@@ -7,3 +7,7 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+/projects/comar/storage/
+/projects/comar/comar.log
+/projects/comar/comar.properties
+/projects/comar/derby.log
