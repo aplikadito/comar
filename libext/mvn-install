@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=fxiconics-0.0.5-jfx.jar -DgroupId=com.pepperonas -DartifactId=fxiconics -Dversion=5.0.0 -Dpackaging=jar

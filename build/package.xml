@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project-init" default="package" basedir=".">
+       
+    <property file="properties/main.properties"/>
+    
+    <target name="package">
+        <echo message="${dir.base}"/>
+        
+        <delete dir="${dir.base}\\comar" />
+        <mkdir dir="${dir.base}\\comar" />
+
+        <copy todir="${dir.base}\\comar" file="${dir.base}\\projects\\comar-proto\\target\\comar-proto-1.0.jar" />
+        
+        <mkdir dir="${dir.base}\\comar\\lib" />
+        <copy todir="${dir.base}\\comar\\lib" >
+            <fileset dir="${dir.base}\\projects\\comar-proto\\target\\lib" />
+        </copy>
+        
+        <copy file="${dir.base}\\share\\JavaExe_64.exe" tofile="${dir.base}\\comar\\comar-proto-1.0.exe" />
+        
+        <copy file="${dir.base}\\home\gtin.bin" todir="${dir.base}\\comar"/>
+        
+    </target>
+    
+</project>
+

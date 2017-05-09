@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project-init" default="startup" basedir=".">
+       
+    <target name="startup">
+        <dirname property="antfile.dir" file="${ant.file}" />
+        <dirname property="antfile.dir.dir" file="${antfile.dir}" />
+        <property name="dir.base.value" value="${antfile.dir.dir}" />
+             
+        <delete dir="properties" />
+        <mkdir dir="properties" />
+        <propertyfile file="properties/main.properties" comment="Propiedades Principales del Proyecto">
+            <entry key="dir.base" value="${dir.base.value}"/>
+        </propertyfile>
+
+        <property name="dir.home" value="${dir.base.value}/home" />
+        <delete dir="${dir.home}"/>
+        <mkdir dir="${dir.home}"/>
+    
+    </target>
+    
+</project>
+
