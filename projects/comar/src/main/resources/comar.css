@@ -121,6 +121,7 @@ COMPONENTES
 }
 
 .comar-flowpane {
+    -fx-padding: 5;
     -fx-hgap: 5;
 }
 
@@ -135,4 +136,11 @@ COMPONENTES
 .comar-link:hover {
     -fx-cursor: hand;
     -fx-background-color: -comar-color-grey; 
+}
+
+.comar-border-0 {
+    -fx-border-width: 0;
+}
+.comar-border-5 {
+    -fx-border-width: 5;
 }

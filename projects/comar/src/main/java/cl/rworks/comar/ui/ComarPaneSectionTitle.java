@@ -14,13 +14,21 @@ import javafx.scene.layout.BorderPane;
  */
 public class ComarPaneSectionTitle extends BorderPane {
 
+    private BorderPane paneTitle;
+    
     public ComarPaneSectionTitle(String title) {
+        paneTitle = new BorderPane();
         Label labelTitle = new Label(title);
         labelTitle.setId("comar-section-label-title");
-        setTop(labelTitle);
+        paneTitle.setLeft(labelTitle);
+        setTop(paneTitle);
         setCenter(new ComarPaneSectionSeparator());
-        
+
         setStyle("-fx-padding: 0 0 10 0");
     }
 
+    public BorderPane getPaneTitle() {
+        return paneTitle;
+    }
+    
 }

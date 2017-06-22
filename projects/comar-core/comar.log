@@ -1,0 +1,61 @@
+2017-06-10 14:15:24 INFO  ComarProperties:52 - Cargando propiedades por defecto
+2017-06-10 14:15:24 INFO  ComarProperties:81 - Guardando propiedades
+2017-06-10 14:15:33 DEBUG DerbyKVDatabase:268 - auto-creating table `KV' if not already existing:
+CREATE TABLE KV (
+  kv_key VARCHAR(767) FOR BIT DATA NOT NULL,
+  kv_value BLOB NOT NULL,
+  PRIMARY KEY(kv_key)
+)
+2017-06-10 14:15:33 DEBUG JSimpleDB:269 - added Java model class `ComarItem' with storage ID 39886
+2017-06-10 14:15:33 DEBUG JSimpleDB:269 - added Java model class `ComarCategory' with storage ID 26444
+2017-06-10 14:15:33 DEBUG JSimpleDB:633 - JSimpleDB schema generated from annotated classes:
+<Schema formatVersion="2">
+    <ObjectType storageId="26444" name="ComarCategory">
+        <SetField storageId="7537" name="items">
+            <ReferenceField storageId="56527" onDelete="EXCEPTION">
+                <ObjectTypes>
+                    <ObjectType storageId="39886"/>
+                </ObjectTypes>
+            </ReferenceField>
+        </SetField>
+        <SimpleField storageId="40098" name="name" type="java.lang.String" indexed="true"/>
+    </ObjectType>
+    <ObjectType storageId="39886" name="ComarItem">
+        <SimpleField storageId="3696" name="buyPrice" type="double"/>
+        <ReferenceField storageId="63691" name="category" onDelete="EXCEPTION">
+            <ObjectTypes>
+                <ObjectType storageId="26444"/>
+            </ObjectTypes>
+        </ReferenceField>
+        <SimpleField storageId="28184" name="code" type="java.lang.String" indexed="true"/>
+        <SimpleField storageId="34661" name="decimalFormat" type="java.lang.String"/>
+        <SimpleField storageId="40098" name="name" type="java.lang.String"/>
+        <SimpleField storageId="17791" name="profitRate" type="double"/>
+        <SimpleField storageId="37558" name="sellPrice" type="double"/>
+        <SimpleField storageId="14981" name="unit" type="java.lang.String"/>
+    </ObjectType>
+</Schema>
+2017-06-10 14:15:33 DEBUG ClassGenerator:240 - begin generating class org/jsimpledb/UntypedJObject$$JSimpleDB
+2017-06-10 14:15:33 DEBUG ClassGenerator:250 - done generating class org/jsimpledb/UntypedJObject$$JSimpleDB
+2017-06-10 14:15:33 DEBUG ClassGenerator:240 - begin generating class cl/rworks/comar/core/ComarCategory$$JSimpleDB
+2017-06-10 14:15:33 DEBUG ClassGenerator:250 - done generating class cl/rworks/comar/core/ComarCategory$$JSimpleDB
+2017-06-10 14:15:33 DEBUG ClassGenerator:240 - begin generating class cl/rworks/comar/core/ComarItem$$JSimpleDB
+2017-06-10 14:15:33 DEBUG ClassGenerator:250 - done generating class cl/rworks/comar/core/ComarItem$$JSimpleDB
+2017-06-10 14:15:33 DEBUG Database:496 - detected an uninitialized database; initializing now (format version 2)
+2017-06-10 14:15:33 DEBUG Database:593 - recording new schema version 557715873 into database
+2017-06-10 14:15:33 DEBUG ReferencePath:253 - RefPath: START startType=cl.rworks.comar.core.ComarCategory path="name" withTargetField=true lastIsSubField=true
+2017-06-10 14:15:33 DEBUG ReferencePath:277 - RefPath: fieldNames=[name]
+2017-06-10 14:15:33 DEBUG ReferencePath:292 - RefPath: remainingCursors=[Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),fieldNames=[name]]]
+2017-06-10 14:15:33 DEBUG ReferencePath:301 - RefPath: processing remainingCursor Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),fieldNames=[name]]
+2017-06-10 14:15:33 DEBUG ReferencePath:576 - RefPath.findField(): jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory) fieldNames=[name] lastIsSubField=true
+2017-06-10 14:15:33 DEBUG ReferencePath:607 - RefPath.findField(): found field field `name' of object type `ComarCategory' in class cl.rworks.comar.core.ComarCategory
+2017-06-10 14:15:33 DEBUG ReferencePath:658 - RefPath.findField(): field is a simple field
+2017-06-10 14:15:33 DEBUG ReferencePath:668 - RefPath.findField(): result=field `name' of object type `ComarCategory'
+2017-06-10 14:15:33 DEBUG ReferencePath$Cursor:826 - RefPath.stepThroughField(): result=[Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),jfield=field `name' of object type `ComarCategory']]
+2017-06-10 14:15:33 DEBUG ReferencePath:322 - RefPath: stepThroughField() on Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),fieldNames=[name]] succeeded: newCursors=[Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),jfield=field `name' of object type `ComarCategory']]
+2017-06-10 14:15:33 DEBUG ReferencePath:326 - RefPath: after stepThroughField(), newCursors=[Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),jfield=field `name' of object type `ComarCategory']]
+2017-06-10 14:15:33 DEBUG ReferencePath:335 - RefPath: newCursor Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),fieldNames=[name]] is completed
+2017-06-10 14:15:33 DEBUG ReferencePath:343 - RefPath: after stepThroughField(), remaining newCursors=[]
+2017-06-10 14:15:33 DEBUG ReferencePath:371 - RefPath: remainingCursors=[] completedCursors=[Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),jfield=field `name' of object type `ComarCategory']]
+2017-06-10 14:15:33 DEBUG ReferencePath:433 - RefPath: DONE: targetTypes=[class cl.rworks.comar.core.ComarCategory] targetFieldStorageId=40098 targetSuperFieldStorageId=0 targetFieldTypes=[java.lang.String] references=[] cursors=[Cursor[jclass=object type `ComarCategory' (class cl.rworks.comar.core.ComarCategory),jfield=field `name' of object type `ComarCategory']]
+2017-06-10 14:15:33 INFO  ComarContext:41 - Categoria 'Varios' no existe

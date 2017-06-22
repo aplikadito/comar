@@ -27,7 +27,7 @@ public class ComarApplication extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        ComarContext context = new ComarContext();
+        ComarContext context = ComarContext.getInstance();
 
         ComarScenePos.init(context);
         ComarSceneAdm.init(context);

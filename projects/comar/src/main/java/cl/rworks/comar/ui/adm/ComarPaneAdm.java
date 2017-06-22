@@ -15,40 +15,43 @@ import javafx.scene.layout.BorderPane;
  */
 public class ComarPaneAdm extends BorderPane {
 
-    public static final int INVENTORY = 0;
-    public static final int SELLS = 1;
-    
+    public static final int PRODUCTS = 0;
+    public static final int CATEGORIES = 1;
+    public static final int SELLS = 2;
+
     private ComarPaneBanner paneBanner;
     private ComarPaneAdmMenu paneMenu;
     private BorderPane paneContent;
     //
-    private ComarPaneAdmInventory paneInventory;
+    private ComarPaneAdmProducts paneProducts;
+    private ComarPaneAdmCategories paneCategories;
     private ComarPaneAdmSells paneSells;
 
     public ComarPaneAdm(ComarContext context) {
         this.paneBanner = new ComarPaneBanner("Administracion");
         this.paneMenu = new ComarPaneAdmMenu(this, context);
-        
+
         this.paneContent = new BorderPane();
         this.paneContent.getStyleClass().add("comar-content");
-        
-        this.paneInventory = new ComarPaneAdmInventory(context);
+
+        this.paneProducts = new ComarPaneAdmProducts(context);
+        this.paneCategories = new ComarPaneAdmCategories(context);
         this.paneSells = new ComarPaneAdmSells(this, context);
 
         setTop(paneBanner);
         setLeft(paneMenu);
         setCenter(paneContent);
-        
-        setContent(INVENTORY);
+
+        setContent(PRODUCTS);
     }
 
     public final void setContent(int pane) {
-//        paneContent.getChildren().clear();
-
         switch (pane) {
-            case INVENTORY:
-//                paneContent.getChildren().add(paneInventory);
-                paneContent.setCenter(paneInventory);
+            case PRODUCTS:
+                paneContent.setCenter(paneProducts);
+                break;
+            case CATEGORIES:
+                paneContent.setCenter(paneCategories);
                 break;
             case SELLS:
                 paneContent.setCenter(paneSells);
@@ -56,7 +59,6 @@ public class ComarPaneAdm extends BorderPane {
             default:
                 throw new RuntimeException("Pane no registrado: " + pane);
         }
-
     }
 
 }

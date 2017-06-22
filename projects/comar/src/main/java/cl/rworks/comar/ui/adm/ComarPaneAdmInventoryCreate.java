@@ -62,7 +62,7 @@ public class ComarPaneAdmInventoryCreate extends BorderPane {
         comboUnit.setConverter(new UnitConverter());
 
         NavigableSet<ComarCategory> categories;
-        JTransaction jtx = context.getDatabase().getDelegate().createTransaction(true, ValidationMode.AUTOMATIC);
+        JTransaction jtx = context.getDatabase().get().createTransaction(true, ValidationMode.AUTOMATIC);
         JTransaction.setCurrent(jtx);
         try {
             categories = ComarCategory.getAll();
