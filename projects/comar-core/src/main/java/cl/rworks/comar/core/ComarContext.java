@@ -38,11 +38,10 @@ public class ComarContext {
         JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
         JTransaction.setCurrent(jtx);
         try {
-            ComarCategory cat = ComarCategory.getByName("Varios");
+            ComarCategory cat = ComarCategory.getVarios();
             if (cat == null) {
                 LOG.info("Creando categoria 'Varios' ...");
-                ComarCategory category = ComarCategory.create();
-                category.setName("Varios");
+                ComarCategory.createVarios();
             }
             
             jtx.commit();

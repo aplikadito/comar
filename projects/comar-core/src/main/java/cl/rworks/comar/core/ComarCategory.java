@@ -20,6 +20,8 @@ import org.jsimpledb.core.util.ObjDumper;
 @JSimpleClass
 public abstract class ComarCategory implements JObject {
 
+    public static final String VARIOS = "Varios";
+
     @JField(indexed = true, unique = true)
     public abstract String getName();
 
@@ -44,6 +46,16 @@ public abstract class ComarCategory implements JObject {
     public static ComarCategory getByName(String name) {
         NavigableSet<ComarCategory> list = JTransaction.getCurrent().queryIndex(ComarCategory.class, "name", String.class).asMap().get(name);
         return list == null ? null : list.iterator().next();
+    }
+
+    public static ComarCategory getVarios() {
+        return getByName(VARIOS);
+    }
+
+    public static ComarCategory createVarios() {
+        ComarCategory category = ComarCategory.create();
+        category.setName(ComarCategory.VARIOS);
+        return category;
     }
 
     @Override
