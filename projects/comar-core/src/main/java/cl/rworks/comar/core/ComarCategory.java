@@ -25,7 +25,7 @@ public abstract class ComarCategory implements JObject {
 
     public abstract void setName(String name);
 
-    public abstract Set<ComarItem> getItems();
+    public abstract Set<ComarProduct> getItems();
 
     public static NavigableSet<ComarCategory> getAll() {
         return JTransaction.getCurrent().getAll(ComarCategory.class);

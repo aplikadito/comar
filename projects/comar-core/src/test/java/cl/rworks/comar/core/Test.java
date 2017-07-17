@@ -5,14 +5,18 @@
  */
 package cl.rworks.comar.core;
 
-import org.jsimpledb.JTransaction;
-
 /**
  *
  * @author rgonzalez
  */
-public interface ComarDatabaseTask {
-
-    public Object execute(JTransaction jtx);
-
+public class Test {
+    
+    public void test(){
+        ComarProperties p = new ComarProperties();
+    }
+ 
+    public static void main(String[] args) {
+        Test test = new Test();
+        test.test();
+    }
 }

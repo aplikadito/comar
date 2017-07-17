@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
 public enum ComarDecimalFormat {
 
     ZERO("Sin decimales", "#"),
-    ONE("Uno decimales", "#.0"),
+    ONE("Un decimales", "#.0"),
     TWO("Dos decimales", "#.00"),
     THREE("Tres decimales", "#.000"),
     FOUR("Cuatro decimales", "#.0000"),

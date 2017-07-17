@@ -5,9 +5,10 @@
  */
 package cl.rworks.comar.core;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.jsimpledb.JSimpleDB;
 import org.jsimpledb.JTransaction;
+import org.jsimpledb.ValidationMode;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -15,7 +16,7 @@ import org.jsimpledb.JTransaction;
  */
 public class ComarContext {
 
-    private static final Logger LOG = LogManager.getLogger(ComarContext.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ComarDatabase.class);
     private static ComarContext instance;
     //
     private ComarProperties properties;
@@ -33,22 +34,22 @@ public class ComarContext {
     }
 
     private void init() {
-        database.execute(new ComarDatabaseTask() {
-            @Override
-            public Object execute(JTransaction jtx) {
-                ComarCategory cat = ComarCategory.getByName("Varios");
-                if (cat == null) {
-                    LOG.info("Creando categoria 'Varios' ...");
-
-                    ComarCategory category = ComarCategory.create();
-                    category.setName("Varios");
-                    jtx.commit();
-                } else {
-                    jtx.rollback();
-                }
-                return null;
+        JSimpleDB db = database.get();
+        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
+        JTransaction.setCurrent(jtx);
+        try {
+            ComarCategory cat = ComarCategory.getByName("Varios");
+            if (cat == null) {
+                LOG.info("Creando categoria 'Varios' ...");
+                ComarCategory category = ComarCategory.create();
+                category.setName("Varios");
             }
-        });
+            
+            jtx.commit();
+        } finally {
+            JTransaction.setCurrent(null);
+        }
+
     }
 
     public ComarProperties getProperties() {

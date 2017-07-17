@@ -7,12 +7,11 @@ package cl.rworks.comar.core;
 
 import org.jsimpledb.kv.derby.DerbyKVDatabase;
 import org.apache.derby.jdbc.EmbeddedDataSource;
-import org.apache.log4j.Logger;
 import org.jsimpledb.JSimpleDB;
 import org.jsimpledb.JSimpleDBFactory;
-import org.jsimpledb.JTransaction;
-import org.jsimpledb.ValidationMode;
 import org.jsimpledb.core.Database;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,7 +19,7 @@ import org.jsimpledb.core.Database;
  */
 public class ComarDatabase {
 
-    private static final Logger LOG = Logger.getLogger(ComarDatabase.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ComarDatabase.class);
     private final JSimpleDB delegate;
 
     public ComarDatabase() {
@@ -33,27 +32,9 @@ public class ComarDatabase {
 
         delegate = new JSimpleDBFactory().
                 setDatabase(new Database(dbDerby)).
-                setModelClasses(ComarCategory.class, ComarItem.class).
+                setModelClasses(ComarCategory.class, ComarProduct.class).
                 setSchemaVersion(-1).
                 newJSimpleDB();
-    }
-
-    public JTransaction startTransaction() {
-        return get().createTransaction(true, ValidationMode.AUTOMATIC);
-    }
-
-    public void endTransaction() {
-        JTransaction.setCurrent(null);
-    }
-
-    public Object execute(ComarDatabaseTask task) {
-        JTransaction jtx = startTransaction();
-        JTransaction.setCurrent(jtx);
-        try {
-            return task.execute(jtx);
-        } finally {
-            endTransaction();
-        }
     }
 
     public JSimpleDB get() {

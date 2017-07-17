@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
  */
 public class ComarProperties {
 
-    private final static Logger LOG = Logger.getLogger(ComarProperties.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ComarDatabase.class);
 
     private final File pfile = new File("comar.properties");
     private Properties properties;
