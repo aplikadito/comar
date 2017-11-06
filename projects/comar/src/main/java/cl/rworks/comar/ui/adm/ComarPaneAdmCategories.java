@@ -5,11 +5,9 @@
  */
 package cl.rworks.comar.ui.adm;
 
-import cl.rworks.comar.core.ComarCategory;
 import cl.rworks.comar.core.ComarContext;
 import cl.rworks.comar.ui.ComarIconLoader;
 import cl.rworks.comar.ui.ComarPaneSectionTitle;
-import java.util.NavigableSet;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -20,9 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import org.apache.log4j.Category;
-import org.jsimpledb.JTransaction;
-import org.jsimpledb.ValidationMode;
+import cl.rworks.comar.core.ComarStockKite;
 
 /**
  *
@@ -57,24 +53,13 @@ public class ComarPaneAdmCategories extends BorderPane {
         public PaneMain() {
             setTop(new ComarPaneSectionTitle("CATEGORIAS"));
 
-            TableView<ComarCategory> table = new TableView();
+            TableView<ComarStockKite> table = new TableView();
             TableColumn firstNameCol = new TableColumn("Nombre");
-            firstNameCol.setCellValueFactory(
-                    new PropertyValueFactory<ComarCategory, String>("name")
+            firstNameCol.setCellValueFactory(new PropertyValueFactory<ComarStockKite, String>("name")
             );
             
             
             table.getColumns().addAll(firstNameCol);
-
-            JTransaction jtx = context.getDatabase().get().createTransaction(true, ValidationMode.DISABLED);
-            JTransaction.setCurrent(jtx);
-            try {
-                ComarCategory[] categories = ComarCategory.getAll().toArray(new ComarCategory[0]);
-                table.getItems().addAll(categories);
-//                table.setItems(categories);
-            } finally {
-
-            }
 
             BorderPane paneTable = new BorderPane();
             paneTable.setCenter(table);

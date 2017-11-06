@@ -20,7 +20,7 @@ public class ComarPaneAdmMenu extends VBox {
     private ComarPaneAdm paneParent;
     private ComarContext context;
     private ComarPaneAdmMenuItem menuProducts;
-    private ComarPaneAdmMenuItem menuCategories;
+    private ComarPaneAdmMenuItem menuStock;
     private ComarPaneAdmMenuItem menuSells;
 
     public ComarPaneAdmMenu(ComarPaneAdm parent, ComarContext context) {
@@ -38,11 +38,11 @@ public class ComarPaneAdmMenu extends VBox {
             }
         });
         
-        this.menuCategories = new ComarPaneAdmMenuItem("Categorias", FxFontAwesome.Icons.faw_folder);
-        this.menuCategories.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        this.menuStock = new ComarPaneAdmMenuItem("Inventario", FxFontAwesome.Icons.faw_folder);
+        this.menuStock.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                paneParent.setContent(ComarPaneAdm.CATEGORIES);
+                paneParent.setContent(ComarPaneAdm.STOCK);
             }
         });
 
@@ -55,7 +55,7 @@ public class ComarPaneAdmMenu extends VBox {
         });
 
         getChildren().add(menuProducts);
-        getChildren().add(menuCategories);
+        getChildren().add(menuStock);
         getChildren().add(menuSells);
     }
 

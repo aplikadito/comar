@@ -16,7 +16,7 @@ import javafx.scene.layout.BorderPane;
 public class ComarPaneAdm extends BorderPane {
 
     public static final int PRODUCTS = 0;
-    public static final int CATEGORIES = 1;
+    public static final int STOCK = 1;
     public static final int SELLS = 2;
 
     private ComarPaneBanner paneBanner;
@@ -50,7 +50,7 @@ public class ComarPaneAdm extends BorderPane {
             case PRODUCTS:
                 paneContent.setCenter(paneProducts);
                 break;
-            case CATEGORIES:
+            case STOCK:
                 paneContent.setCenter(paneCategories);
                 break;
             case SELLS:

@@ -5,14 +5,12 @@
  */
 package cl.rworks.comar.ui.adm;
 
-import cl.rworks.comar.core.ComarCategory;
 import cl.rworks.comar.core.ComarContext;
 import cl.rworks.comar.core.ComarUnit;
 import cl.rworks.comar.ui.ComarGuiUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NavigableSet;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -23,8 +21,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import org.jsimpledb.JTransaction;
-import org.jsimpledb.ValidationMode;
 
 /**
  *
@@ -37,7 +33,6 @@ public class ComarPaneAdmInventoryCreate extends BorderPane {
     private TextField textCode;
     private TextField textName;
     private ComboBox<ComarUnit> comboUnit;
-    private ComboBox<ComarCategory> comboCategory;
     private VBox paneForm;
     private FlowPane paneButtons;
 
@@ -61,20 +56,6 @@ public class ComarPaneAdmInventoryCreate extends BorderPane {
         comboUnit.getSelectionModel().selectFirst();
         comboUnit.setConverter(new UnitConverter());
 
-        NavigableSet<ComarCategory> categories;
-        JTransaction jtx = context.getDatabase().get().createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
-        try {
-            categories = ComarCategory.getAll();
-        } finally {
-            JTransaction.setCurrent(null);
-        }
-
-        comboCategory = new ComboBox<ComarCategory>();
-        comboCategory.getItems().addAll(categories);
-        comboCategory.getSelectionModel().selectFirst();
-        comboCategory.setConverter(new CategoryConverter());
-
         paneForm = new VBox();
         paneForm.getStyleClass().add("comar-form");
         this.setCenter(paneForm);
@@ -83,7 +64,6 @@ public class ComarPaneAdmInventoryCreate extends BorderPane {
         children.add(ComarGuiUtils.createRow("Codigo", textCode));
         children.add(ComarGuiUtils.createRow("Nombre", textName));
         children.add(ComarGuiUtils.createRow("Unidad", comboUnit));
-        children.add(ComarGuiUtils.createRow("Categoria", comboCategory));
 
     }
 
@@ -108,17 +88,4 @@ public class ComarPaneAdmInventoryCreate extends BorderPane {
         }
     }
 
-    private class CategoryConverter extends StringConverter<ComarCategory> {
-
-        @Override
-        public String toString(ComarCategory category) {
-            return category.getName();
-        }
-
-        @Override
-        public ComarCategory fromString(String string) {
-            return null;
-        }
-
-    }
 }
