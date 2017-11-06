@@ -5,9 +5,7 @@
  */
 package cl.rworks.comar.core;
 
-import org.jsimpledb.JSimpleDB;
-import org.jsimpledb.JTransaction;
-import org.jsimpledb.ValidationMode;
+import cl.rworks.kite.KiteDb;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -16,11 +14,12 @@ import org.slf4j.LoggerFactory;
  */
 public class ComarContext {
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ComarDatabase.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ComarContext.class);
     private static ComarContext instance;
     //
     private ComarProperties properties;
-    private ComarDatabase database;
+    private KiteDb database;
+    private ComarService service;
 
     public static ComarContext getInstance() {
         instance = instance == null ? new ComarContext() : instance;
@@ -29,33 +28,19 @@ public class ComarContext {
 
     private ComarContext() {
         properties = new ComarProperties();
-        database = new ComarDatabase();
+        database = new KiteDb("storage", ComarProductKite.class, ComarStockKite.class, ComarSellKite.class);
+        service = new ComarServiceImpl(database);
         init();
     }
 
     private void init() {
-        JSimpleDB db = database.get();
-        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
-        try {
-            ComarCategory cat = ComarCategory.getVarios();
-            if (cat == null) {
-                LOG.info("Creando categoria 'Varios' ...");
-                ComarCategory.createVarios();
-            }
-            
-            jtx.commit();
-        } finally {
-            JTransaction.setCurrent(null);
-        }
-
     }
 
     public ComarProperties getProperties() {
         return properties;
     }
 
-    public ComarDatabase getDatabase() {
+    public KiteDb getDatabase() {
         return database;
     }
 

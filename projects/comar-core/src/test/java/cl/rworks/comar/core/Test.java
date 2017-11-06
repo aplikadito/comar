@@ -5,18 +5,25 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.kite.KiteDb;
+
 /**
  *
  * @author rgonzalez
  */
 public class Test {
-    
-    public void test(){
+
+    public void test() {
         ComarProperties p = new ComarProperties();
     }
- 
+
     public static void main(String[] args) {
-        Test test = new Test();
-        test.test();
+        KiteDb db = new KiteDb(ComarProductKite.class, ComarStockKite.class, ComarSellKite.class);
+        db.execute(jtx -> {
+            ComarProductKite p = ComarProductKite.create();
+            
+            jtx.commit();
+            return null;
+        });
     }
 }

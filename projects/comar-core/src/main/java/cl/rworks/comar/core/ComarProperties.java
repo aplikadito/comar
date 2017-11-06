@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ComarProperties {
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ComarDatabase.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ComarProperties.class);
 
     private final File pfile = new File("comar.properties");
     private Properties properties;
