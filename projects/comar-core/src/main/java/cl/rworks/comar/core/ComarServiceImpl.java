@@ -6,10 +6,7 @@
 package cl.rworks.comar.core;
 
 import cl.rworks.kite.KiteDb;
-import io.permazen.core.ObjId;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NavigableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +18,8 @@ public class ComarServiceImpl implements ComarService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComarServiceImpl.class);
 
+    private KiteDb database;
+    //
     private final Class<?>[] classes = new Class<?>[]{
         ComarProductKite.class,
         ComarStockKite.class,
@@ -28,7 +27,8 @@ public class ComarServiceImpl implements ComarService {
         ComarCategoryKite.class
     };
 
-    private KiteDb database;
+    private ComarProductDao daoProduct;
+    private ComarCategoryDao daoCategory;
 
     public ComarServiceImpl() {
         this("storage");
@@ -36,82 +36,60 @@ public class ComarServiceImpl implements ComarService {
 
     public ComarServiceImpl(String name) {
         this.database = name == null || name.isEmpty() ? new KiteDb(classes) : new KiteDb(name, classes);
+        this.daoProduct = new ComarProductDao(database);
+        this.daoCategory = new ComarCategoryDao(database);
     }
 
     public KiteDb getDatabase() {
         return database;
     }
 
-    public ComarProduct createProduct() throws ComarServiceException {
-        Object response = database.execute(jtx -> {
-
-            ComarProductKite p = ComarProductKite.create();
-            ComarProductKite pp = (ComarProductKite) p.copyOut();
-
-            jtx.rollback();
-            return pp;
-        });
-        return (ComarProduct) response;
-    }
-
-    public void insertProduct(final ComarProduct aux) throws ComarServiceException {
-        database.execute(jtx -> {
-
-            ComarProductKite persistence = ComarProductKite.create();
-            persistence.setId(persistence.getObjId().asLong());
-            persistence.setCode(aux.getCode());
-            persistence.setName(aux.getName());
-            persistence.setDecimalFormat(aux.getDecimalFormat());
-            persistence.setUnit(aux.getUnit());
-
-            aux.setId(persistence.getId());
-
-            jtx.commit();
-            LOG.info("Producto agregado: [{}, {}]", persistence.getCode(), persistence.getName());
-            return null;
-        });
-    }
-
-    public List<ComarProduct> getAllProducts() throws ComarServiceException {
-        return (List<ComarProduct>) database.execute(jtx -> {
-            NavigableSet<ComarProductKite> products = jtx.getAll(ComarProductKite.class);
-            List<ComarProduct> list = new ArrayList<>();
-            for (ComarProductKite p : products) {
-                ComarProductKite pp = (ComarProductKite) p.copyOut();
-                list.add(pp);
-            }
-
-            jtx.rollback();
-            return list;
-
-        });
-    }
-
-    public ComarProduct getByIdProduct(final Long id) throws ComarServiceException {
-        if (id == null) {
-            return null;
-        }
-
-        return (ComarProduct) database.execute(jtx -> {
-            ObjId oid = new ObjId(id);
-            ComarProductKite p = (ComarProductKite) jtx.get(oid);
-            ComarProductKite pp = p != null ? (ComarProductKite) p.copyOut() : null;
-            jtx.rollback();
-            return pp;
-
-        });
+    @Override
+    public ComarProductDao getProductDao() {
+        return daoProduct;
     }
 
     @Override
-    public ComarProduct getByIdCode(String code) throws ComarServiceException {
-        return (ComarProduct) database.execute(jtx -> {
-            NavigableSet<ComarProduct> result = jtx.queryIndex(ComarProduct.class, "code", String.class).asMap().get("code");
-            ComarProductKite p = result != null ? (ComarProductKite) result.first() : null;
-            ComarProductKite pp = p != null ? (ComarProductKite) p.copyOut() : null;
-            jtx.rollback();
-            return pp;
-        });
+    public ComarCategoryDao getCategoryDao() {
+        return daoCategory;
+    }
 
+    @Override
+    public ComarProduct createProduct() throws ComarServiceException {
+        return daoProduct.create();
+    }
+
+    @Override
+    public void insertProduct(ComarProduct product) throws ComarServiceException {
+        if (product == null) {
+            throw new ComarServiceException("Producto nulo");
+        }
+
+        String code = product.getCode();
+        if (code == null || code.isEmpty()) {
+            throw new ComarServiceException("Codigo nulo o vacio");
+        }
+
+        if (daoProduct.getByCode(code) != null) {
+            throw new ComarServiceException("El codigo ya existe: " + product.getCode());
+        }
+
+        daoProduct.insert(product);
+    }
+
+    @Override
+    public ComarProduct getProduct(Long id) throws ComarServiceException {
+        return daoProduct.get(id);
+    }
+
+    @Override
+    public ComarProduct getByCodeProduct(String code) throws ComarServiceException {
+        return daoProduct.getByCode(code);
+    }
+
+    @Override
+    public List<ComarProduct> getAllProducts() throws ComarServiceException {
+        return daoProduct.getAll();
     }
 
 }

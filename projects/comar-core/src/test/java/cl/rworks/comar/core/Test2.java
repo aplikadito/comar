@@ -5,9 +5,6 @@
  */
 package cl.rworks.comar.core;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author rgonzalez
@@ -20,7 +17,7 @@ public class Test2 {
 //        long id = -244252732922459347L;
         String code = "0010";
 
-        ComarProduct pp = service.getByIdCode(code);
+        ComarProduct pp = service.getByCodeProduct(code);
         System.out.println(pp.getName());
 
     }
@@ -30,7 +27,7 @@ public class Test2 {
             Test2 test = new Test2();
             test.test();
         } catch (Exception ex) {
-            Logger.getLogger(Test2.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 

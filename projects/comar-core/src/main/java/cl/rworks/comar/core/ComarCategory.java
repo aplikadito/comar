@@ -18,4 +18,6 @@ public interface ComarCategory {
     String getName();
 
     void setName(String name);
+    
+//    asd();
 }

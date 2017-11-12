@@ -6,8 +6,6 @@
 package cl.rworks.comar.core;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -19,15 +17,14 @@ public class Test1 {
         ComarService service = new ComarServiceImpl();
 
         service.getAllProducts().stream().forEach(System.out::println);
-        
+
         List<ComarProduct> allProducts = service.getAllProducts();
-        for(ComarProduct p: allProducts){
+        for (ComarProduct p : allProducts) {
             ComarCategory cate = p.getCategory();
         }
-        
+
 //            System.out.println(String.format("[%s %s %s %s %s]", e.getId(), e.getCode(), e.getName(), e.getDecimalFormat(), e.getUnit()));
 //        });
-
     }
 
     public static void main(String[] args) {
@@ -35,7 +32,8 @@ public class Test1 {
             Test1 test = new Test1();
             test.test();
         } catch (Exception ex) {
-            Logger.getLogger(Test1.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+
         }
     }
 

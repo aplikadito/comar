@@ -13,14 +13,18 @@ import java.util.List;
  */
 public interface ComarService {
 
-    ComarProduct createProduct() throws ComarServiceException;
+    ComarProductDao getProductDao();
 
-    void insertProduct(final ComarProduct p) throws ComarServiceException;
+    ComarCategoryDao getCategoryDao();
+
+    public ComarProduct createProduct() throws ComarServiceException;
+
+    public void insertProduct(ComarProduct product) throws ComarServiceException;
+
+    public ComarProduct getProduct(Long id) throws ComarServiceException;
+
+    public ComarProduct getByCodeProduct(String code) throws ComarServiceException;
 
     public List<ComarProduct> getAllProducts() throws ComarServiceException;
-
-    public ComarProduct getByIdProduct(Long id) throws ComarServiceException;
-
-    public ComarProduct getByIdCode(String code) throws ComarServiceException;
 
 }

@@ -9,26 +9,21 @@ package cl.rworks.comar.core;
  *
  * @author rgonzalez
  */
-public class Test {
+public class Test0 {
 
     public void test() throws Exception {
-        
+
         ComarService service = new ComarServiceImpl();
-        
+
         ComarProduct product = service.createProduct();
-        System.out.println(product.getId());
-        
         product.setCode("0011");
         product.setName("mate_" + product.getCode());
         service.insertProduct(product);
-        
-        System.out.println(product.getId());
-        System.out.println(product.getDecimalFormat());
     }
 
     public static void main(String[] args) {
         try {
-            Test test = new Test();
+            Test0 test = new Test0();
             test.test();
         } catch (Exception ex) {
             ex.printStackTrace();
