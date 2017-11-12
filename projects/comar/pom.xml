@@ -47,6 +47,28 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>install1</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../../libext/fxiconics-0.0.5-jfx.jar</file>
+                            <groupId>com.pepperonas</groupId>
+                            <artifactId>fxiconics</artifactId>
+                            <version>5.0.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.6</version>
                 <executions>
@@ -69,6 +91,13 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
+                
+                <configuration>
+                    <workingDirectory>..\\home</workingDirectory>
+                    <!--<mainClass>com.package.MyMainClass</mainClass>-->
+                    <!--<includeProjectDependencies>true</includeProjectDependencies>-->
+                </configuration>
+                
                 <executions>
                     <execution>
                         <id>unpack-dependencies</id>
@@ -127,7 +156,7 @@
                     </additionalClasspathElements>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
-    
 </project>
