@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="project-init" default="startup" basedir=".">
+<project name="project-init" default="startup" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
        
     <target name="startup">
         <dirname property="antfile.dir" file="${ant.file}" />
@@ -15,8 +15,20 @@
         <property name="dir.home" value="${dir.base.value}/home" />
         <delete dir="${dir.home}"/>
         <mkdir dir="${dir.home}"/>
-    
+        
     </target>
+
+    
+    <artifact:pom id="maven_install" groupId="com.pepperonas" artifactId="fxiconics"  version="5.0.0" packaging="jar" >
+        <!--<dependency groupId="..." artifactId="..." version="..."/>-->
+        <!--<dependency groupId="..." artifactId="..." version="..."/>-->
+        <!--<license name="apache" url="http://www.apache.org"/>  can be omitted -->
+    </artifact:pom>
+
+    <target name ="minstall" depends="jar">
+        <artifact:install file="D:\trabajo\comar\libext\fxiconics-0.0.5-jfx.jar" pomRefId="maven_install"/>
+    </target>
+    
     
 </project>
 

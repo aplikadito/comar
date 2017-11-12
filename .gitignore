@@ -12,3 +12,5 @@ buildNumber.properties
 /projects/comar/comar.properties
 /projects/comar/derby.log
 /projects/comar-core/nbproject/
+/home/
+storage
