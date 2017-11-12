@@ -12,9 +12,7 @@ package cl.rworks.comar.core;
 public class Test0 {
 
     public void test() throws Exception {
-
         ComarService service = new ComarServiceImpl();
-
         ComarProduct product = service.createProduct();
         product.setCode("0011");
         product.setName("mate_" + product.getCode());

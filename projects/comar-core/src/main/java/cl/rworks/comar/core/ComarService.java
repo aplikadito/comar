@@ -6,6 +6,7 @@
 package cl.rworks.comar.core;
 
 import java.util.List;
+import java.util.NavigableSet;
 
 /**
  *
@@ -13,18 +14,16 @@ import java.util.List;
  */
 public interface ComarService {
 
-    ComarProductDao getProductDao();
+    ComarProduct createProduct() throws ComarServiceException;
 
-    ComarCategoryDao getCategoryDao();
+    void insertProduct(ComarProduct product) throws ComarServiceException;
 
-    public ComarProduct createProduct() throws ComarServiceException;
+    ComarProduct getProduct(Long id) throws ComarServiceException;
 
-    public void insertProduct(ComarProduct product) throws ComarServiceException;
+    ComarProduct getByCodeProduct(String code) throws ComarServiceException;
 
-    public ComarProduct getProduct(Long id) throws ComarServiceException;
+    List<ComarProduct> getAllProducts() throws ComarServiceException;
 
-    public ComarProduct getByCodeProduct(String code) throws ComarServiceException;
-
-    public List<ComarProduct> getAllProducts() throws ComarServiceException;
+    List<ComarProduct> search(String text) throws ComarServiceException;
 
 }
