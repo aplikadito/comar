@@ -11,15 +11,14 @@ import io.permazen.annotation.PermazenType;
 
 /**
  *
- * @author rgonzalez
+ * @author aplik
  */
 @PermazenType
-public interface ComarSellKite extends JObject, ComarSell {
+public interface ComarCategoryKite extends JObject, ComarCategory {
 
-    @JField(indexed = true)
-    default Long getId() {
-        return getObjId() != null ? getObjId().asLong() : null;
-    }
+    @JField(indexed = true, unique = true)
+    String getName();
+    
+    void setName(String name);
 
-    void setId(Long id);
 }

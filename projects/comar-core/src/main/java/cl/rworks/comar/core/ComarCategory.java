@@ -7,11 +7,15 @@ package cl.rworks.comar.core;
 
 /**
  *
- * @author rgonzalez
+ * @author aplik
  */
-public interface ComarStock {
+public interface ComarCategory {
 
     Long getId();
 
     void setId(Long id);
+
+    String getName();
+
+    void setName(String name);
 }

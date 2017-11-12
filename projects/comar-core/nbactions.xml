@@ -12,7 +12,7 @@
             <properties>
                 <exec.args>-classpath %classpath ${packageClassName}</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>/home/rgonzalez/trabajo/comar/dev/home</exec.workingdir>
+                <exec.workingdir>..\\home</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -28,7 +28,7 @@
                 <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath ${packageClassName}</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
-                <exec.workingdir>/home/rgonzalez/trabajo/comar/dev/home</exec.workingdir>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>
@@ -43,7 +43,23 @@
             <properties>
                 <exec.args>-classpath %classpath ${packageClassName}</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>/home/rgonzalez/trabajo/comar/dev/home</exec.workingdir>
+                <exec.workingdir></exec.workingdir>
+            </properties>
+        </action>
+        <action>
+            <actionName>run.single.main</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-classpath %classpath ${packageClassName}</exec.args>
+                <exec.executable>java</exec.executable>
+                <exec.classpathScope>${classPathScope}</exec.classpathScope>
+                <exec.workingdir>..\\..\\home</exec.workingdir>
             </properties>
         </action>
     </actions>

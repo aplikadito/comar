@@ -5,7 +5,6 @@
  */
 package cl.rworks.comar.core;
 
-import cl.rworks.kite.KiteDb;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -18,7 +17,6 @@ public class ComarContext {
     private static ComarContext instance;
     //
     private ComarProperties properties;
-    private KiteDb database;
     private ComarService service;
 
     public static ComarContext getInstance() {
@@ -28,8 +26,6 @@ public class ComarContext {
 
     private ComarContext() {
         properties = new ComarProperties();
-        database = new KiteDb("storage", ComarProductKite.class, ComarStockKite.class, ComarSellKite.class);
-        service = new ComarServiceImpl(database);
         init();
     }
 
@@ -38,10 +34,6 @@ public class ComarContext {
 
     public ComarProperties getProperties() {
         return properties;
-    }
-
-    public KiteDb getDatabase() {
-        return database;
     }
 
 }

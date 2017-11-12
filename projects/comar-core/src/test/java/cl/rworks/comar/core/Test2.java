@@ -5,33 +5,32 @@
  */
 package cl.rworks.comar.core;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author rgonzalez
  */
-public class Test {
+public class Test2 {
 
     public void test() throws Exception {
-        
         ComarService service = new ComarServiceImpl();
-        
-        ComarProduct product = service.createProduct();
-        System.out.println(product.getId());
-        
-        product.setCode("0011");
-        product.setName("mate_" + product.getCode());
-        service.insertProduct(product);
-        
-        System.out.println(product.getId());
-        System.out.println(product.getDecimalFormat());
+
+//        long id = -244252732922459347L;
+        String code = "0010";
+
+        ComarProduct pp = service.getByIdCode(code);
+        System.out.println(pp.getName());
+
     }
 
     public static void main(String[] args) {
         try {
-            Test test = new Test();
+            Test2 test = new Test2();
             test.test();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Logger.getLogger(Test2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

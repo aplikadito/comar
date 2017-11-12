@@ -5,10 +5,22 @@
  */
 package cl.rworks.comar.core;
 
+import java.util.List;
+
 /**
  *
  * @author rgonzalez
  */
 public interface ComarService {
-    
+
+    ComarProduct createProduct() throws ComarServiceException;
+
+    void insertProduct(final ComarProduct p) throws ComarServiceException;
+
+    public List<ComarProduct> getAllProducts() throws ComarServiceException;
+
+    public ComarProduct getByIdProduct(Long id) throws ComarServiceException;
+
+    public ComarProduct getByIdCode(String code) throws ComarServiceException;
+
 }

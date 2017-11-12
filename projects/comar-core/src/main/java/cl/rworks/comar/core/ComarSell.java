@@ -11,7 +11,7 @@ package cl.rworks.comar.core;
  */
 public interface ComarSell {
 
-    Integer getId();
+    Long getId();
 
-    void setId(Integer id);
+    void setId(Long id);
 }

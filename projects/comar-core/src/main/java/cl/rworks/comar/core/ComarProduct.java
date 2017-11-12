@@ -11,9 +11,9 @@ package cl.rworks.comar.core;
  */
 public interface ComarProduct {
 
-    Integer getId();
+    Long getId();
 
-    void setId(Integer id);
+    void setId(Long id);
 
     String getCode();
 
@@ -31,4 +31,7 @@ public interface ComarProduct {
 
     void setDecimalFormat(ComarDecimalFormat decimalFormat);
 
+    ComarCategory getCategory();
+
+    void setCategory(ComarCategory category);
 }

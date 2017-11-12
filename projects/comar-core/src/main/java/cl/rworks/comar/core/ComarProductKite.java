@@ -7,7 +7,10 @@ package cl.rworks.comar.core;
 
 import io.permazen.JObject;
 import io.permazen.JTransaction;
+import io.permazen.annotation.JField;
+import io.permazen.annotation.OnCreate;
 import io.permazen.annotation.PermazenType;
+import io.permazen.core.util.ObjDumper;
 import java.util.NavigableSet;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -18,7 +21,7 @@ import java.util.stream.Stream;
  * @author rgonzalez
  */
 @PermazenType
-public interface ComarProductKite extends JObject, ComarProduct, HasId, HasCode {
+public abstract class ComarProductKite implements JObject, ComarProduct {
 
     public static ComarProductKite create() {
         JTransaction jtx = JTransaction.getCurrent();
@@ -58,6 +61,26 @@ public interface ComarProductKite extends JObject, ComarProduct, HasId, HasCode 
         Stream<ComarProductKite> stream = getAll().stream().filter(filterCode).filter(filter);
 
         return stream;
+    }
+
+    @JField(indexed = true, unique = true)
+    public abstract Long getId();
+
+    public abstract void setId(Long id);
+
+    @JField(indexed = true, unique = true)
+    public abstract String getCode();
+
+    public abstract void setCode(String code);
+
+    @OnCreate
+    void onCreate() {
+        setDecimalFormat(ComarDecimalFormat.ZERO);
+        setUnit(ComarUnit.UNIDAD);
+    }
+
+    public String toString() {
+        return String.format("[%s, %s, %s, %s, %s, %s]", getId(), getCode(), getName(), getUnit(), getDecimalFormat(), getCategory());
     }
 
 }
