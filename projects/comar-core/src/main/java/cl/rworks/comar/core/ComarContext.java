@@ -26,6 +26,7 @@ public class ComarContext {
 
     private ComarContext() {
         properties = new ComarProperties();
+        service = new ComarServiceImpl("storage");
         init();
     }
 

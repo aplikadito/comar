@@ -18,7 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import cl.rworks.comar.core.ComarStockKite;
+import cl.rworks.comar.core.impl.ComarStockKite;
 
 /**
  *

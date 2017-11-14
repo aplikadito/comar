@@ -3,15 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core;
+package cl.rworks.comar.core.impl;
 
+import cl.rworks.comar.core.model.ComarDecimalFormat;
+import cl.rworks.comar.core.model.ComarProduct;
+import cl.rworks.comar.core.model.ComarUnit;
+import cl.rworks.kite.KiteException;
 import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.annotation.JField;
 import io.permazen.annotation.OnCreate;
 import io.permazen.annotation.PermazenType;
 import io.permazen.core.ObjId;
-import java.util.Collections;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 import java.util.function.Predicate;
@@ -67,6 +70,14 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         p.setId(pp.getId());
     }
 
+    public static void update(ComarProduct p) {
+        ComarProductKite pp = get(p.getId());
+        pp.setCode(p.getCode());
+        pp.setName(p.getName());
+        pp.setDecimalFormat(p.getDecimalFormat());
+        pp.setUnit(p.getUnit());
+    }
+    
     public static ComarProductKite get(Long id) {
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(id);
@@ -79,20 +90,27 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         return result != null ? (ComarProductKite) result.first() : null;
     }
 
-    public static NavigableSet<ComarProduct> search(final String text) {
+    public static void delete(ComarProduct p) {
+        JTransaction jtx = JTransaction.getCurrent();
+        ObjId oid = new ObjId(p.getId());
+        JObject pp = jtx.get(oid);
+        jtx.delete(pp);
+    }
+
+    public static NavigableSet<ComarProductKite> search(final String text) {
         if (text == null) {
             return new TreeSet<>();
         }
 
         JTransaction jtx = JTransaction.getCurrent();
         String ttext = text.trim();
-        NavigableSet<ComarProduct> all = jtx.getAll(ComarProduct.class);
+        NavigableSet<ComarProductKite> all = jtx.getAll(ComarProductKite.class);
         if (!ttext.isEmpty()) {
             Pattern pattern = Pattern.compile(".*" + ttext + ".*");
-            Predicate<ComarProduct> filterCode = e -> pattern.matcher(e.getCode()).matches();
-            Predicate<ComarProduct> filterName = e -> pattern.matcher(e.getName()).matches();
-            Predicate<ComarProduct> filter = e -> filterCode.test(e) || filterName.test(e);
-            Stream<ComarProduct> stream = all.stream().filter(filter);
+            Predicate<ComarProductKite> filterCode = e -> pattern.matcher(e.getCode()).matches();
+            Predicate<ComarProductKite> filterName = e -> pattern.matcher(e.getName()).matches();
+            Predicate<ComarProductKite> filter = e -> filterCode.test(e) || filterName.test(e);
+            Stream<ComarProductKite> stream = all.stream().filter(filter);
             return stream.collect(Collectors.toCollection(TreeSet::new));
         } else {
             return all;

@@ -5,6 +5,8 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.comar.core.model.ComarProduct;
+
 /**
  *
  * @author rgonzalez
@@ -13,10 +15,22 @@ public class Test0 {
 
     public void test() throws Exception {
         ComarService service = new ComarServiceImpl();
+        
         ComarProduct product = service.createProduct();
-        product.setCode("0011");
-        product.setName("mate_" + product.getCode());
+        product.setCode("0001");
+        product.setName("producto_" + product.getCode());
+        
         service.insertProduct(product);
+        System.out.println("size: " + service.getAllProducts().size());
+        
+        product.setName("elemento");
+        service.updateProduct(product);
+        
+        ComarProduct fproduct = service.getByCodeProduct("0001");
+        System.out.println("fproduct: " + fproduct.getName());
+        
+        service.deleteProduct(fproduct);
+        System.out.println("size: " + service.getAllProducts().size());
     }
 
     public static void main(String[] args) {

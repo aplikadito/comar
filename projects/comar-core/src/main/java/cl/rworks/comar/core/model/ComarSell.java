@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core;
+package cl.rworks.comar.core.model;
 
 /**
  *
@@ -14,4 +14,8 @@ public interface ComarSell {
     Long getId();
 
     void setId(Long id);
+    
+    String getCode();
+
+    void setCode(String code);
 }

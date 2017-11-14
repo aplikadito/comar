@@ -3,21 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core;
+package cl.rworks.comar.core.model;
 
 /**
  *
- * @author aplik
+ * @author rgonzalez
  */
-public interface ComarCategory {
+public interface ComarStock {
 
     Long getId();
 
     void setId(Long id);
 
-    String getName();
+    String getCode();
 
-    void setName(String name);
-    
-//    asd();
+    void setCode(String code);
 }

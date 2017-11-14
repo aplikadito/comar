@@ -5,6 +5,8 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.comar.core.model.ComarProduct;
+import cl.rworks.comar.core.model.ComarCategory;
 import java.util.List;
 
 /**

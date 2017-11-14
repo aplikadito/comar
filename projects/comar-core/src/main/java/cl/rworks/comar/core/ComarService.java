@@ -5,8 +5,8 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.comar.core.model.ComarProduct;
 import java.util.List;
-import java.util.NavigableSet;
 
 /**
  *
@@ -17,6 +17,8 @@ public interface ComarService {
     ComarProduct createProduct() throws ComarServiceException;
 
     void insertProduct(ComarProduct product) throws ComarServiceException;
+    
+    void updateProduct(ComarProduct product) throws ComarServiceException;
 
     ComarProduct getProduct(Long id) throws ComarServiceException;
 
@@ -24,6 +26,8 @@ public interface ComarService {
 
     List<ComarProduct> getAllProducts() throws ComarServiceException;
 
-    List<ComarProduct> search(String text) throws ComarServiceException;
+    List<ComarProduct> searchProduct(String text) throws ComarServiceException;
+    
+    void deleteProduct(ComarProduct product) throws ComarServiceException;
 
 }

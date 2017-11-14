@@ -5,6 +5,8 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.comar.core.model.ComarProduct;
+
 /**
  *
  * @author rgonzalez

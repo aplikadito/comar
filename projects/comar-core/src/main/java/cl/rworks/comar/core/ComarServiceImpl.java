@@ -5,6 +5,11 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.comar.core.impl.ComarStockKite;
+import cl.rworks.comar.core.model.ComarProduct;
+import cl.rworks.comar.core.impl.ComarSellKite;
+import cl.rworks.comar.core.impl.ComarProductKite;
+import cl.rworks.comar.core.impl.ComarCategoryKite;
 import cl.rworks.kite.KiteDb;
 import cl.rworks.kite.KiteException;
 import java.util.ArrayList;
@@ -32,7 +37,7 @@ public class ComarServiceImpl implements ComarService {
     };
 
     public ComarServiceImpl() {
-        this("storage");
+        this(null);
     }
 
     public ComarServiceImpl(String name) {
@@ -72,8 +77,32 @@ public class ComarServiceImpl implements ComarService {
                 if (ComarProductKite.getByCode(code) != null) {
                     throw new KiteException("El codigo ya existe: " + product.getCode());
                 }
+
                 ComarProductKite.insert(product);
                 jtx.commit();
+                return null;
+            });
+        } catch (KiteException ex) {
+            throw new ComarServiceException(ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public void updateProduct(ComarProduct product) throws ComarServiceException {
+        try {
+            if (product == null) {
+                throw new ComarServiceException("Producto nulo");
+            }
+
+            database.execute(jtx -> {
+                ComarProductKite pp = ComarProductKite.get(product.getId());
+                if (pp != null) {
+                    ComarProductKite.update(product);
+                    jtx.commit();
+                } else {
+                    jtx.rollback();
+                }
+
                 return null;
             });
         } catch (KiteException ex) {
@@ -132,17 +161,31 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public List<ComarProduct> search(final String text) throws ComarServiceException {
-        if(text == null || text.isEmpty()){
+    public void deleteProduct(final ComarProduct p) throws ComarServiceException {
+        try {
+            database.execute(jtx -> {
+                String code = p.getCode();
+                ComarProductKite.delete(p);
+                p.setId(null);
+                jtx.commit();
+                return null;
+            });
+        } catch (KiteException ex) {
+            throw new ComarServiceException("Error", ex);
+        }
+    }
+
+    @Override
+    public List<ComarProduct> searchProduct(final String text) throws ComarServiceException {
+        if (text == null || text.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        
+
         try {
             return (List<ComarProduct>) database.execute(jtx -> {
-                NavigableSet<ComarProduct> products = ComarProductKite.search(text);
+                NavigableSet<ComarProductKite> products = ComarProductKite.search(text);
                 List<ComarProduct> list = new ArrayList<>();
-                for (ComarProduct aux : products) {
-                    ComarProductKite p = (ComarProductKite) aux;
+                for (ComarProductKite p : products) {
                     ComarProductKite pp = (ComarProductKite) p.copyOut();
                     list.add(pp);
                 }

@@ -6,7 +6,7 @@
 package cl.rworks.comar.ui.adm;
 
 import cl.rworks.comar.core.ComarContext;
-import cl.rworks.comar.core.ComarUnit;
+import cl.rworks.comar.core.model.ComarUnit;
 import cl.rworks.comar.ui.ComarGuiUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
