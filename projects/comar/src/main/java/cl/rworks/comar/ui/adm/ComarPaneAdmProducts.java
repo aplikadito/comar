@@ -25,13 +25,13 @@ import javafx.scene.layout.FlowPane;
 public class ComarPaneAdmProducts extends BorderPane {
 
     private PaneMain paneInv;
-    private PaneAdd paneAdd;
+    private ComarPaneAdmProductsAddPane paneAdd;
     private PaneEdit paneEdit;
     private PaneDelete paneDelete;
 
     public ComarPaneAdmProducts(ComarContext context) {
         paneInv = new PaneMain();
-        paneAdd = new PaneAdd();
+        paneAdd = new ComarPaneAdmProductsAddPane(this);
         paneEdit = new PaneEdit();
         paneDelete = new PaneDelete();
 
@@ -75,19 +75,6 @@ public class ComarPaneAdmProducts extends BorderPane {
             paneButtons.setAlignment(Pos.CENTER);
             paneButtons.getStyleClass().addAll("comar-flowpane");
             setBottom(paneButtons);
-        }
-
-    }
-
-    private class PaneAdd extends BorderPane {
-
-        public PaneAdd() {
-            ComarPaneSectionTitle banner = new ComarPaneSectionTitle("PRODUCTOS > AGREGAR");
-            Label buttonBack = ComarIconLoader.getIcon(ComarIconLoader.BACK, 16);
-            buttonBack.getStyleClass().add("comar-link");
-            buttonBack.setOnMouseClicked(e -> view(paneInv));
-            banner.getPaneTitle().setRight(buttonBack);
-            setTop(banner);
         }
 
     }
