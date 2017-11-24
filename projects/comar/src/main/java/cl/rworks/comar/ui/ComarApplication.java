@@ -8,7 +8,6 @@ package cl.rworks.comar.ui;
 import cl.rworks.comar.core.ComarContext;
 import cl.rworks.comar.ui.adm.ComarSceneAdm;
 import cl.rworks.comar.ui.pos.ComarScenePos;
-import java.io.File;
 import java.util.Optional;
 import javafx.application.Application;
 import javafx.application.Platform;
