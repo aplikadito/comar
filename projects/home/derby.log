@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Wed Nov 15 00:50:26 CLST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-015f-bdcc-a6b5-000006693448 
+on database directory /home/rgonzalez/trabajo/comar/dev/projects/home/storage with class loader sun.misc.Launcher$AppClassLoader@5c647e05 
+Loaded from file:/home/rgonzalez/trabajo/comar/dev/projects/comar/target/comar-1.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_101-b13
+user.dir=/home/rgonzalez/trabajo/comar/dev/projects/home
+os.name=Linux
+os.arch=amd64
+os.version=4.4.0-21-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

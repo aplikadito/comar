@@ -8,7 +8,6 @@ package cl.rworks.comar.core.impl;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
-import cl.rworks.kite.KiteException;
 import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.annotation.JField;
