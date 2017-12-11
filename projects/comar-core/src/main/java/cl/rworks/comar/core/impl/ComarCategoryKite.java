@@ -55,9 +55,9 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         return (ComarCategoryKite) jtx.get(oid);
     }
 
-    public static ComarCategoryKite getByCode(String code) {
+    public static ComarCategoryKite getByName(String name) {
         JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarCategoryKite> result = jtx.queryIndex(ComarCategoryKite.class, "name", String.class).asMap().get(code);
+        NavigableSet<ComarCategoryKite> result = jtx.queryIndex(ComarCategoryKite.class, "name", String.class).asMap().get(name);
         return result != null ? (ComarCategoryKite) result.first() : null;
     }
 

@@ -5,9 +5,11 @@
  */
 package cl.rworks.comar.core.impl;
 
+import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
+import cl.rworks.kite.KiteException;
 import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.annotation.JField;
@@ -58,7 +60,7 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         return jtx.getAll(ComarProductKite.class);
     }
 
-    public static void insert(ComarProduct p) {
+    public static ComarProductKite insert(ComarProduct p) {
         ComarProductKite pp = create();
         pp.setId(pp.getObjId().asLong());
         pp.setCode(p.getCode());
@@ -66,17 +68,47 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         pp.setDecimalFormat(p.getDecimalFormat());
         pp.setUnit(p.getUnit());
 
+        ComarCategory c = p.getCategory();
+        if (c != null) {
+            ComarCategoryKite cc = ComarCategoryKite.get(c.getId());
+            pp.setCategory(cc);
+        }
+
         p.setId(pp.getId());
+        return pp;
     }
 
-    public static void update(ComarProduct p) {
+    public static ComarProductKite update(ComarProduct p) {
         ComarProductKite pp = get(p.getId());
         pp.setCode(p.getCode());
         pp.setName(p.getName());
         pp.setDecimalFormat(p.getDecimalFormat());
         pp.setUnit(p.getUnit());
+
+        ComarCategory c = p.getCategory();
+        if (c != null) {
+            ComarCategoryKite cc = ComarCategoryKite.get(c.getId());
+            pp.setCategory(cc);
+        }
+
+        return pp;
     }
-    
+
+    public static ComarProductKite update(ComarProductKite pp, ComarProduct p) {
+        pp.setCode(p.getCode());
+        pp.setName(p.getName());
+        pp.setDecimalFormat(p.getDecimalFormat());
+        pp.setUnit(p.getUnit());
+
+        ComarCategory c = p.getCategory();
+        if (c != null) {
+            ComarCategoryKite cc = ComarCategoryKite.get(c.getId());
+            pp.setCategory(cc);
+        }
+
+        return pp;
+    }
+
     public static ComarProductKite get(Long id) {
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(id);
@@ -117,4 +149,8 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
 
     }
 
+    public static boolean existsCode(String code) {
+        ComarProductKite product = getByCode(code);
+        return product != null;
+    }
 }

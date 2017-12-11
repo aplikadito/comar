@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.comar.core.impl.ComarServiceImpl;
 import cl.rworks.comar.core.model.ComarProduct;
 
 /**
@@ -14,12 +15,12 @@ import cl.rworks.comar.core.model.ComarProduct;
 public class Test2 {
 
     public void test() throws Exception {
-        ComarService service = new ComarServiceImpl();
+        ComarServiceProduct service = new ComarServiceImpl().getServiceProduct();
 
 //        long id = -244252732922459347L;
         String code = "0010";
 
-        ComarProduct pp = service.getByCodeProduct(code);
+        ComarProduct pp = service.getByCode(code);
         System.out.println(pp.getName());
 
     }

@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.comar.core.impl.ComarServiceImpl;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarCategory;
 import java.util.List;
@@ -16,11 +17,11 @@ import java.util.List;
 public class Test1 {
 
     public void test() throws Exception {
-        ComarService service = new ComarServiceImpl();
+        ComarServiceProduct service = new ComarServiceImpl().getServiceProduct();
 
-        service.getAllProducts().stream().forEach(System.out::println);
+        service.getAll().stream().forEach(System.out::println);
 
-        List<ComarProduct> allProducts = service.getAllProducts();
+        List<ComarProduct> allProducts = service.getAll();
         for (ComarProduct p : allProducts) {
             ComarCategory cate = p.getCategory();
         }

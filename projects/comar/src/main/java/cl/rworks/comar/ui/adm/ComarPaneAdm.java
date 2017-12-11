@@ -16,26 +16,33 @@ import javafx.scene.layout.BorderPane;
 public class ComarPaneAdm extends BorderPane {
 
     public static final int PRODUCTS = 0;
-    public static final int STOCK = 1;
-    public static final int SELLS = 2;
-
+    public static final int CATEGORIES = 1;
+    public static final int STOCK = 2;
+    public static final int SELLS = 3;
+    //
+    private ComarContext context;
+    //
     private ComarPaneBanner paneBanner;
     private ComarPaneAdmMenu paneMenu;
     private BorderPane paneContent;
     //
     private ComarPaneAdmProducts paneProducts;
     private ComarPaneAdmCategories paneCategories;
+    private ComarPaneAdmStock paneStock;
     private ComarPaneAdmSells paneSells;
 
     public ComarPaneAdm(ComarContext context) {
+        this.context = context;
+
         this.paneBanner = new ComarPaneBanner("Administracion");
         this.paneMenu = new ComarPaneAdmMenu(this, context);
 
         this.paneContent = new BorderPane();
         this.paneContent.getStyleClass().add("comar-content");
 
-        this.paneProducts = new ComarPaneAdmProducts(context);
+        this.paneProducts = new ComarPaneAdmProducts();
         this.paneCategories = new ComarPaneAdmCategories(context);
+        this.paneStock = new ComarPaneAdmStock(context);
         this.paneSells = new ComarPaneAdmSells(this, context);
 
         setTop(paneBanner);
@@ -49,9 +56,13 @@ public class ComarPaneAdm extends BorderPane {
         switch (pane) {
             case PRODUCTS:
                 paneContent.setCenter(paneProducts);
+                paneProducts.init(context);
+                break;
+            case CATEGORIES:
+                paneContent.setCenter(paneCategories);
                 break;
             case STOCK:
-                paneContent.setCenter(paneCategories);
+                paneContent.setCenter(paneStock);
                 break;
             case SELLS:
                 paneContent.setCenter(paneSells);

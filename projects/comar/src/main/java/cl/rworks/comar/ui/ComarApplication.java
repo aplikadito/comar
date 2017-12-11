@@ -6,6 +6,7 @@
 package cl.rworks.comar.ui;
 
 import cl.rworks.comar.core.ComarContext;
+import cl.rworks.comar.core.ComarContextImpl;
 import cl.rworks.comar.ui.adm.ComarSceneAdm;
 import cl.rworks.comar.ui.pos.ComarScenePos;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class ComarApplication extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        ComarContext context = ComarContext.getInstance();
+        ComarContext context = ComarContextImpl.getInstance();
 
         ComarScenePos.init(context);
         ComarSceneAdm.init(context);

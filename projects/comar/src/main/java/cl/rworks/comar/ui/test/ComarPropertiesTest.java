@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core;
+package cl.rworks.comar.ui.test;
+
+import cl.rworks.comar.core.ComarProperties;
 
 /**
  *
- * @author rgonzalez
+ * @author aplik
  */
-public interface ComarContext {
-
-    public ComarProperties getProperties();
-
-    public ComarService getService();
+public class ComarPropertiesTest implements ComarProperties{
+    
 }

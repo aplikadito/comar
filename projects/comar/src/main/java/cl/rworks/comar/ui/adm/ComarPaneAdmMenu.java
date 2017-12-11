@@ -20,6 +20,7 @@ public class ComarPaneAdmMenu extends VBox {
     private ComarPaneAdm paneParent;
     private ComarContext context;
     private ComarPaneAdmMenuItem menuProducts;
+    private ComarPaneAdmMenuItem menuCategories;
     private ComarPaneAdmMenuItem menuStock;
     private ComarPaneAdmMenuItem menuSells;
 
@@ -30,7 +31,7 @@ public class ComarPaneAdmMenu extends VBox {
         getStyleClass().add("comar-menu");
         setMinWidth(200);
 
-        this.menuProducts = new ComarPaneAdmMenuItem("Productos", FxFontAwesome.Icons.faw_folder);
+        this.menuProducts = new ComarPaneAdmMenuItem("Productos", FxFontAwesome.Icons.faw_barcode);
         this.menuProducts.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -38,7 +39,15 @@ public class ComarPaneAdmMenu extends VBox {
             }
         });
         
-        this.menuStock = new ComarPaneAdmMenuItem("Inventario", FxFontAwesome.Icons.faw_folder);
+        this.menuCategories = new ComarPaneAdmMenuItem("Categorias", FxFontAwesome.Icons.faw_folder);
+        this.menuCategories.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                paneParent.setContent(ComarPaneAdm.CATEGORIES);
+            }
+        });
+        
+        this.menuStock = new ComarPaneAdmMenuItem("Inventario", FxFontAwesome.Icons.faw_book);
         this.menuStock.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -55,6 +64,7 @@ public class ComarPaneAdmMenu extends VBox {
         });
 
         getChildren().add(menuProducts);
+        getChildren().add(menuCategories);
         getChildren().add(menuStock);
         getChildren().add(menuSells);
     }

@@ -15,32 +15,32 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import cl.rworks.comar.core.model.ComarCategory;
-import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
+import cl.rworks.comar.core.impl.ComarStockKite;
+import cl.rworks.comar.core.model.ComarStock;
 
 /**
  *
  * @author rgonzalez
  */
-public class ComarPaneAdmCategories extends BorderPane {
+public class ComarPaneAdmStock extends BorderPane {
 
     private ComarContext context;
     //
-    private PaneMain paneInv;
+    private PaneMain paneMain;
     private PaneAdd paneAdd;
     private PaneEdit paneEdit;
 
-    public ComarPaneAdmCategories(ComarContext context) {
+    public ComarPaneAdmStock(ComarContext context) {
         this.context = context;
 
-        paneInv = new PaneMain();
+        paneMain = new PaneMain();
         paneAdd = new PaneAdd();
         paneEdit = new PaneEdit();
 
-        show(paneInv);
+        show(paneMain);
     }
 
     private void show(Node pane) {
@@ -50,10 +50,10 @@ public class ComarPaneAdmCategories extends BorderPane {
     private class PaneMain extends BorderPane {
 
         public PaneMain() {
-            setTop(new ComarPaneSectionTitle("CATEGORIAS"));
+            setTop(new ComarPaneSectionTitle("INVENTARIO"));
 
-            TableView<ComarCategory> table = new TableView();
-            TableColumn firstNameCol = new TableColumn("Nombre");
+            TableView<ComarStock> table = new TableView();
+            TableColumn firstNameCol = new TableColumn("Codigo");
             table.getColumns().addAll(firstNameCol);
 
             BorderPane paneTable = new BorderPane();
@@ -66,15 +66,12 @@ public class ComarPaneAdmCategories extends BorderPane {
             setCenter(paneTable);
 
             Button buttonAdd = new Button("Agregar");
-            buttonAdd.setOnMouseClicked(e -> addCategory());
+            buttonAdd.setOnMouseClicked(e -> show(paneAdd));
 
             Button buttonEdit = new Button("Editar");
-            buttonEdit.setOnMouseClicked(e -> editCategory());
+            buttonEdit.setOnMouseClicked(e -> show(paneEdit));
 
-            Button buttonDelete = new Button("Eliminar");
-            buttonDelete.setOnMouseClicked(e -> deleteCategory());
-
-            FlowPane paneButtons = new FlowPane(buttonAdd, buttonEdit, buttonDelete);
+            FlowPane paneButtons = new FlowPane(buttonAdd, buttonEdit);
             paneButtons.setAlignment(Pos.CENTER);
             paneButtons.getStyleClass().addAll("comar-flowpane");
             setBottom(paneButtons);
@@ -82,19 +79,8 @@ public class ComarPaneAdmCategories extends BorderPane {
 
     }
 
-    private void addCategory() {
-        show(paneAdd);
-    }
-
-    private void editCategory() {
-        show(paneEdit);
-    }
-
-    private void deleteCategory() {
-    }
-
     private void goBack() {
-        show(paneInv);
+        show(paneMain);
     }
 
     private class PaneTop extends ComarPaneSectionTitle {
@@ -111,41 +97,18 @@ public class ComarPaneAdmCategories extends BorderPane {
 
     private class PaneAdd extends BorderPane {
 
-        private CategoryForm categoryForm;
-
         public PaneAdd() {
-            setTop(new PaneTop("CATEGORIAS > AGREGAR"));
-            this.categoryForm = new CategoryForm();
-            setCenter(categoryForm);
+            setTop(new PaneTop("STOCK > AGREGAR"));
         }
 
     }
 
     private class PaneEdit extends BorderPane {
 
-        private CategoryForm categoryForm;
-
         public PaneEdit() {
-            setTop(new PaneTop("CATEGORIAS > EDITAR"));
-            this.categoryForm = new CategoryForm();
-            setCenter(categoryForm);
+            setTop(new PaneTop("STOCK > EDITAR"));
         }
 
     }
 
-    private class CategoryForm extends GridPane {
-
-        private Text textName;
-
-        public CategoryForm() {
-            add(new Label("Nombre"), 0, 0);
-
-            textName = new Text();
-            add(textName, 1, 0);
-        }
-
-        public Text getTextName() {
-            return textName;
-        }
-    }
 }

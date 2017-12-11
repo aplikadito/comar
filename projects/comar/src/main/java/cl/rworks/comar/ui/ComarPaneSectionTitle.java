@@ -27,7 +27,7 @@ public class ComarPaneSectionTitle extends BorderPane {
         setStyle("-fx-padding: 0 0 10 0");
     }
 
-    public BorderPane getPaneTitle() {
+    public final BorderPane getPaneTitle() {
         return paneTitle;
     }
     

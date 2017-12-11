@@ -3,56 +3,40 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core;
+package cl.rworks.comar.core.impl;
 
-import cl.rworks.comar.core.impl.ComarStockKite;
+import cl.rworks.comar.core.ComarServiceException;
+import cl.rworks.comar.core.ComarServiceProduct;
+import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.impl.ComarSellKite;
-import cl.rworks.comar.core.impl.ComarProductKite;
-import cl.rworks.comar.core.impl.ComarCategoryKite;
+import cl.rworks.comar.core.model.ComarUnit;
 import cl.rworks.kite.KiteDb;
 import cl.rworks.kite.KiteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NavigableSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author rgonzalez
+ * @author aplik
  */
-public class ComarServiceImpl implements ComarService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ComarServiceImpl.class);
+public class ComarServiceProductImpl implements ComarServiceProduct {
 
     private KiteDb database;
-    //
-    private final Class<?>[] classes = new Class<?>[]{
-        ComarProductKite.class,
-        ComarStockKite.class,
-        ComarSellKite.class,
-        ComarCategoryKite.class
-    };
 
-    public ComarServiceImpl() {
-        this(null);
-    }
-
-    public ComarServiceImpl(String name) {
-        this.database = name == null || name.isEmpty() ? new KiteDb(classes) : new KiteDb(name, classes);
-    }
-
-    public KiteDb getDatabase() {
-        return database;
+    public ComarServiceProductImpl(KiteDb database) {
+        this.database = database;
     }
 
     @Override
-    public ComarProduct createProduct() throws ComarServiceException {
+    public ComarProduct create() throws ComarServiceException {
         try {
             return (ComarProduct) database.execute(jtx -> {
                 ComarProductKite pp = (ComarProductKite) ComarProductKite.create().copyOut();
+                pp.setUnit(ComarUnit.UNIDAD);
+                pp.setDecimalFormat(ComarDecimalFormat.ZERO);
                 jtx.rollback();
                 return pp;
             });
@@ -62,7 +46,7 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public void insertProduct(ComarProduct product) throws ComarServiceException {
+    public void insert(ComarProduct product) throws ComarServiceException {
         try {
             if (product == null) {
                 throw new ComarServiceException("Producto nulo");
@@ -78,7 +62,7 @@ public class ComarServiceImpl implements ComarService {
                     throw new KiteException("El codigo ya existe: " + product.getCode());
                 }
 
-                ComarProductKite.insert(product);
+                ComarProductKite pp = ComarProductKite.insert(product);
                 jtx.commit();
                 return null;
             });
@@ -88,7 +72,7 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public void updateProduct(ComarProduct product) throws ComarServiceException {
+    public void update(ComarProduct product) throws ComarServiceException {
         try {
             if (product == null) {
                 throw new ComarServiceException("Producto nulo");
@@ -97,10 +81,11 @@ public class ComarServiceImpl implements ComarService {
             database.execute(jtx -> {
                 ComarProductKite pp = ComarProductKite.get(product.getId());
                 if (pp != null) {
-                    ComarProductKite.update(product);
+                    ComarProductKite.update(pp, product);
                     jtx.commit();
                 } else {
                     jtx.rollback();
+                    throw new KiteException("Producto no encontrado: " + product.getCode());
                 }
 
                 return null;
@@ -111,7 +96,7 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public ComarProduct getProduct(Long id) throws ComarServiceException {
+    public ComarProduct get(Long id) throws ComarServiceException {
         try {
             if (id == null) {
                 return null;
@@ -128,7 +113,7 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public ComarProduct getByCodeProduct(String code) throws ComarServiceException {
+    public ComarProduct getByCode(String code) throws ComarServiceException {
         try {
             return (ComarProduct) database.execute(jtx -> {
                 ComarProductKite p = ComarProductKite.getByCode(code);
@@ -142,7 +127,7 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public List<ComarProduct> getAllProducts() throws ComarServiceException {
+    public List<ComarProduct> getAll() throws ComarServiceException {
         try {
             return (List<ComarProduct>) database.execute(jtx -> {
                 NavigableSet<ComarProductKite> products = ComarProductKite.getAll();
@@ -161,7 +146,7 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public void deleteProduct(final ComarProduct p) throws ComarServiceException {
+    public void delete(final ComarProduct p) throws ComarServiceException {
         try {
             database.execute(jtx -> {
                 String code = p.getCode();
@@ -176,7 +161,7 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public List<ComarProduct> searchProduct(final String text) throws ComarServiceException {
+    public List<ComarProduct> search(final String text) throws ComarServiceException {
         if (text == null || text.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -198,4 +183,16 @@ public class ComarServiceImpl implements ComarService {
         }
     }
 
+    @Override
+    public boolean existsCode(final String code) throws ComarServiceException {
+        try {
+            return (Boolean) database.execute(jtx -> {
+                boolean response = ComarProductKite.existsCode(code);
+                jtx.rollback();
+                return response;
+            });
+        } catch (KiteException ex) {
+            throw new ComarServiceException("Error", ex);
+        }
+    }
 }
