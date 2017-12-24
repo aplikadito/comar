@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.ui.adm;
 
-import cl.rworks.comar.core.ComarContext;
+import cl.rworks.comar.core.model.ComarContext;
 import cl.rworks.comar.ui.ComarPaneBanner;
 import javafx.scene.layout.BorderPane;
 

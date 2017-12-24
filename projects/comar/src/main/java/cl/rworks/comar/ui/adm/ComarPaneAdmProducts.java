@@ -5,8 +5,8 @@
  */
 package cl.rworks.comar.ui.adm;
 
-import cl.rworks.comar.core.ComarContext;
-import cl.rworks.comar.core.ComarServiceException;
+import cl.rworks.comar.core.model.ComarContext;
+import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.ui.ComarGuiUtils;
 import cl.rworks.comar.ui.ComarIconLoader;

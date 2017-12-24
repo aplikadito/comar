@@ -5,9 +5,8 @@
  */
 package cl.rworks.comar.core.impl;
 
-import cl.rworks.comar.core.ComarServiceException;
-import cl.rworks.comar.core.ComarServiceProduct;
-import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.service.ComarServiceException;
+import cl.rworks.comar.core.service.ComarServiceProduct;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;

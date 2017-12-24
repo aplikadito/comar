@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core;
+package cl.rworks.comar.core.model;
+
+import cl.rworks.comar.core.service.ComarService;
 
 /**
  *

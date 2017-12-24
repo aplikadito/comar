@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.ui.test;
 
-import cl.rworks.comar.core.ComarProperties;
+import cl.rworks.comar.core.model.ComarProperties;
 
 /**
  *

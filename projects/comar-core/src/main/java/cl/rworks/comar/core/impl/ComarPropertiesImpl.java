@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.core.impl;
 
-import cl.rworks.comar.core.ComarProperties;
+import cl.rworks.comar.core.model.ComarProperties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

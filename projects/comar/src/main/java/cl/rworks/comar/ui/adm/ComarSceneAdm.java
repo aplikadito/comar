@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.ui.adm;
 
-import cl.rworks.comar.core.ComarContext;
+import cl.rworks.comar.core.model.ComarContext;
 import javafx.scene.Scene;
 
 /**

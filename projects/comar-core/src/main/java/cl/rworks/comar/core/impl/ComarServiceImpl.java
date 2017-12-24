@@ -5,8 +5,8 @@
  */
 package cl.rworks.comar.core.impl;
 
-import cl.rworks.comar.core.ComarService;
-import cl.rworks.comar.core.ComarServiceProduct;
+import cl.rworks.comar.core.service.ComarService;
+import cl.rworks.comar.core.service.ComarServiceProduct;
 import cl.rworks.kite.KiteDb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

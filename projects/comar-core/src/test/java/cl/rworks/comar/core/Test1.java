@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.core;
 
+import cl.rworks.comar.core.service.ComarServiceProduct;
 import cl.rworks.comar.core.impl.ComarServiceImpl;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarCategory;

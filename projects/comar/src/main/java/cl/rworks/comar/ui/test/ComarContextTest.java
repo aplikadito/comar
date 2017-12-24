@@ -5,10 +5,10 @@
  */
 package cl.rworks.comar.ui.test;
 
-import cl.rworks.comar.core.ComarContext;
-import cl.rworks.comar.core.ComarProperties;
-import cl.rworks.comar.core.ComarService;
-import cl.rworks.comar.core.ComarServiceException;
+import cl.rworks.comar.core.model.ComarContext;
+import cl.rworks.comar.core.model.ComarProperties;
+import cl.rworks.comar.core.service.ComarService;
+import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.impl.ComarServiceImpl;
 import cl.rworks.comar.core.model.ComarProduct;
 

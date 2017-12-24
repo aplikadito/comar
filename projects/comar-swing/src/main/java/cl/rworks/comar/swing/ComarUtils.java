@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core;
+package cl.rworks.comar.swing;
 
 /**
  *
  * @author rgonzalez
  */
-public interface ComarProperties {
+public class ComarUtils {
 
 }

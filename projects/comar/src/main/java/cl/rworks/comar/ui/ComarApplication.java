@@ -5,14 +5,17 @@
  */
 package cl.rworks.comar.ui;
 
-import cl.rworks.comar.core.ComarContext;
-import cl.rworks.comar.core.ComarContextImpl;
+import cl.rworks.comar.core.model.ComarContext;
+import cl.rworks.comar.core.impl.ComarContextImpl;
+import cl.rworks.comar.ui.adm.ComarPaneAdmProducts;
 import cl.rworks.comar.ui.adm.ComarSceneAdm;
 import cl.rworks.comar.ui.pos.ComarScenePos;
+import cl.rworks.comar.ui.test.ComarContextTest;
 import java.util.Optional;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -27,6 +30,11 @@ public class ComarApplication extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
+//        startNormal(primaryStage);
+        startTest(primaryStage);
+    }
+    
+    private void startNormal(final Stage primaryStage){
         ComarContext context = ComarContextImpl.getInstance();
 
         ComarScenePos.init(context);
@@ -57,6 +65,21 @@ public class ComarApplication extends Application {
             }
         });
 
+        primaryStage.show();
+    }
+    
+    public void startTest(final Stage primaryStage) throws Exception {
+//        Parent root = new TestPane();
+        ComarPaneAdmProducts root = new ComarPaneAdmProducts();
+        root.init(new ComarContextTest());
+        root.getStyleClass().add("comar-content");
+        Scene scene = new Scene(root);
+        
+        scene.getStylesheets().add("comar.css");
+        primaryStage.setTitle("Comar");
+        primaryStage.setScene(scene);
+        primaryStage.setWidth(1024);
+        primaryStage.setHeight(700);
         primaryStage.show();
     }
 
