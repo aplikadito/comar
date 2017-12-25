@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.swing.pointofsell;
 
-import cl.rworks.comar.swing.ComarPanelTitle;
+import cl.rworks.comar.swing.util.ComarPanelTitle;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import java.awt.BorderLayout;

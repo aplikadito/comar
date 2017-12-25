@@ -5,16 +5,40 @@
  */
 package cl.rworks.comar.swing.util;
 
-import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author aplik
  */
-public interface ComarMenuButtonManager {
+public class ComarMenuButtonManager {
 
-    public void putMenuButton(String id, ComarMenuButton button);
+    private Map<String, ComarMenuButton> menuButtons;
+    private ComarMenuButton selectedMenuButton;
 
-    public ComarMenuButton getMenuButton(String id);
+    public ComarMenuButtonManager() {
+        this.menuButtons = new HashMap<>();
+    }
+
+    public void putMenuButton(String id, final ComarMenuButton button) {
+        this.menuButtons.put(id, button);
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                selectedMenuButton = button;
+                for (ComarMenuButton menuButton : menuButtons.values()) {
+                    menuButton.setSelected(selectedMenuButton == menuButton);
+                    menuButton.updateStateUi();
+                }
+            }
+        });
+    }
+
+    public ComarMenuButton getMenuButton(String id) {
+        return menuButtons.get(id);
+    }
 
 }

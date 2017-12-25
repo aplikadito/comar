@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing;
 
+import cl.rworks.comar.swing.util.ComarPanelCardContainer;
 import com.alee.laf.rootpane.WebFrame;
 import java.awt.BorderLayout;
 import javax.swing.Action;
@@ -17,7 +18,7 @@ import javax.swing.JPanel;
 public class ComarFrame extends WebFrame {
 
     private ComarMenuBar menuBar;
-    private ComarPanelCard panelCard;
+    private ComarPanelCardContainer panelCard;
     private ComarStatusBar statusBar;
 
     public ComarFrame() {
@@ -30,7 +31,7 @@ public class ComarFrame extends WebFrame {
 
         setLayout(new BorderLayout());
 
-        panelCard = new ComarPanelCard();
+        panelCard = new ComarPanelCardContainer();
         add(panelCard, BorderLayout.CENTER);
 
         statusBar = new ComarStatusBar();
@@ -43,7 +44,7 @@ public class ComarFrame extends WebFrame {
         setVisible(true);
     }
 
-    public ComarPanelCard getPanelCard() {
+    public ComarPanelCardContainer getPanelCard() {
         return panelCard;
     }
 
@@ -51,9 +52,9 @@ public class ComarFrame extends WebFrame {
         return statusBar;
     }
 
-    public final void addCard(JPanel card, String cardName, Action action) {
+    public final void addCard(String id, String title, JPanel card, Action action) {
         this.menuBar.addCard(action);
-        this.panelCard.addCard(card, cardName);
+        this.panelCard.addCard(id, card);
     }
 
 }

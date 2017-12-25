@@ -5,11 +5,9 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.swing.admnistration.ComarActionAdministration;
+import cl.rworks.comar.swing.util.ComarPanelCardContainerAction;
 import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
-import cl.rworks.comar.swing.options.ComarActionOptions;
 import cl.rworks.comar.swing.options.ComarPanelOptions;
-import cl.rworks.comar.swing.pointofsell.ComarActionPointOfSell;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -42,19 +40,19 @@ public class ComarSystem {
         ComarPanelPointOfSell panelPointOfSell = new ComarPanelPointOfSell();
         ComarPanelAdministration panelAdmnistration = new ComarPanelAdministration();
         ComarPanelOptions panelOptions = new ComarPanelOptions();
-        
-        
+
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
-            
+
             StringBuilder sb = new StringBuilder();
+
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
                 String actualCardName = frame.getPanelCard().getActualCardName();
                 if (actualCardName.equals("POS")) {
                     if (KeyEvent.KEY_TYPED == e.getID()) {
                         System.out.println("Got key event!");
-                        
+
                         sb.append(e.getKeyChar());
                         panelPointOfSell.getLabelKeyboard().setText(sb.toString());
                         return false;
@@ -67,12 +65,11 @@ public class ComarSystem {
             }
         });
 
-        frame.addCard(panelPointOfSell, "POS", new ComarActionPointOfSell());
-        frame.addCard(panelAdmnistration, "ADM", new ComarActionAdministration());
-        frame.addCard(panelOptions, "OPT", new ComarActionOptions());
+        frame.addCard("POS", "Punto de Venta", panelPointOfSell, new ComarPanelCardContainerAction(frame.getPanelCard(), "POS"));
+        frame.addCard("ADM", "Administracion", panelAdmnistration, new ComarPanelCardContainerAction(frame.getPanelCard(), "ADM"));
+        frame.addCard("OPT", "Opciones", panelOptions, new ComarPanelCardContainerAction(frame.getPanelCard(), "OPT"));
 
         frame.getPanelCard().showCard("ADM");
-
     }
 
 }

@@ -6,7 +6,7 @@
 package cl.rworks.comar.swing.options;
 
 import cl.rworks.comar.swing.ComarFrame;
-import cl.rworks.comar.swing.ComarPanelTitle;
+import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.ComarSystem;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.button.WebButton;
