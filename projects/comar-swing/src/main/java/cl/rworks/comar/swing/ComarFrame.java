@@ -52,7 +52,7 @@ public class ComarFrame extends WebFrame {
         return statusBar;
     }
 
-    public final void addCard(String id, String title, JPanel card, Action action) {
+    public final void addCard(String id, JPanel card, Action action) {
         this.menuBar.addCard(action);
         this.panelCard.addCard(id, card);
     }

@@ -5,13 +5,15 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.swing.util.ComarPanelCardContainerAction;
 import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
 import cl.rworks.comar.swing.options.ComarPanelOptions;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
+import cl.rworks.comar.swing.util.ComarPanelCardContainer;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import javax.swing.AbstractAction;
 
 /**
  *
@@ -48,28 +50,50 @@ public class ComarSystem {
 
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
-                String actualCardName = frame.getPanelCard().getActualCardName();
-                if (actualCardName.equals("POS")) {
-                    if (KeyEvent.KEY_TYPED == e.getID()) {
-                        System.out.println("Got key event!");
-
-                        sb.append(e.getKeyChar());
-                        panelPointOfSell.getLabelKeyboard().setText(sb.toString());
-                        return false;
-                    } else {
-                        return true;
-                    }
-                } else {
-                    return true;
-                }
+//                String actualCardName = frame.getPanelCard().getActualCardName();
+//                if (actualCardName.equals("POS")) {
+//                    if (KeyEvent.KEY_TYPED == e.getID()) {
+//                        System.out.println("Got key event!");
+//
+//                        sb.append(e.getKeyChar());
+//                        panelPointOfSell.getLabelKeyboard().setText(sb.toString());
+//                        return false;
+//                    } else {
+//                        return true;
+//                    }
+//                } else {
+//                    return true;
+//                }
+                return false;
             }
         });
 
-        frame.addCard("POS", "Punto de Venta", panelPointOfSell, new ComarPanelCardContainerAction(frame.getPanelCard(), "POS"));
-        frame.addCard("ADM", "Administracion", panelAdmnistration, new ComarPanelCardContainerAction(frame.getPanelCard(), "ADM"));
-        frame.addCard("OPT", "Opciones", panelOptions, new ComarPanelCardContainerAction(frame.getPanelCard(), "OPT"));
+        frame.addCard("POS", panelPointOfSell, new ShowViewAction("Punto de Venta", frame.getPanelCard(), "POS"));
+        frame.addCard("ADM", panelAdmnistration, new ShowViewAction("Administracion", frame.getPanelCard(), "ADM"));
+        frame.addCard("OPT", panelOptions, new ShowViewAction("Opciones", frame.getPanelCard(), "OPT"));
 
         frame.getPanelCard().showCard("ADM");
+    }
+
+    public class ShowViewAction extends AbstractAction {
+
+        private String title;
+        private ComarPanelCardContainer cardContainer;
+        private String id;
+
+        public ShowViewAction(String title, ComarPanelCardContainer cardContainer, String id) {
+            this.title = title;
+            this.cardContainer = cardContainer;
+            this.id = id;
+
+            putValue(NAME, title);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            cardContainer.showCard(id);
+        }
+
     }
 
 }
