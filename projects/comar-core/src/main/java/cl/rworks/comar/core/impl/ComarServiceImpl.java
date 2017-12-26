@@ -30,10 +30,17 @@ public class ComarServiceImpl implements ComarService {
     //
     private ComarServiceProduct productService;
 
+    /**
+     * Crea la base de datos en memoria
+     */
     public ComarServiceImpl() {
         this(null);
     }
 
+    /**
+     * Crea la base en disco dentro del directorio con el nombre 'name'
+     * @param name 
+     */
     public ComarServiceImpl(String name) {
         this.database = name == null || name.isEmpty() ? new KiteDb(classes) : new KiteDb(name, classes);
         this.productService = new ComarServiceProductImpl(database);

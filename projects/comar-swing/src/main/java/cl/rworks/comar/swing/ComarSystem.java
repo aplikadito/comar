@@ -5,6 +5,8 @@
  */
 package cl.rworks.comar.swing;
 
+import cl.rworks.comar.core.impl.ComarServiceImpl;
+import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
 import cl.rworks.comar.swing.options.ComarPanelOptions;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
@@ -24,10 +26,15 @@ public class ComarSystem {
     private static ComarSystem instance;
     //
     private ComarFrame frame;
+    private ComarService service;
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
         return instance;
+    }
+
+    private ComarSystem() {
+        this.service = new ComarServiceImpl("storage");
     }
 
     public void setFrame(ComarFrame frame) {
@@ -36,6 +43,10 @@ public class ComarSystem {
 
     public ComarFrame getFrame() {
         return frame;
+    }
+
+    public ComarService getService() {
+        return service;
     }
 
     public void startup() {

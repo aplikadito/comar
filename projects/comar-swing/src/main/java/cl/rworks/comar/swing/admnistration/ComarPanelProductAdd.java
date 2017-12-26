@@ -5,10 +5,15 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
+import cl.rworks.comar.core.model.ComarContext;
+import cl.rworks.comar.core.model.ComarProduct;
+import cl.rworks.comar.core.service.ComarService;
+import cl.rworks.comar.core.service.ComarServiceException;
+import cl.rworks.comar.core.service.ComarServiceProduct;
+import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
-import cl.rworks.comar.swing.util.ComarValidation;
-import cl.rworks.comar.swing.util.ComarValidationException;
+import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
@@ -16,7 +21,6 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.notification.NotificationIcon;
-import static com.alee.managers.notification.NotificationIcon.tip;
 import com.alee.managers.notification.NotificationManager;
 import com.alee.managers.notification.WebInnerNotification;
 import com.alee.managers.notification.WebNotification;
@@ -25,6 +29,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
 import javax.swing.Box;
@@ -41,7 +47,6 @@ public class ComarPanelProductAdd extends WebPanel {
     private WebPanel panelForm;
     //
     private WebTextField textCode;
-    private WebLabel labelError;
     private WebTextField textName;
 
     public ComarPanelProductAdd() {
@@ -77,19 +82,15 @@ public class ComarPanelProductAdd extends WebPanel {
         panelForm.setAlignmentX(0.0f);
 
         textCode = new WebTextField(20);
+        textCode.setFocusable(true);
         panelForm.add(new WebLabel("Codigo"));
-
-        labelError = new WebLabel(ComarIconLoader.load(ComarIconLoader.ERROR));
-        labelError.setVisible(false);
-        Box box = Box.createHorizontalBox();
-        box.add(textCode);
-        box.add(labelError);
-        panelForm.add(box);
+        panelForm.add(textCode);
 
         textName = new WebTextField();
+        textName.setFocusable(true);
         panelForm.add(new WebLabel("Nombre"));
         panelForm.add(textName);
-
+        
         return panelForm;
     }
 
@@ -100,8 +101,13 @@ public class ComarPanelProductAdd extends WebPanel {
         panelFormButtons.setMaximumSize(new Dimension(300, 30));
         panelFormButtons.setAlignmentX(0.0f);
 
-        panelFormButtons.add(new WebButton(new AddAction()));
-        panelFormButtons.add(new WebButton(new ClearAction()));
+        WebButton buttonOk = new WebButton(new AddAction());
+        buttonOk.setFocusable(true);
+        panelFormButtons.add(buttonOk);
+        
+        WebButton buttonClear = new WebButton(new ClearAction());
+        buttonClear.setFocusable(true);
+        panelFormButtons.add(buttonClear);
 
         return panelFormButtons;
     }
@@ -128,11 +134,19 @@ public class ComarPanelProductAdd extends WebPanel {
             }
 
             if (validate) {
-                WebInnerNotification not = new WebInnerNotification();
-                not.setContent("Producto Agregado");
-                not.setDisplayTime(2000);
-                
-                NotificationManager.showInnerNotification(not);
+                try {
+                    ComarServiceProduct service = ComarSystem.getInstance().getService().getServiceProduct();
+                    ComarProduct product = service.create();
+                    product.setCode(strCode);
+                    product.setName(strName);
+                    service.insert(product);
+
+                    ComarUtils.showInfo("Producto Agregado");
+                    clear();
+                } catch (ComarServiceException ex) {
+                    ex.printStackTrace();
+                    ComarUtils.showWarn(ex.getMessage());
+                }
             }
         }
 
@@ -146,9 +160,14 @@ public class ComarPanelProductAdd extends WebPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
+            clear();
         }
 
+    }
+
+    private void clear() {
+        this.textCode.clear();
+        this.textName.clear();
     }
 
 }

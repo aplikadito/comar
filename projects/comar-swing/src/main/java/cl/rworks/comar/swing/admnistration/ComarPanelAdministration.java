@@ -27,7 +27,7 @@ import javax.swing.BoxLayout;
 public class ComarPanelAdministration extends WebPanel {
 
     private ComarMenuButtonManager manager;
-    private Map<String, WebPanel> views;
+//    private Map<String, WebPanel> views;
     private ComarPanelCardContainer panelCardContainer;
     private WebPanel panelContent;
 
@@ -45,38 +45,34 @@ public class ComarPanelAdministration extends WebPanel {
         panelContent = new WebPanel();
         panelContent.setLayout(new BorderLayout());
 
+        panelCardContainer = new ComarPanelCardContainer();
+        panelContent.add(panelCardContainer, BorderLayout.CENTER);
+
+        ComarMenuButton[] buttons = new ComarMenuButton[]{
+            new ComarMenuButton("PRODUCTS_SEARCH", "Buscar", panelCardContainer, new ComarPanelProductSearch()),
+            new ComarMenuButton("PRODUCTS_ADD", "Agregar", panelCardContainer, new ComarPanelProductAdd()),
+            new ComarMenuButton("PRODUCTS_EDIT", "Editar", panelCardContainer, new EmptyCard("PRODUCTS_EDIT")),
+            new ComarMenuButton("PRODUCTS_DELETE", "Eliminar", panelCardContainer, new EmptyCard("PRODUCTS_DELETE")),
+            //
+            new ComarMenuButton("STOCK_ADD", "Agregar", panelCardContainer, new EmptyCard("STOCK_ADD")),
+            new ComarMenuButton("STOCK_EDIT", "Editar", panelCardContainer, new EmptyCard("STOCK_EDIT")),
+            new ComarMenuButton("STOCK_DELETE", "Eliminar", panelCardContainer, new EmptyCard("STOCK_DELETE")),
+            //
+            new ComarMenuButton("SELLS_ADD", "Agregar", panelCardContainer, new EmptyCard("SELLS_ADD")),
+            new ComarMenuButton("SELLS_EDIT", "Editar", panelCardContainer, new EmptyCard("SELLS_EDIT")),
+            new ComarMenuButton("SELLS_DELETE", "Eliminar", panelCardContainer, new EmptyCard("SELLS_DELETE"))
+        };
+
         this.manager = new ComarMenuButtonManager();
-        this.manager.putMenuButton("PRODUCTS_ADD", new ComarMenuButton("Agregar Producto", new ShowViewAction("PRODUCTS_ADD")));
-        this.manager.putMenuButton("PRODUCTS_EDIT", new ComarMenuButton("Editar", new ShowViewAction("PRODUCTS_EDIT")));
-        this.manager.putMenuButton("PRODUCTS_DELETE", new ComarMenuButton("Eliminar", new ShowViewAction("PRODUCTS_DELETE")));
-        this.manager.putMenuButton("STOCK_ADD", new ComarMenuButton("Agregar", new ShowViewAction("STOCK_ADD")));
-        this.manager.putMenuButton("STOCK_EDIT", new ComarMenuButton("Editar", new ShowViewAction("STOCK_EDIT")));
-        this.manager.putMenuButton("STOCK_DELETE", new ComarMenuButton("Eliminar", new ShowViewAction("STOCK_DELETE")));
-        this.manager.putMenuButton("SELLS_ADD", new ComarMenuButton("Agregar", new ShowViewAction("SELLS_ADD")));
-        this.manager.putMenuButton("SELLS_EDIT", new ComarMenuButton("Editar", new ShowViewAction("SELLS_EDIT")));
-        this.manager.putMenuButton("SELLS_DELETE", new ComarMenuButton("Eliminar", new ShowViewAction("SELLS_DELETE")));
+        for (ComarMenuButton button : buttons) {
+            manager.putMenuButton(button.getCode(), button);
+            panelCardContainer.addCard(button.getCode(), button.getCard());
+        }
 
-        this.views = new HashMap<>();
-        this.views.put("PRODUCTS_ADD", new ComarPanelProductAdd());
-        this.views.put("PRODUCTS_EDIT", new WebPanel(new WebLabel("PRODUCTS_EDIT")));
-        this.views.put("PRODUCTS_DELETE", new WebPanel(new WebLabel("PRODUCTS_DELETE")));
-        this.views.put("STOCK_ADD", new WebPanel(new WebLabel("STOCK_ADD")));
-        this.views.put("STOCK_EDIT", new WebPanel(new WebLabel("STOCK_EDIT")));
-        this.views.put("STOCK_DELETE", new WebPanel(new WebLabel("STOCK_DELETE")));
-        this.views.put("SELLS_ADD", new WebPanel(new WebLabel("SELLS_ADD")));
-        this.views.put("SELLS_EDIT", new WebPanel(new WebLabel("SELLS_EDIT")));
-        this.views.put("SELLS_DELETE", new WebPanel(new WebLabel("SELLS_DELETE")));
-
-        buildMenu();
-        buildCardContainer();
-
-        return panelContent;
-    }
-
-    private void buildMenu() {
         WebPanel panelProducts = new WebPanel();
         panelProducts.setBackground(Color.BLACK);
         panelProducts.setLayout(new BoxLayout(panelProducts, BoxLayout.PAGE_AXIS));
+        panelProducts.add(manager.getMenuButton("PRODUCTS_SEARCH"));
         panelProducts.add(manager.getMenuButton("PRODUCTS_ADD"));
         panelProducts.add(manager.getMenuButton("PRODUCTS_EDIT"));
         panelProducts.add(manager.getMenuButton("PRODUCTS_DELETE"));
@@ -100,26 +96,16 @@ public class ComarPanelAdministration extends WebPanel {
         ac.addPane("Inventario", panelStock);
         ac.addPane("Ventas", panelSells);
         panelContent.add(ac, BorderLayout.WEST);
+
+        return panelContent;
     }
 
-    private void buildCardContainer() {
-        panelCardContainer = new ComarPanelCardContainer();
-        views.entrySet().forEach(e -> panelCardContainer.addCard(e.getKey(), e.getValue()));
-        panelContent.add(panelCardContainer, BorderLayout.CENTER);
-    }
+    private class EmptyCard extends WebPanel {
 
-    private class ShowViewAction extends AbstractAction {
-
-        private final String id;
-
-        public ShowViewAction(String id) {
-            this.id = id;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            panelCardContainer.showCard(id);
+        public EmptyCard(String title) {
+            add(new WebLabel(title));
         }
 
     }
+
 }
