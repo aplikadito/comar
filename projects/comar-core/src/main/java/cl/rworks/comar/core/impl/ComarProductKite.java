@@ -62,23 +62,13 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
     public static ComarProductKite insert(ComarProduct p) {
         ComarProductKite pp = create();
         pp.setId(pp.getObjId().asLong());
-        pp.setCode(p.getCode());
-        pp.setName(p.getName());
-        pp.setDecimalFormat(p.getDecimalFormat());
-        pp.setUnit(p.getUnit());
-
-        ComarCategory c = p.getCategory();
-        if (c != null) {
-            ComarCategoryKite cc = ComarCategoryKite.get(c.getId());
-            pp.setCategory(cc);
-        }
+        update(pp, p);
 
         p.setId(pp.getId());
         return pp;
     }
 
-    public static ComarProductKite update(ComarProduct p) {
-        ComarProductKite pp = get(p.getId());
+    public static void update(ComarProductKite pp, ComarProduct p) {
         pp.setCode(p.getCode());
         pp.setName(p.getName());
         pp.setDecimalFormat(p.getDecimalFormat());
@@ -89,23 +79,6 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
             ComarCategoryKite cc = ComarCategoryKite.get(c.getId());
             pp.setCategory(cc);
         }
-
-        return pp;
-    }
-
-    public static ComarProductKite update(ComarProductKite pp, ComarProduct p) {
-        pp.setCode(p.getCode());
-        pp.setName(p.getName());
-        pp.setDecimalFormat(p.getDecimalFormat());
-        pp.setUnit(p.getUnit());
-
-        ComarCategory c = p.getCategory();
-        if (c != null) {
-            ComarCategoryKite cc = ComarCategoryKite.get(c.getId());
-            pp.setCategory(cc);
-        }
-
-        return pp;
     }
 
     public static ComarProductKite get(Long id) {

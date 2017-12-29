@@ -5,8 +5,9 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.core.impl.ComarServiceImpl;
-import cl.rworks.comar.core.service.ComarService;
+import cl.rworks.comar.core.impl.ComarDatabaseServiceImpl;
+import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.service.ComarDatabaseServiceException;
 import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
 import cl.rworks.comar.swing.options.ComarPanelOptions;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
@@ -16,6 +17,8 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
+import cl.rworks.comar.core.service.ComarDatabaseService;
+import cl.rworks.comar.core.service.ComarDatabaseServiceCategory;
 
 /**
  *
@@ -26,7 +29,7 @@ public class ComarSystem {
     private static ComarSystem instance;
     //
     private ComarFrame frame;
-    private ComarService service;
+    private ComarSystemService service;
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
@@ -34,7 +37,7 @@ public class ComarSystem {
     }
 
     private ComarSystem() {
-        this.service = new ComarServiceImpl("storage");
+        this.service = new ComarSystemService();
     }
 
     public void setFrame(ComarFrame frame) {
@@ -45,15 +48,46 @@ public class ComarSystem {
         return frame;
     }
 
-    public ComarService getService() {
+    public ComarSystemService getService() {
         return service;
     }
 
     public void startup() {
+        startupDb();
+        startupCards();
+        startupKeyboard();
+
+        frame.getPanelCard().showCard("ADM");
+    }
+
+    private void startupDb() {
+        ComarDatabaseServiceCategory serv = service.getDatabaseService().getServiceCategory();
+        try {
+            if (!serv.existsName("General")) {
+                ComarCategory c = serv.create("General");
+                serv.insert(c);
+            }
+
+            if (!serv.existsName("Abarrotes")) {
+                ComarCategory c = serv.create("Abarrotes");
+                serv.insert(c);
+            }
+        } catch (ComarDatabaseServiceException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void startupCards() {
         ComarPanelPointOfSell panelPointOfSell = new ComarPanelPointOfSell();
         ComarPanelAdministration panelAdmnistration = new ComarPanelAdministration();
         ComarPanelOptions panelOptions = new ComarPanelOptions();
 
+        frame.addCard("POS", panelPointOfSell, new ShowViewAction("Punto de Venta", frame.getPanelCard(), "POS"));
+        frame.addCard("ADM", panelAdmnistration, new ShowViewAction("Administracion", frame.getPanelCard(), "ADM"));
+        frame.addCard("OPT", panelOptions, new ShowViewAction("Opciones", frame.getPanelCard(), "OPT"));
+    }
+
+    private void startupKeyboard() {
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
 
@@ -78,12 +112,6 @@ public class ComarSystem {
                 return false;
             }
         });
-
-        frame.addCard("POS", panelPointOfSell, new ShowViewAction("Punto de Venta", frame.getPanelCard(), "POS"));
-        frame.addCard("ADM", panelAdmnistration, new ShowViewAction("Administracion", frame.getPanelCard(), "ADM"));
-        frame.addCard("OPT", panelOptions, new ShowViewAction("Opciones", frame.getPanelCard(), "OPT"));
-
-        frame.getPanelCard().showCard("ADM");
     }
 
     public class ShowViewAction extends AbstractAction {

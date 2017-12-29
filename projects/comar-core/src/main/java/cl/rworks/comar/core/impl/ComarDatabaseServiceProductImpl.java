@@ -5,8 +5,7 @@
  */
 package cl.rworks.comar.core.impl;
 
-import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.comar.core.service.ComarServiceProduct;
+import cl.rworks.comar.core.service.ComarDatabaseServiceException;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
@@ -16,21 +15,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NavigableSet;
+import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
 
 /**
  *
  * @author aplik
  */
-public class ComarServiceProductImpl implements ComarServiceProduct {
+public class ComarDatabaseServiceProductImpl implements ComarDatabaseServiceProduct {
 
     private KiteDb database;
 
-    public ComarServiceProductImpl(KiteDb database) {
+    public ComarDatabaseServiceProductImpl(KiteDb database) {
         this.database = database;
     }
 
     @Override
-    public ComarProduct create() throws ComarServiceException {
+    public ComarProduct create() throws ComarDatabaseServiceException {
         try {
             return (ComarProduct) database.execute(jtx -> {
                 ComarProductKite pp = (ComarProductKite) ComarProductKite.create().copyOut();
@@ -40,20 +40,20 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return pp;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException("Error", ex);
+            throw new ComarDatabaseServiceException("Error", ex);
         }
     }
 
     @Override
-    public void insert(ComarProduct product) throws ComarServiceException {
+    public void insert(ComarProduct product) throws ComarDatabaseServiceException {
         try {
             if (product == null) {
-                throw new ComarServiceException("Producto nulo");
+                throw new ComarDatabaseServiceException("Producto nulo");
             }
 
             String code = product.getCode();
             if (code == null || code.isEmpty()) {
-                throw new ComarServiceException("Codigo nulo o vacio");
+                throw new ComarDatabaseServiceException("Codigo nulo o vacio");
             }
 
             database.execute(jtx -> {
@@ -66,15 +66,15 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return null;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException(ex.getMessage(), ex);
+            throw new ComarDatabaseServiceException(ex.getMessage(), ex);
         }
     }
 
     @Override
-    public void update(ComarProduct product) throws ComarServiceException {
+    public void update(ComarProduct product) throws ComarDatabaseServiceException {
         try {
             if (product == null) {
-                throw new ComarServiceException("Producto nulo");
+                throw new ComarDatabaseServiceException("Producto nulo");
             }
 
             database.execute(jtx -> {
@@ -90,12 +90,12 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return null;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException(ex.getMessage(), ex);
+            throw new ComarDatabaseServiceException(ex.getMessage(), ex);
         }
     }
 
     @Override
-    public ComarProduct get(Long id) throws ComarServiceException {
+    public ComarProduct get(Long id) throws ComarDatabaseServiceException {
         try {
             if (id == null) {
                 return null;
@@ -107,12 +107,12 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return pp;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException("Error", ex);
+            throw new ComarDatabaseServiceException("Error", ex);
         }
     }
 
     @Override
-    public ComarProduct getByCode(String code) throws ComarServiceException {
+    public ComarProduct getByCode(String code) throws ComarDatabaseServiceException {
         try {
             return (ComarProduct) database.execute(jtx -> {
                 ComarProductKite p = ComarProductKite.getByCode(code);
@@ -121,12 +121,12 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return pp;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException("Error", ex);
+            throw new ComarDatabaseServiceException("Error", ex);
         }
     }
 
     @Override
-    public List<ComarProduct> getAll() throws ComarServiceException {
+    public List<ComarProduct> getAll() throws ComarDatabaseServiceException {
         try {
             return (List<ComarProduct>) database.execute(jtx -> {
                 NavigableSet<ComarProductKite> products = ComarProductKite.getAll();
@@ -140,12 +140,12 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return list;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException("Error", ex);
+            throw new ComarDatabaseServiceException("Error", ex);
         }
     }
 
     @Override
-    public void delete(final ComarProduct p) throws ComarServiceException {
+    public void delete(final ComarProduct p) throws ComarDatabaseServiceException {
         try {
             database.execute(jtx -> {
                 String code = p.getCode();
@@ -155,12 +155,12 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return null;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException("Error", ex);
+            throw new ComarDatabaseServiceException("Error", ex);
         }
     }
 
     @Override
-    public List<ComarProduct> search(final String text) throws ComarServiceException {
+    public List<ComarProduct> search(final String text) throws ComarDatabaseServiceException {
         if (text == null || text.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -178,12 +178,12 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return list;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException("Error", ex);
+            throw new ComarDatabaseServiceException("Error", ex);
         }
     }
 
     @Override
-    public boolean existsCode(final String code) throws ComarServiceException {
+    public boolean existsCode(final String code) throws ComarDatabaseServiceException {
         try {
             return (Boolean) database.execute(jtx -> {
                 boolean response = ComarProductKite.existsCode(code);
@@ -191,7 +191,7 @@ public class ComarServiceProductImpl implements ComarServiceProduct {
                 return response;
             });
         } catch (KiteException ex) {
-            throw new ComarServiceException("Error", ex);
+            throw new ComarDatabaseServiceException("Error", ex);
         }
     }
 }

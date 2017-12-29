@@ -45,5 +45,8 @@ public enum ComarDecimalFormat {
         return df;
     }
 
+    public String toString() {
+        return getName() + " (" + getPattern() + ")";
+    }
 
 }

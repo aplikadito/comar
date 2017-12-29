@@ -9,8 +9,10 @@ package cl.rworks.comar.core.service;
  *
  * @author rgonzalez
  */
-public interface ComarService {
+public interface ComarDatabaseService {
 
-    public ComarServiceProduct getServiceProduct();
+    public ComarDatabaseServiceProduct getServiceProduct();
+
+    public ComarDatabaseServiceCategory getServiceCategory();
 
 }

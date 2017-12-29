@@ -5,37 +5,40 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
-import cl.rworks.comar.core.model.ComarContext;
+import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.service.ComarService;
-import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.comar.core.service.ComarServiceProduct;
+import cl.rworks.comar.core.model.ComarUnit;
+import cl.rworks.comar.core.service.ComarDatabaseServiceException;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.button.WebButton;
+import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
-import com.alee.managers.notification.NotificationIcon;
-import com.alee.managers.notification.NotificationManager;
-import com.alee.managers.notification.WebInnerNotification;
-import com.alee.managers.notification.WebNotification;
 import com.alee.managers.tooltip.TooltipManager;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
+import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
+import cl.rworks.comar.core.service.ComarDatabaseServiceCategory;
+import cl.rworks.comar.swing.ComarSystemService;
 
 /**
  *
@@ -48,6 +51,9 @@ public class ComarPanelProductAdd extends WebPanel {
     //
     private WebTextField textCode;
     private WebTextField textName;
+    private WebComboBox comboCategory;
+    private WebComboBox comboUnit;
+    private WebComboBox comboFormat;
 
     public ComarPanelProductAdd() {
         initValues();
@@ -78,7 +84,7 @@ public class ComarPanelProductAdd extends WebPanel {
         panelForm = new WebPanel(new FormLayout(false, true, 10, 10));
         panelForm.setMinimumSize(new Dimension(300, 100));
         panelForm.setPreferredSize(new Dimension(300, 100));
-        panelForm.setMaximumSize(new Dimension(300, 100));
+        panelForm.setMaximumSize(new Dimension(300, 200));
         panelForm.setAlignmentX(0.0f);
 
         textCode = new WebTextField(20);
@@ -90,8 +96,42 @@ public class ComarPanelProductAdd extends WebPanel {
         textName.setFocusable(true);
         panelForm.add(new WebLabel("Nombre"));
         panelForm.add(textName);
-        
+
+        comboCategory = new WebComboBox(loadCategories());
+        panelForm.add(new WebLabel("Categoria"));
+        panelForm.add(comboCategory);
+
+        comboCategory.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    ComarCategory c = (ComarCategory) value;
+                    label.setText(c.getName());
+                }
+                return label;
+            }
+
+        });
+
+        comboUnit = new WebComboBox(ComarUnit.values());
+        panelForm.add(new WebLabel("Unidad"));
+        panelForm.add(comboUnit);
+
+        comboFormat = new WebComboBox(ComarDecimalFormat.values());
+        panelForm.add(new WebLabel("Formato"));
+        panelForm.add(comboFormat);
+
         return panelForm;
+    }
+
+    private List<ComarCategory> loadCategories() {
+        try {
+            return ComarSystem.getInstance().getService().getAllCategories();
+        } catch (ComarDatabaseServiceException ex) {
+            ex.printStackTrace();
+            return Collections.EMPTY_LIST;
+        }
     }
 
     private WebPanel buildFormButtons() {
@@ -104,7 +144,7 @@ public class ComarPanelProductAdd extends WebPanel {
         WebButton buttonOk = new WebButton(new AddAction());
         buttonOk.setFocusable(true);
         panelFormButtons.add(buttonOk);
-        
+
         WebButton buttonClear = new WebButton(new ClearAction());
         buttonClear.setFocusable(true);
         panelFormButtons.add(buttonClear);
@@ -133,17 +173,24 @@ public class ComarPanelProductAdd extends WebPanel {
                 validate = false;
             }
 
+            ComarCategory category = (ComarCategory) comboCategory.getSelectedItem();
+            ComarUnit unit = (ComarUnit) comboUnit.getSelectedItem();
+            ComarDecimalFormat format = (ComarDecimalFormat) comboFormat.getSelectedItem();
+
             if (validate) {
                 try {
-                    ComarServiceProduct service = ComarSystem.getInstance().getService().getServiceProduct();
-                    ComarProduct product = service.create();
+                    ComarSystemService service = ComarSystem.getInstance().getService();
+                    ComarProduct product = service.createProduct();
                     product.setCode(strCode);
                     product.setName(strName);
-                    service.insert(product);
+                    product.setCategory(category);
+                    product.setUnit(unit);
+                    product.setDecimalFormat(format);
+                    service.insertProduct(product);
 
                     ComarUtils.showInfo("Producto Agregado");
                     clear();
-                } catch (ComarServiceException ex) {
+                } catch (ComarDatabaseServiceException ex) {
                     ex.printStackTrace();
                     ComarUtils.showWarn(ex.getMessage());
                 }

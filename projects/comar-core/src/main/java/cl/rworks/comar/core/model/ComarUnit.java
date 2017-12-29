@@ -32,6 +32,8 @@ public enum ComarUnit {
         return symbol;
     }
     
-    
+    public String toString(){
+        return getName();
+    }
     
 }

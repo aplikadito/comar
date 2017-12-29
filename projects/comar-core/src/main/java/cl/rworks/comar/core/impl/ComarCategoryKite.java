@@ -32,9 +32,11 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
     @Override
     void setName(String name);
 
-    public static ComarCategoryKite create() {
+    public static ComarCategoryKite create(String name) {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.create(ComarCategoryKite.class);
+        ComarCategoryKite cc = jtx.create(ComarCategoryKite.class);
+        cc.setName(name);
+        return cc;
     }
 
     public static NavigableSet<ComarCategoryKite> getAll() {
@@ -42,11 +44,17 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         return jtx.getAll(ComarCategoryKite.class);
     }
 
-    public static void insert(ComarCategory p) {
-        ComarCategoryKite pp = create();
-        pp.setId(pp.getObjId().asLong());
-        pp.setName(p.getName());
-        p.setId(pp.getId());
+    public static ComarCategoryKite insert(ComarCategory c) {
+        ComarCategoryKite cc = create(c.getName());
+        cc.setId(cc.getObjId().asLong());
+        update(cc, c);
+
+        c.setId(cc.getId());
+        return cc;
+    }
+
+    public static void update(ComarCategory cc, ComarCategory c) {
+        cc.setName(c.getName());
     }
 
     public static ComarCategoryKite get(Long id) {
@@ -61,9 +69,9 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         return result != null ? (ComarCategoryKite) result.first() : null;
     }
 
-    public static void delete(ComarCategory p) {
+    public static void delete(ComarCategory c) {
         JTransaction jtx = JTransaction.getCurrent();
-        ObjId oid = new ObjId(p.getId());
+        ObjId oid = new ObjId(c.getId());
         JObject pp = jtx.get(oid);
         jtx.delete(pp);
     }
@@ -85,5 +93,9 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
             return all;
         }
 
+    }
+
+    public static boolean existsName(String name) {
+        return getByName(name) != null;
     }
 }

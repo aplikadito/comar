@@ -5,19 +5,20 @@
  */
 package cl.rworks.comar.core.impl;
 
-import cl.rworks.comar.core.service.ComarService;
-import cl.rworks.comar.core.service.ComarServiceProduct;
 import cl.rworks.kite.KiteDb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import cl.rworks.comar.core.service.ComarDatabaseService;
+import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
+import cl.rworks.comar.core.service.ComarDatabaseServiceCategory;
 
 /**
  *
  * @author rgonzalez
  */
-public class ComarServiceImpl implements ComarService {
+public class ComarDatabaseServiceImpl implements ComarDatabaseService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ComarServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ComarDatabaseServiceImpl.class);
 
     private KiteDb database;
     //
@@ -28,22 +29,25 @@ public class ComarServiceImpl implements ComarService {
         ComarCategoryKite.class
     };
     //
-    private ComarServiceProduct productService;
+    private ComarDatabaseServiceProduct productService;
+    private ComarDatabaseServiceCategory categoryService;
 
     /**
      * Crea la base de datos en memoria
      */
-    public ComarServiceImpl() {
+    public ComarDatabaseServiceImpl() {
         this(null);
     }
 
     /**
      * Crea la base en disco dentro del directorio con el nombre 'name'
-     * @param name 
+     *
+     * @param name
      */
-    public ComarServiceImpl(String name) {
+    public ComarDatabaseServiceImpl(String name) {
         this.database = name == null || name.isEmpty() ? new KiteDb(classes) : new KiteDb(name, classes);
-        this.productService = new ComarServiceProductImpl(database);
+        this.productService = new ComarDatabaseServiceProductImpl(database);
+        this.categoryService = new ComarDatabaseServiceCategoryImpl(database);
     }
 
     public KiteDb getDatabase() {
@@ -51,8 +55,13 @@ public class ComarServiceImpl implements ComarService {
     }
 
     @Override
-    public ComarServiceProduct getServiceProduct() {
+    public ComarDatabaseServiceProduct getServiceProduct() {
         return productService;
+    }
+
+    @Override
+    public ComarDatabaseServiceCategory getServiceCategory() {
+        return categoryService;
     }
 
 }

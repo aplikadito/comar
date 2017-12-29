@@ -5,7 +5,13 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
+import cl.rworks.comar.core.model.ComarProduct;
+import cl.rworks.comar.core.service.ComarDatabaseServiceException;
+import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
+import cl.rworks.comar.swing.util.ComarUtils;
+import com.alee.extended.breadcrumb.WebBreadcrumbButton;
+import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
@@ -14,11 +20,15 @@ import com.alee.laf.text.WebTextField;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
 
 /**
  *
@@ -30,6 +40,7 @@ public class ComarPanelProductSearch extends WebPanel {
     private WebTable table;
     private ProductTableModel tableModel;
     private WebTextField textSearch;
+    private WebButton buttonSearch;
 
     public ComarPanelProductSearch() {
         initValues();
@@ -61,8 +72,11 @@ public class ComarPanelProductSearch extends WebPanel {
         WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
         panel.add(new WebLabel("Buscar"));
 
-        textSearch = new WebTextField();
+        textSearch = new WebTextField(20);
         panel.add(textSearch);
+
+        buttonSearch = new WebButton(new SearchAction());
+        panel.add(buttonSearch);
 
         return panel;
     }
@@ -98,11 +112,21 @@ public class ComarPanelProductSearch extends WebPanel {
 
     private class ProductTableModel extends AbstractTableModel {
 
-        private String[] columnNames = new String[]{"Codigo", "Nombre"};
+        private String[] columnNames = new String[]{"Codigo", "Nombre", "Categoria", "Unidad", "Formato"};
+
+        private List<ComarProduct> products;
+
+        public List<ComarProduct> getProducts() {
+            return products;
+        }
+
+        public void setProducts(List<ComarProduct> products) {
+            this.products = products;
+        }
 
         @Override
         public int getRowCount() {
-            return 0;
+            return products != null ? products.size() : 0;
         }
 
         @Override
@@ -111,8 +135,40 @@ public class ComarPanelProductSearch extends WebPanel {
         }
 
         @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
+
+        @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return "";
+            ComarProduct p = products.get(rowIndex);
+            switch (columnIndex) {
+                case 0:
+                    return p.getCode();
+                case 1:
+                    return p.getName();
+                case 2:
+                    return p.getCategory().getName();
+                case 3:
+                    return p.getUnit().getName();
+                case 4:
+                    return p.getDecimalFormat().getName();
+                default:
+                    return "";
+            }
+        }
+
+    }
+
+    private class SearchAction extends AbstractAction {
+
+        public SearchAction() {
+            putValue(NAME, "Buscar");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            search();
         }
 
     }
@@ -128,6 +184,21 @@ public class ComarPanelProductSearch extends WebPanel {
             clear();
         }
 
+    }
+
+    private void search() {
+        String strText = this.textSearch.getText();
+        if (strText.isEmpty()) {
+            try {
+                List<ComarProduct> products = ComarSystem.getInstance().getService().searchProduct(strText);
+                tableModel.setProducts(products);
+                tableModel.fireTableDataChanged();
+            } catch (ComarDatabaseServiceException ex) {
+                ComarUtils.showWarn(ex.getMessage());
+            }
+        } else {
+
+        }
     }
 
     private void clear() {

@@ -7,10 +7,10 @@ package cl.rworks.comar.core.impl;
 
 import cl.rworks.comar.core.model.ComarContext;
 import cl.rworks.comar.core.model.ComarProperties;
-import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.impl.ComarPropertiesImpl;
-import cl.rworks.comar.core.impl.ComarServiceImpl;
+import cl.rworks.comar.core.impl.ComarDatabaseServiceImpl;
 import org.slf4j.LoggerFactory;
+import cl.rworks.comar.core.service.ComarDatabaseService;
 
 /**
  *
@@ -22,7 +22,7 @@ public class ComarContextImpl implements ComarContext {
     private static ComarContextImpl instance;
     //
     private ComarProperties properties;
-    private ComarService service;
+    private ComarDatabaseService service;
 
     public static ComarContextImpl getInstance() {
         instance = instance == null ? new ComarContextImpl() : instance;
@@ -31,7 +31,7 @@ public class ComarContextImpl implements ComarContext {
 
     private ComarContextImpl() {
         properties = new ComarPropertiesImpl();
-        service = new ComarServiceImpl("storage");
+        service = new ComarDatabaseServiceImpl("storage");
         init();
     }
 
@@ -44,7 +44,7 @@ public class ComarContextImpl implements ComarContext {
     }
     
     @Override
-    public ComarService getService(){
+    public ComarDatabaseService getService(){
         return service;
     }
 

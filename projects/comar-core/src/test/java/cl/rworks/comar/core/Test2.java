@@ -5,9 +5,9 @@
  */
 package cl.rworks.comar.core;
 
-import cl.rworks.comar.core.service.ComarServiceProduct;
-import cl.rworks.comar.core.impl.ComarServiceImpl;
+import cl.rworks.comar.core.impl.ComarDatabaseServiceImpl;
 import cl.rworks.comar.core.model.ComarProduct;
+import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
 
 /**
  *
@@ -16,7 +16,7 @@ import cl.rworks.comar.core.model.ComarProduct;
 public class Test2 {
 
     public void test() throws Exception {
-        ComarServiceProduct service = new ComarServiceImpl().getServiceProduct();
+        ComarDatabaseServiceProduct service = new ComarDatabaseServiceImpl().getServiceProduct();
 
 //        long id = -244252732922459347L;
         String code = "0010";
