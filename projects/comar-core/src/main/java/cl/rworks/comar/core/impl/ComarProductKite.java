@@ -9,6 +9,7 @@ import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
+import cl.rworks.comar.core.service.ComarDaoException;
 import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.annotation.JField;
@@ -51,49 +52,72 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
 
     public static ComarProductKite create() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.create(ComarProductKite.class);
+        ComarProductKite o = jtx.create(ComarProductKite.class);
+        o.setId(o.getObjId().asLong());
+        o.setUnit(ComarUnit.UNIDAD);
+        o.setDecimalFormat(ComarDecimalFormat.ZERO);
+        return o;
     }
 
     public static NavigableSet<ComarProductKite> getAll() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.getAll(ComarProductKite.class);
+        NavigableSet<ComarProductKite> products = jtx.getAll(ComarProductKite.class);
+        for (ComarProductKite p : products) {
+            System.out.println(p.getCategory());
+        }
+        return products;
     }
 
-    public static ComarProductKite insert(ComarProduct p) {
-        ComarProductKite pp = create();
-        pp.setId(pp.getObjId().asLong());
-        update(pp, p);
+    public static void update(ComarProduct p) throws ComarDaoException {
+        if (p == null) {
+            throw new ComarDaoException("Producto nulo");
+        }
 
-        p.setId(pp.getId());
-        return pp;
+        System.out.println(p.getId());
+        JTransaction jtx = JTransaction.getCurrent();
+        ComarProduct odb = (ComarProduct) jtx.get(new ObjId(p.getId()));
+        update(p, odb);
     }
 
-    public static void update(ComarProductKite pp, ComarProduct p) {
-        pp.setCode(p.getCode());
-        pp.setName(p.getName());
-        pp.setDecimalFormat(p.getDecimalFormat());
-        pp.setUnit(p.getUnit());
+    public static void update(ComarProduct source, ComarProduct destiny) {
+        destiny.setCode(source.getCode());
+        destiny.setName(source.getName());
+        destiny.setDecimalFormat(source.getDecimalFormat());
+        destiny.setUnit(source.getUnit());
 
-        ComarCategory c = p.getCategory();
+        ComarCategory c = source.getCategory();
         if (c != null) {
             ComarCategoryKite cc = ComarCategoryKite.get(c.getId());
-            pp.setCategory(cc);
+            destiny.setCategory(cc);
         }
     }
 
-    public static ComarProductKite get(Long id) {
+    public static ComarProductKite get(Object id) throws ComarDaoException {
+        if (id == null) {
+            return null;
+        }
+
+        if (!(id instanceof Long)) {
+            throw new ComarDaoException("El id no es Long");
+        }
+
+        Long longId = (Long) id;
+
         JTransaction jtx = JTransaction.getCurrent();
-        ObjId oid = new ObjId(id);
-        return (ComarProductKite) jtx.get(oid);
+        return (ComarProductKite) jtx.get(new ObjId(longId));
     }
 
     public static ComarProductKite getByCode(String code) {
         JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarProduct> result = jtx.queryIndex(ComarProduct.class, "code", String.class).asMap().get(code);
-        return result != null ? (ComarProductKite) result.first() : null;
+        NavigableSet<ComarProductKite> result = jtx.queryIndex(ComarProductKite.class, "code", String.class).asMap().get(code);
+        return result != null ? result.first() : null;
     }
 
     public static void delete(ComarProduct p) {
+        if (p == null) {
+            return;
+        }
+
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(p.getId());
         JObject pp = jtx.get(oid);
@@ -101,7 +125,7 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
     }
 
     public static NavigableSet<ComarProductKite> search(final String text) {
-        if (text == null) {
+        if (text == null || text.isEmpty()) {
             return new TreeSet<>();
         }
 
@@ -114,7 +138,9 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
             Predicate<ComarProductKite> filterName = e -> pattern.matcher(e.getName()).matches();
             Predicate<ComarProductKite> filter = e -> filterCode.test(e) || filterName.test(e);
             Stream<ComarProductKite> stream = all.stream().filter(filter);
-            return stream.collect(Collectors.toCollection(TreeSet::new));
+
+            TreeSet<ComarProductKite> collect = stream.collect(Collectors.toCollection(TreeSet::new));
+            return collect;
         } else {
             return all;
         }

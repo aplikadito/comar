@@ -32,6 +32,13 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
     @Override
     void setName(String name);
 
+    public static ComarCategoryKite create() {
+        JTransaction jtx = JTransaction.getCurrent();
+        ComarCategoryKite odb = jtx.create(ComarCategoryKite.class);
+        odb.setId(odb.getObjId().asLong());
+        return odb;
+    }
+
     public static ComarCategoryKite create(String name) {
         JTransaction jtx = JTransaction.getCurrent();
         ComarCategoryKite cc = jtx.create(ComarCategoryKite.class);
@@ -44,17 +51,14 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         return jtx.getAll(ComarCategoryKite.class);
     }
 
-    public static ComarCategoryKite insert(ComarCategory c) {
-        ComarCategoryKite cc = create(c.getName());
-        cc.setId(cc.getObjId().asLong());
-        update(cc, c);
-
-        c.setId(cc.getId());
-        return cc;
+    public static void update(ComarCategory o) {
+        JTransaction jtx = JTransaction.getCurrent();
+        ComarCategory odb = (ComarCategory) jtx.get(new ObjId(o.getId()));
+        update(o, odb);
     }
 
-    public static void update(ComarCategory cc, ComarCategory c) {
-        cc.setName(c.getName());
+    public static void update(ComarCategory source, ComarCategory destiny) {
+        destiny.setName(source.getName());
     }
 
     public static ComarCategoryKite get(Long id) {
@@ -64,6 +68,10 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
     }
 
     public static ComarCategoryKite getByName(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+
         JTransaction jtx = JTransaction.getCurrent();
         NavigableSet<ComarCategoryKite> result = jtx.queryIndex(ComarCategoryKite.class, "name", String.class).asMap().get(name);
         return result != null ? (ComarCategoryKite) result.first() : null;
@@ -95,7 +103,4 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
 
     }
 
-    public static boolean existsName(String name) {
-        return getByName(name) != null;
-    }
 }

@@ -5,12 +5,15 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
+import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.service.ComarDatabaseServiceException;
+import cl.rworks.comar.core.model.ComarUnit;
+import cl.rworks.comar.core.service.ComarDaoFactory;
+import cl.rworks.comar.core.service.ComarDaoException;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
-import com.alee.extended.breadcrumb.WebBreadcrumbButton;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -21,14 +24,14 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
-import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
+import cl.rworks.comar.core.service.ComarDaoProduct;
+import cl.rworks.comar.core.service.ComarDaoService;
+import java.util.ArrayList;
 
 /**
  *
@@ -114,13 +117,13 @@ public class ComarPanelProductSearch extends WebPanel {
 
         private String[] columnNames = new String[]{"Codigo", "Nombre", "Categoria", "Unidad", "Formato"};
 
-        private List<ComarProduct> products;
+        private List<ProductRow> products;
 
-        public List<ComarProduct> getProducts() {
+        public List<ProductRow> getProducts() {
             return products;
         }
 
-        public void setProducts(List<ComarProduct> products) {
+        public void setProducts(List<ProductRow> products) {
             this.products = products;
         }
 
@@ -141,18 +144,18 @@ public class ComarPanelProductSearch extends WebPanel {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            ComarProduct p = products.get(rowIndex);
+            ProductRow p = products.get(rowIndex);
             switch (columnIndex) {
                 case 0:
                     return p.getCode();
                 case 1:
                     return p.getName();
                 case 2:
-                    return p.getCategory().getName();
+                    return p.getCategoryName();
                 case 3:
                     return p.getUnit().getName();
                 case 4:
-                    return p.getDecimalFormat().getName();
+                    return p.getFormat().getName();
                 default:
                     return "";
             }
@@ -190,10 +193,10 @@ public class ComarPanelProductSearch extends WebPanel {
         String strText = this.textSearch.getText();
         if (strText.isEmpty()) {
             try {
-                List<ComarProduct> products = ComarSystem.getInstance().getService().searchProduct(strText);
+                List<ProductRow> products = loadProducts(strText);
                 tableModel.setProducts(products);
                 tableModel.fireTableDataChanged();
-            } catch (ComarDatabaseServiceException ex) {
+            } catch (ComarDaoException ex) {
                 ComarUtils.showWarn(ex.getMessage());
             }
         } else {
@@ -205,4 +208,110 @@ public class ComarPanelProductSearch extends WebPanel {
         this.textSearch.clear();
     }
 
+    private List<ProductRow> loadProducts(String strText) throws ComarDaoException {
+        List<ProductRow> rows = new ArrayList<>();
+
+        ComarDaoService daoService = ComarSystem.getInstance().getDaoService();
+        try {
+            daoService.openTransaction();
+
+            ComarDaoProduct daoProduct = ComarDaoFactory.getDaoProduct();
+            List<ComarProduct> list = strText.isEmpty() ? daoProduct.getAll() : daoProduct.search(strText);
+            for (ComarProduct p : list) {
+                ComarCategory c = (ComarCategory) daoProduct.instance(p, "category");
+
+                ProductRow row = new ProductRow();
+                row.setCode(p.getCode());
+                row.setName(p.getName());
+                row.setCategoryName(c != null ? c.getName() : "");
+                row.setUnit(p.getUnit());
+                row.setFormat(p.getDecimalFormat());
+                row.setIdProduct(p.getId());
+                row.setIdCategory(c != null ? c.getId() : null);
+
+                rows.add(row);
+            }
+
+            daoService.rollback();
+        } catch (ComarDaoException ex) {
+            daoService.rollback();
+            ex.printStackTrace();
+        } finally {
+            daoService.closeTransaction();
+        }
+
+        return rows;
+    }
+
+    private class ProductRow {
+
+        private String code;
+        private String name;
+        private String categoryName;
+        private ComarUnit unit;
+        private ComarDecimalFormat format;
+        //
+        private Long idProduct;
+        private Long idCategory;
+
+        public ProductRow() {
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCategoryName() {
+            return categoryName;
+        }
+
+        public void setCategoryName(String categoryName) {
+            this.categoryName = categoryName;
+        }
+
+        public ComarUnit getUnit() {
+            return unit;
+        }
+
+        public void setUnit(ComarUnit unit) {
+            this.unit = unit;
+        }
+
+        public ComarDecimalFormat getFormat() {
+            return format;
+        }
+
+        public void setFormat(ComarDecimalFormat format) {
+            this.format = format;
+        }
+
+        public Long getIdProduct() {
+            return idProduct;
+        }
+
+        public void setIdProduct(Long idProduct) {
+            this.idProduct = idProduct;
+        }
+
+        public Long getIdCategory() {
+            return idCategory;
+        }
+
+        public void setIdCategory(Long idCategory) {
+            this.idCategory = idCategory;
+        }
+
+    }
 }

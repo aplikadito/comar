@@ -5,9 +5,11 @@
  */
 package cl.rworks.comar.core;
 
-import cl.rworks.comar.core.impl.ComarDatabaseServiceImpl;
+import cl.rworks.comar.core.impl.ComarDaoServiceImpl;
 import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
+import cl.rworks.comar.core.service.ComarDaoFactory;
+import cl.rworks.comar.core.service.ComarDaoProduct;
+import cl.rworks.comar.core.service.ComarDaoService;
 
 /**
  *
@@ -16,23 +18,25 @@ import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
 public class Test0 {
 
     public void test() throws Exception {
-        ComarDatabaseServiceProduct service = new ComarDatabaseServiceImpl().getServiceProduct();
+        ComarDaoService service = new ComarDaoServiceImpl();
+        ComarDaoProduct dao = ComarDaoFactory.getDaoProduct();
+
+        service.openTransaction();
         
-        ComarProduct product = service.create();
+        ComarProduct product = dao.create();
         product.setCode("0001");
         product.setName("producto_" + product.getCode());
         
-        service.insert(product);
-        System.out.println("size: " + service.getAll().size());
-        
         product.setName("elemento");
-        service.update(product);
-        
-        ComarProduct fproduct = service.getByCode("0001");
+        dao.update(product);
+
+        ComarProduct fproduct = dao.getByCode("0001");
         System.out.println("fproduct: " + fproduct.getName());
+
+        dao.delete(fproduct);
+        System.out.println("size: " + dao.getAll().size());
         
-        service.delete(fproduct);
-        System.out.println("size: " + service.getAll().size());
+        service.closeTransaction();
     }
 
     public static void main(String[] args) {

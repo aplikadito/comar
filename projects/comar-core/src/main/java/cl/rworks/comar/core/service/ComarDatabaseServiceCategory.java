@@ -14,21 +14,21 @@ import java.util.List;
  */
 public interface ComarDatabaseServiceCategory {
 
-    ComarCategory create(String name) throws ComarDatabaseServiceException;
+    ComarCategory create(String name) throws ComarDaoException;
 
-    void insert(ComarCategory product) throws ComarDatabaseServiceException;
+    void insert(ComarCategory product) throws ComarDaoException;
 
-    void update(ComarCategory product) throws ComarDatabaseServiceException;
+    void update(ComarCategory product) throws ComarDaoException;
 
-    ComarCategory get(Long id) throws ComarDatabaseServiceException;
+    ComarCategory get(Long id) throws ComarDaoException;
 
-    ComarCategory getByName(String name) throws ComarDatabaseServiceException;
+    ComarCategory getByName(String name) throws ComarDaoException;
 
-    List<ComarCategory> getAll() throws ComarDatabaseServiceException;
+    List<ComarCategory> getAll() throws ComarDaoException;
 
-    List<ComarCategory> search(String text) throws ComarDatabaseServiceException;
+    List<ComarCategory> search(String text) throws ComarDaoException;
 
-    void delete(ComarCategory product) throws ComarDatabaseServiceException;
+    void delete(ComarCategory product) throws ComarDaoException;
 
-    boolean existsName(String name) throws ComarDatabaseServiceException;
+    boolean existsName(String name) throws ComarDaoException;
 }

@@ -5,9 +5,9 @@
  */
 package cl.rworks.comar.core;
 
-import cl.rworks.comar.core.impl.ComarDatabaseServiceImpl;
 import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
+import cl.rworks.comar.core.service.ComarDaoFactory;
+import cl.rworks.comar.core.service.ComarDaoProduct;
 
 /**
  *
@@ -16,12 +16,12 @@ import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
 public class Test2 {
 
     public void test() throws Exception {
-        ComarDatabaseServiceProduct service = new ComarDatabaseServiceImpl().getServiceProduct();
+        ComarDaoProduct dao = ComarDaoFactory.getDaoProduct();
 
 //        long id = -244252732922459347L;
         String code = "0010";
 
-        ComarProduct pp = service.getByCode(code);
+        ComarProduct pp = dao.getByCode(code);
         System.out.println(pp.getName());
 
     }

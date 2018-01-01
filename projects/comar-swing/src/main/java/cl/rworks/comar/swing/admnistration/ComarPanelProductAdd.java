@@ -9,7 +9,11 @@ import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
-import cl.rworks.comar.core.service.ComarDatabaseServiceException;
+import cl.rworks.comar.core.service.ComarDaoCategory;
+import cl.rworks.comar.core.service.ComarDaoException;
+import cl.rworks.comar.core.service.ComarDaoFactory;
+import cl.rworks.comar.core.service.ComarDaoProduct;
+import cl.rworks.comar.core.service.ComarDaoService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
@@ -36,9 +40,6 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
-import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
-import cl.rworks.comar.core.service.ComarDatabaseServiceCategory;
-import cl.rworks.comar.swing.ComarSystemService;
 
 /**
  *
@@ -126,11 +127,20 @@ public class ComarPanelProductAdd extends WebPanel {
     }
 
     private List<ComarCategory> loadCategories() {
+        ComarDaoService service = ComarSystem.getInstance().getDaoService();
+
         try {
-            return ComarSystem.getInstance().getService().getAllCategories();
-        } catch (ComarDatabaseServiceException ex) {
+            service.openTransaction();
+            ComarDaoCategory daoCat = ComarDaoFactory.getDaoCategory();
+            List<ComarCategory> cats = daoCat.getAll();
+
+            service.rollback();
+            return cats;
+        } catch (ComarDaoException ex) {
             ex.printStackTrace();
             return Collections.EMPTY_LIST;
+        } finally {
+            service.closeTransaction();
         }
     }
 
@@ -160,11 +170,29 @@ public class ComarPanelProductAdd extends WebPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            ComarDaoService daoService = ComarSystem.getInstance().getDaoService();
+
             boolean validate = true;
             String strCode = textCode.getText();
             if (strCode == null || strCode.isEmpty()) {
                 TooltipManager.showOneTimeTooltip(textCode, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Codigo nulo o vacio", TooltipWay.trailing);
                 validate = false;
+            }
+
+            try {
+                daoService.openTransaction();
+
+                ComarProduct product = ComarDaoFactory.getDaoProduct().getByCode(strCode);
+                if (product != null) {
+                    TooltipManager.showOneTimeTooltip(textCode, null, ComarIconLoader.load(ComarIconLoader.ERROR), "El codigo ya existe", TooltipWay.trailing);
+                    validate = false;
+                }
+                daoService.rollback();
+            } catch (ComarDaoException ex) {
+                daoService.rollback();
+                ex.printStackTrace();
+            } finally {
+                daoService.closeTransaction();
             }
 
             String strName = textName.getText();
@@ -179,20 +207,24 @@ public class ComarPanelProductAdd extends WebPanel {
 
             if (validate) {
                 try {
-                    ComarSystemService service = ComarSystem.getInstance().getService();
-                    ComarProduct product = service.createProduct();
+                    daoService.openTransaction();
+                    ComarDaoProduct daoProduct = ComarDaoFactory.getDaoProduct();
+                    ComarProduct product = daoProduct.create();
                     product.setCode(strCode);
                     product.setName(strName);
                     product.setCategory(category);
                     product.setUnit(unit);
                     product.setDecimalFormat(format);
-                    service.insertProduct(product);
+                    daoService.commit();
 
                     ComarUtils.showInfo("Producto Agregado");
                     clear();
-                } catch (ComarDatabaseServiceException ex) {
+                } catch (ComarDaoException ex) {
+                    daoService.rollback();
                     ex.printStackTrace();
                     ComarUtils.showWarn(ex.getMessage());
+                } finally {
+                    daoService.closeTransaction();
                 }
             }
         }

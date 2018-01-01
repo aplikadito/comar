@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.core.model;
 
-import cl.rworks.comar.core.service.ComarDatabaseService;
+import cl.rworks.comar.core.service.ComarDaoService;
 
 /**
  *
@@ -15,5 +15,5 @@ public interface ComarContext {
 
     public ComarProperties getProperties();
 
-    public ComarDatabaseService getService();
+    public ComarDaoService getService();
 }

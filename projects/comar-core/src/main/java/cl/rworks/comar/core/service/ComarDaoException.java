@@ -9,13 +9,13 @@ package cl.rworks.comar.core.service;
  *
  * @author aplik
  */
-public class ComarDatabaseServiceException extends Exception {
+public class ComarDaoException extends Exception {
 
-    public ComarDatabaseServiceException(String message) {
+    public ComarDaoException(String message) {
         super(message);
     }
 
-    public ComarDatabaseServiceException(String message, Throwable cause) {
+    public ComarDaoException(String message, Throwable cause) {
         super(message, cause);
     }
 

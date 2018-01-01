@@ -5,9 +5,12 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.core.impl.ComarDatabaseServiceImpl;
+import cl.rworks.comar.core.impl.ComarDaoServiceImpl;
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.service.ComarDatabaseServiceException;
+import cl.rworks.comar.core.service.ComarDaoCategory;
+import cl.rworks.comar.core.service.ComarDaoException;
+import cl.rworks.comar.core.service.ComarDaoFactory;
+import cl.rworks.comar.core.service.ComarDaoService;
 import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
 import cl.rworks.comar.swing.options.ComarPanelOptions;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
@@ -17,8 +20,6 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
-import cl.rworks.comar.core.service.ComarDatabaseService;
-import cl.rworks.comar.core.service.ComarDatabaseServiceCategory;
 
 /**
  *
@@ -29,7 +30,7 @@ public class ComarSystem {
     private static ComarSystem instance;
     //
     private ComarFrame frame;
-    private ComarSystemService service;
+    private ComarDaoService daoService;
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
@@ -37,7 +38,7 @@ public class ComarSystem {
     }
 
     private ComarSystem() {
-        this.service = new ComarSystemService();
+        this.daoService = new ComarDaoServiceImpl("storage");
     }
 
     public void setFrame(ComarFrame frame) {
@@ -48,8 +49,8 @@ public class ComarSystem {
         return frame;
     }
 
-    public ComarSystemService getService() {
-        return service;
+    public ComarDaoService getDaoService() {
+        return daoService;
     }
 
     public void startup() {
@@ -61,19 +62,26 @@ public class ComarSystem {
     }
 
     private void startupDb() {
-        ComarDatabaseServiceCategory serv = service.getDatabaseService().getServiceCategory();
         try {
-            if (!serv.existsName("General")) {
-                ComarCategory c = serv.create("General");
-                serv.insert(c);
+            daoService.openTransaction();
+
+            ComarDaoCategory daoCat = ComarDaoFactory.getDaoCategory();
+            if (daoCat.getByName("General") == null) {
+                ComarCategory c = daoCat.create();
+                c.setName("General");
             }
 
-            if (!serv.existsName("Abarrotes")) {
-                ComarCategory c = serv.create("Abarrotes");
-                serv.insert(c);
+            if (daoCat.getByName("Abarrotes") == null) {
+                ComarCategory c = daoCat.create();
+                c.setName("Abarrotes");
             }
-        } catch (ComarDatabaseServiceException ex) {
+            
+            daoService.commit();
+        } catch (ComarDaoException ex) {
+            daoService.rollback();
             ex.printStackTrace();
+        } finally {
+            daoService.closeTransaction();
         }
     }
 

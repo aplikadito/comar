@@ -5,11 +5,11 @@
  */
 package cl.rworks.comar.core;
 
-import cl.rworks.comar.core.impl.ComarDatabaseServiceImpl;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.service.ComarDaoFactory;
+import cl.rworks.comar.core.service.ComarDaoProduct;
 import java.util.List;
-import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
 
 /**
  *
@@ -18,11 +18,11 @@ import cl.rworks.comar.core.service.ComarDatabaseServiceProduct;
 public class Test1 {
 
     public void test() throws Exception {
-        ComarDatabaseServiceProduct service = new ComarDatabaseServiceImpl().getServiceProduct();
+        ComarDaoProduct dao = ComarDaoFactory.getDaoProduct();
 
-        service.getAll().stream().forEach(System.out::println);
+        dao.getAll().stream().forEach(System.out::println);
 
-        List<ComarProduct> allProducts = service.getAll();
+        List<ComarProduct> allProducts = dao.getAll();
         for (ComarProduct p : allProducts) {
             ComarCategory cate = p.getCategory();
         }

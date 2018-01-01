@@ -9,10 +9,15 @@ package cl.rworks.comar.core.service;
  *
  * @author rgonzalez
  */
-public interface ComarDatabaseService {
+public interface ComarDaoService {
 
-    public ComarDatabaseServiceProduct getServiceProduct();
+    public void openTransaction();
 
-    public ComarDatabaseServiceCategory getServiceCategory();
+    public Object execute(ComarDaoQuery job) throws ComarDaoException;
 
+    public void closeTransaction();
+
+    public void commit();
+
+    public void rollback();
 }
