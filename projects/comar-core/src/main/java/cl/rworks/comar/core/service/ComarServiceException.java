@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.data;
+package cl.rworks.comar.core.service;
 
 /**
  *
  * @author rgonzalez
  */
-public class ComarDataException extends Exception{ 
+public class ComarServiceException extends Exception{ 
 
-    public ComarDataException(String message) {
+    public ComarServiceException(String message) {
         super(message);
     }
 
-    public ComarDataException(String message, Throwable cause) {
+    public ComarServiceException(String message, Throwable cause) {
         super(message, cause);
     }
     

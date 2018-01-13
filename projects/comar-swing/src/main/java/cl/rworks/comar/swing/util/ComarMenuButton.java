@@ -6,11 +6,8 @@
 package cl.rworks.comar.swing.util;
 
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -21,18 +18,14 @@ public class ComarMenuButton extends WebLabel {
     //
     private String code;
     private String title;
-    private ComarPanelCardContainer cardContainer;
-    private WebPanel card;
     //
     private int state = EXIT;
     private boolean selected = false;
 
-    public ComarMenuButton(String code, String title, ComarPanelCardContainer cardContainer, WebPanel card) {
+    public ComarMenuButton(String code, String title) {
         super(title);
         this.code = code;
         this.title = title;
-        this.cardContainer = cardContainer;
-        this.card = card;
 
         setOpaque(true);
         setHorizontalAlignment(SwingConstants.CENTER);
@@ -44,7 +37,6 @@ public class ComarMenuButton extends WebLabel {
 
         setPreferredHeight(30);
         setMaximumSize(new Dimension(2000, 2000));
-        addMouseListener(new MenuMouseAdapter());
     }
 
     public boolean isSelected() {
@@ -74,41 +66,12 @@ public class ComarMenuButton extends WebLabel {
         }
     }
 
-    private class MenuMouseAdapter extends MouseAdapter {
-
-        public MenuMouseAdapter() {
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            setSelected(true);
-            updateStateUi();
-            cardContainer.showCard(code);
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            setState(ComarMenuButton.HOVER);
-            updateStateUi();
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            setState(ComarMenuButton.EXIT);
-            updateStateUi();
-        }
-    }
-
     public String getCode() {
         return code;
     }
 
     public String getTitle() {
         return title;
-    }
-
-    public WebPanel getCard() {
-        return card;
     }
 
 }

@@ -5,11 +5,12 @@
  */
 package cl.rworks.comar.swing;
 
+import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelCardContainer;
 import com.alee.laf.rootpane.WebFrame;
 import java.awt.BorderLayout;
+import java.util.logging.Logger;
 import javax.swing.Action;
-import javax.swing.JPanel;
 
 /**
  *
@@ -52,7 +53,7 @@ public class ComarFrame extends WebFrame {
         return statusBar;
     }
 
-    public final void addCard(String id, JPanel card, Action action) {
+    public final void addCard(String id, ComarPanelCard card, Action action) {
         this.menuBar.addCard(action);
         this.panelCard.addCard(id, card);
     }

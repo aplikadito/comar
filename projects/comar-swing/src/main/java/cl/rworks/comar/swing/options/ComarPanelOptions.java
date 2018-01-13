@@ -8,6 +8,7 @@ package cl.rworks.comar.swing.options;
 import cl.rworks.comar.swing.ComarFrame;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.util.ComarPanelCard;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
@@ -28,7 +29,7 @@ import javax.swing.plaf.FontUIResource;
  *
  * @author rgonzalez
  */
-public class ComarPanelOptions extends WebPanel {
+public class ComarPanelOptions extends ComarPanelCard {
 
     private WebPanel panelForm;
 
@@ -49,7 +50,6 @@ public class ComarPanelOptions extends WebPanel {
         panelForm.add(new WebTextField());
 
 //        panelTitled.setContent(panelForm);
-
         add(panelForm, BorderLayout.CENTER);
 
         WebButton webButton = new WebButton("Aplicar");
@@ -67,4 +67,5 @@ public class ComarPanelOptions extends WebPanel {
         });
         add(new WebPanel(new FlowLayout(FlowLayout.RIGHT), webButton), BorderLayout.SOUTH);
     }
+
 }

@@ -1,13 +1,13 @@
 ----------------------------------------------------------------
-Sat Jan 06 14:34:24 CLST 2018:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-0160-cc89-b0fa-000006134aa8 
-on database directory /home/rgonzalez/trabajo/comar/dev/projects/comar-swing/storage with class loader sun.misc.Launcher$AppClassLoader@73d16e93 
-Loaded from file:/home/rgonzalez/.m2/repository/org/apache/derby/derby/10.13.1.1/derby-10.13.1.1.jar
+Sat Jan 13 13:22:19 CLST 2018:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-0160-f054-38b3-000009a2e758 
+on database directory D:\trabajo\comar\projects\comar-swing\storage with class loader sun.misc.Launcher$AppClassLoader@73d16e93 
+Loaded from file:/C:/Users/aplik/.m2/repository/org/apache/derby/derby/10.13.1.1/derby-10.13.1.1.jar
 java.vendor=Oracle Corporation
-java.runtime.version=1.8.0_101-b13
-user.dir=/home/rgonzalez/trabajo/comar/dev/projects/comar-swing
-os.name=Linux
+java.runtime.version=1.8.0_151-b12
+user.dir=D:\trabajo\comar\projects\comar-swing
+os.name=Windows 10
 os.arch=amd64
-os.version=4.4.0-21-generic
+os.version=10.0
 derby.system.home=null
 Database Class Loader started - derby.database.classpath=''

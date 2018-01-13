@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.core.data;
 
+import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
@@ -61,18 +62,14 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
     public static NavigableSet<ComarProductKite> getAll() {
         JTransaction jtx = JTransaction.getCurrent();
         NavigableSet<ComarProductKite> products = jtx.getAll(ComarProductKite.class);
-        for (ComarProductKite p : products) {
-            System.out.println(p.getCategory());
-        }
         return products;
     }
 
-    public static void update(ComarProduct p) throws ComarDataException {
+    public static void update(ComarProduct p) throws ComarServiceException {
         if (p == null) {
-            throw new ComarDataException("Producto nulo");
+            throw new ComarServiceException("Producto nulo");
         }
 
-        System.out.println(p.getId());
         JTransaction jtx = JTransaction.getCurrent();
         ComarProduct odb = (ComarProduct) jtx.get(new ObjId(p.getId()));
         update(p, odb);
@@ -91,13 +88,13 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         }
     }
 
-    public static ComarProductKite get(Object id) throws ComarDataException {
+    public static ComarProductKite get(Object id) throws ComarServiceException {
         if (id == null) {
             return null;
         }
 
         if (!(id instanceof Long)) {
-            throw new ComarDataException("El id no es Long");
+            throw new ComarServiceException("El id no es Long");
         }
 
         Long longId = (Long) id;
@@ -107,6 +104,10 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
     }
 
     public static ComarProductKite getByCode(String code) {
+        if(code == null || code.isEmpty()){
+            return null;
+        }
+        
         JTransaction jtx = JTransaction.getCurrent();
         NavigableSet<ComarProductKite> result = jtx.queryIndex(ComarProductKite.class, "code", String.class).asMap().get(code);
         return result != null ? result.first() : null;

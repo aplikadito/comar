@@ -7,6 +7,7 @@ package cl.rworks.comar.core.service;
 
 import cl.rworks.comar.core.data.ComarCategoryKite;
 import cl.rworks.comar.core.data.ComarProductKite;
+import cl.rworks.comar.core.data.ComarSellKite;
 import cl.rworks.comar.core.data.ComarStockKite;
 import cl.rworks.kite.KiteDb;
 import cl.rworks.kite.KiteDbDisk;
@@ -31,13 +32,20 @@ public class ComarServiceImpl implements ComarService {
         switch (option) {
             case 0:
                 kitedb = new KiteDbMemory(modelClasses);
+                break;
             case 1:
                 kitedb = new KiteDbDisk("storage", modelClasses);
+                break;
             case 2:
                 kitedb = new KiteDbMysql(null, modelClasses);
+                break;
             default:
-                throw new RuntimeException();
+                throw new RuntimeException("opcion no soportada: " + option);
         }
+    }
+
+    public KiteDb getKitedb() {
+        return kitedb;
     }
 
 }

@@ -102,5 +102,5 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         }
 
     }
-
+    
 }

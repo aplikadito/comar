@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing.pointofsell;
 
+import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -14,7 +15,7 @@ import java.awt.BorderLayout;
  *
  * @author rgonzalez
  */
-public class ComarPanelPointOfSell extends WebPanel {
+public class ComarPanelPointOfSell extends ComarPanelCard {
 
     private WebLabel labelKeyboard = new WebLabel();
 

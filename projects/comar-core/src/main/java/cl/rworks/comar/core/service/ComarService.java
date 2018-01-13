@@ -5,6 +5,8 @@
  */
 package cl.rworks.comar.core.service;
 
+import cl.rworks.kite.KiteDb;
+
 /**
  *
  * @author rgonzalez
@@ -14,4 +16,6 @@ public interface ComarService {
     int MEMORY = 0;
     int DISK = 1;
     int MYSQL = 2;
+
+    KiteDb getKitedb();
 }

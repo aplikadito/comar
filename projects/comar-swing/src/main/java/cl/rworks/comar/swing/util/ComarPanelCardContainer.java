@@ -7,7 +7,8 @@ package cl.rworks.comar.swing.util;
 
 import com.alee.laf.panel.WebPanel;
 import java.awt.CardLayout;
-import javax.swing.JPanel;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -15,6 +16,7 @@ import javax.swing.JPanel;
  */
 public class ComarPanelCardContainer extends WebPanel {
 
+    private Map<String, ComarPanelCard> map = new HashMap<>();
     private CardLayout layout = new CardLayout();
     private String actualCardName;
 
@@ -22,17 +24,27 @@ public class ComarPanelCardContainer extends WebPanel {
         setLayout(layout);
     }
 
-    public final void addCard(String id, JPanel card) {
+    public final void addCard(String id, ComarPanelCard card) {
+        map.put(id, card);
         add(card, id);
     }
 
     public final void showCard(String cardName) {
+        if (actualCardName != null) {
+            map.get(actualCardName).hideCard();
+        }
+
         this.actualCardName = cardName;
+        map.get(actualCardName).updateCard();
         layout.show(this, cardName);
     }
 
     public String getActualCardName() {
         return actualCardName;
+    }
+
+    public ComarPanelCard getCard(String cardName) {
+        return map.get(cardName);
     }
 
 }

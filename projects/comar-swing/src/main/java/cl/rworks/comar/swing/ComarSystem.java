@@ -5,7 +5,8 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.service.ComarService;
+import cl.rworks.comar.core.service.ComarService;
+import cl.rworks.comar.core.service.ComarServiceImpl;
 import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
 import cl.rworks.comar.swing.options.ComarPanelOptions;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
@@ -33,7 +34,8 @@ public class ComarSystem {
     }
 
     private ComarSystem() {
-        this.service = new ComarService("storage");
+        System.out.println(System.getProperty("user.dir"));
+        this.service = new ComarServiceImpl(ComarService.DISK);
     }
 
     public void setFrame(ComarFrame frame) {
@@ -49,10 +51,29 @@ public class ComarSystem {
     }
 
     public void startup() {
+        startupDb();
         startupCards();
         startupKeyboard();
 
         frame.getPanelCard().showCard("ADM");
+    }
+
+    private void startupDb() {
+//        Permazen db = service.getKitedb().get();
+//        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
+//        JTransaction.setCurrent(jtx);
+//        try {
+//            ComarCategoryKite category = ComarCategoryKite.getByName("General");
+//            if (category == null) {
+//                ComarCategoryKite.create("General");
+//            }
+//            jtx.commit();
+//        } catch (Exception ex) {
+//            jtx.rollback();
+//            ex.printStackTrace();
+//        } finally {
+//            JTransaction.setCurrent(null);
+//        }
     }
 
     private void startupCards() {
