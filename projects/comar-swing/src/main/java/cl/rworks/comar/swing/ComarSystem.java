@@ -5,12 +5,7 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.core.impl.ComarDaoServiceImpl;
-import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.service.ComarDaoCategory;
-import cl.rworks.comar.core.service.ComarDaoException;
-import cl.rworks.comar.core.service.ComarDaoFactory;
-import cl.rworks.comar.core.service.ComarDaoService;
+import cl.rworks.comar.service.ComarService;
 import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
 import cl.rworks.comar.swing.options.ComarPanelOptions;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
@@ -30,7 +25,7 @@ public class ComarSystem {
     private static ComarSystem instance;
     //
     private ComarFrame frame;
-    private ComarDaoService daoService;
+    private ComarService service;
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
@@ -38,7 +33,7 @@ public class ComarSystem {
     }
 
     private ComarSystem() {
-        this.daoService = new ComarDaoServiceImpl("storage");
+        this.service = new ComarService("storage");
     }
 
     public void setFrame(ComarFrame frame) {
@@ -49,40 +44,15 @@ public class ComarSystem {
         return frame;
     }
 
-    public ComarDaoService getDaoService() {
-        return daoService;
+    public ComarService getService() {
+        return service;
     }
 
     public void startup() {
-        startupDb();
         startupCards();
         startupKeyboard();
 
         frame.getPanelCard().showCard("ADM");
-    }
-
-    private void startupDb() {
-        try {
-            daoService.openTransaction();
-
-            ComarDaoCategory daoCat = ComarDaoFactory.getDaoCategory();
-            if (daoCat.getByName("General") == null) {
-                ComarCategory c = daoCat.create();
-                c.setName("General");
-            }
-
-            if (daoCat.getByName("Abarrotes") == null) {
-                ComarCategory c = daoCat.create();
-                c.setName("Abarrotes");
-            }
-            
-            daoService.commit();
-        } catch (ComarDaoException ex) {
-            daoService.rollback();
-            ex.printStackTrace();
-        } finally {
-            daoService.closeTransaction();
-        }
     }
 
     private void startupCards() {

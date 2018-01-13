@@ -9,8 +9,8 @@ import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
-import cl.rworks.comar.core.service.ComarDaoFactory;
-import cl.rworks.comar.core.service.ComarDaoException;
+import cl.rworks.comar.data.service.ComarDaoFactory;
+import cl.rworks.comar.data.service.ComarDaoException;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
@@ -29,8 +29,8 @@ import static javax.swing.Action.NAME;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
-import cl.rworks.comar.core.service.ComarDaoProduct;
-import cl.rworks.comar.core.service.ComarDaoService;
+import cl.rworks.comar.data.service.ComarDaoProduct;
+import cl.rworks.comar.data.service.ComarDaoService;
 import java.util.ArrayList;
 
 /**
@@ -211,7 +211,7 @@ public class ComarPanelProductSearch extends WebPanel {
     private List<ProductRow> loadProducts(String strText) throws ComarDaoException {
         List<ProductRow> rows = new ArrayList<>();
 
-        ComarDaoService daoService = ComarSystem.getInstance().getDaoService();
+        ComarDaoService daoService = ComarSystem.getInstance().getService();
         try {
             daoService.openTransaction();
 

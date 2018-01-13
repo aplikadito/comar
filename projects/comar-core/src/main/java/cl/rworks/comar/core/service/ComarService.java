@@ -9,7 +9,9 @@ package cl.rworks.comar.core.service;
  *
  * @author rgonzalez
  */
-public interface ComarDaoQuery {
+public interface ComarService {
 
-    public Object execute(Object... parameters) throws ComarDaoException;
+    int MEMORY = 0;
+    int DISK = 1;
+    int MYSQL = 2;
 }

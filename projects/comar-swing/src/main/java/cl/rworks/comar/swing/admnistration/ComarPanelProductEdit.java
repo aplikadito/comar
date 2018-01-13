@@ -45,25 +45,26 @@ import javax.swing.border.EmptyBorder;
  *
  * @author rgonzalez
  */
-public class ComarPanelProductAdd extends WebPanel {
+public class ComarPanelProductEdit extends WebPanel {
 
     private WebPanel panelContent;
     private WebPanel panelForm;
     //
     private WebTextField textCode;
+    private WebButton buttonCode;
     private WebTextField textName;
     private WebComboBox comboCategory;
     private WebComboBox comboUnit;
     private WebComboBox comboFormat;
 
-    public ComarPanelProductAdd() {
+    public ComarPanelProductEdit() {
         initValues();
     }
 
     private void initValues() {
         setLayout(new BorderLayout());
 
-        add(new ComarPanelSubtitle("Agregar Producto"), BorderLayout.NORTH);
+        add(new ComarPanelSubtitle("Editar Producto"), BorderLayout.NORTH);
         add(buildContent(), BorderLayout.CENTER);
     }
 
@@ -88,10 +89,19 @@ public class ComarPanelProductAdd extends WebPanel {
         panelForm.setMaximumSize(new Dimension(300, 200));
         panelForm.setAlignmentX(0.0f);
 
+        buttonCode = new WebButton("Cargar");
+        
         textCode = new WebTextField(20);
         textCode.setFocusable(true);
+        
+        WebPanel panel = new WebPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+        panel.add(textCode);
+        panel.add(buttonCode);
+//        panel.setMaximumWidth(100);
+        
         panelForm.add(new WebLabel("Codigo"));
-        panelForm.add(textCode);
+        panelForm.add(panel);
 
         textName = new WebTextField();
         textName.setFocusable(true);

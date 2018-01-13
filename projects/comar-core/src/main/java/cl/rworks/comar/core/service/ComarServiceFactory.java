@@ -5,13 +5,14 @@
  */
 package cl.rworks.comar.core.service;
 
-import cl.rworks.comar.core.model.ComarCategory;
-
 /**
  *
  * @author rgonzalez
  */
-public interface ComarDaoCategory extends ComarDao<ComarCategory> {
+public class ComarServiceFactory {
 
-    public ComarCategory getByName(String name) throws ComarDaoException;
+    public static ComarService get(int option) {
+        return new ComarServiceImpl(option);
+    }
+
 }

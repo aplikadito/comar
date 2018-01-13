@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.impl;
+package cl.rworks.comar.core.data;
 
 import cl.rworks.comar.core.model.ComarStock;
 import io.permazen.JObject;

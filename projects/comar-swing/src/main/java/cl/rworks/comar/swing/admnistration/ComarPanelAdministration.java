@@ -14,10 +14,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 
 /**
@@ -51,7 +47,7 @@ public class ComarPanelAdministration extends WebPanel {
         ComarMenuButton[] buttons = new ComarMenuButton[]{
             new ComarMenuButton("PRODUCTS_SEARCH", "Buscar", panelCardContainer, new ComarPanelProductSearch()),
             new ComarMenuButton("PRODUCTS_ADD", "Agregar", panelCardContainer, new ComarPanelProductAdd()),
-            new ComarMenuButton("PRODUCTS_EDIT", "Editar", panelCardContainer, new EmptyCard("PRODUCTS_EDIT")),
+            new ComarMenuButton("PRODUCTS_EDIT", "Editar", panelCardContainer, new ComarPanelProductEdit()),
             new ComarMenuButton("PRODUCTS_DELETE", "Eliminar", panelCardContainer, new EmptyCard("PRODUCTS_DELETE")),
             //
             new ComarMenuButton("STOCK_ADD", "Agregar", panelCardContainer, new EmptyCard("STOCK_ADD")),

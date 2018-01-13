@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.impl;
+package cl.rworks.comar.core.data;
 
 import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
-import cl.rworks.comar.core.service.ComarDaoException;
 import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.annotation.JField;
@@ -68,9 +67,9 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         return products;
     }
 
-    public static void update(ComarProduct p) throws ComarDaoException {
+    public static void update(ComarProduct p) throws ComarDataException {
         if (p == null) {
-            throw new ComarDaoException("Producto nulo");
+            throw new ComarDataException("Producto nulo");
         }
 
         System.out.println(p.getId());
@@ -92,13 +91,13 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         }
     }
 
-    public static ComarProductKite get(Object id) throws ComarDaoException {
+    public static ComarProductKite get(Object id) throws ComarDataException {
         if (id == null) {
             return null;
         }
 
         if (!(id instanceof Long)) {
-            throw new ComarDaoException("El id no es Long");
+            throw new ComarDataException("El id no es Long");
         }
 
         Long longId = (Long) id;
