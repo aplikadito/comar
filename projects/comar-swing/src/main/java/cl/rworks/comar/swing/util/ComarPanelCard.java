@@ -13,7 +13,7 @@ import com.alee.laf.panel.WebPanel;
  */
 public abstract class ComarPanelCard extends WebPanel {
 
-    public void updateCard() {
+    public void preload() {
     }
 
     public void hideCard() {

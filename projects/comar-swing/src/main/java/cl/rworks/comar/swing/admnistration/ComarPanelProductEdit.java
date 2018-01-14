@@ -22,6 +22,9 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.splitpane.WebSplitPane;
+import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
@@ -48,13 +51,12 @@ import javax.swing.border.EmptyBorder;
  *
  * @author rgonzalez
  */
-public class ComarPanelProductEdit extends ComarPanelCard {
+public class ComarPanelProductEdit extends WebPanel {
 
     private WebPanel panelContent;
     private WebPanel panelForm;
     //
     private WebTextField textCode;
-    private WebButton buttonCode;
     private WebTextField textName;
     private WebComboBox comboCategory;
     private WebComboBox comboUnit;
@@ -92,22 +94,14 @@ public class ComarPanelProductEdit extends ComarPanelCard {
         panelForm.setMaximumSize(new Dimension(300, 200));
         panelForm.setAlignmentX(0.0f);
 
-        buttonCode = new WebButton(new SearchAction());
-
         textCode = new WebTextField(20);
         textCode.setFocusable(false);
         textCode.setEditable(false);
         textCode.setEnabled(false);
         textCode.setBoldFont();
 
-        WebPanel panel = new WebPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-        panel.add(textCode);
-        panel.add(buttonCode);
-//        panel.setMaximumWidth(100);
-
         panelForm.add(new WebLabel("Codigo"));
-        panelForm.add(panel);
+        panelForm.add(textCode);
 
         textName = new WebTextField();
         textName.setFocusable(true);
@@ -169,7 +163,7 @@ public class ComarPanelProductEdit extends ComarPanelCard {
         panelFormButtons.setMaximumSize(new Dimension(300, 30));
         panelFormButtons.setAlignmentX(0.0f);
 
-        WebButton buttonOk = new WebButton(new AddAction());
+        WebButton buttonOk = new WebButton(new OkAction());
         buttonOk.setFocusable(true);
         panelFormButtons.add(buttonOk);
 
@@ -180,8 +174,7 @@ public class ComarPanelProductEdit extends ComarPanelCard {
         return panelFormButtons;
     }
 
-    @Override
-    public void updateCard() {
+    public void updateForm(ComarProduct product) {
         comboCategory.removeAllItems();
         comboCategory.setEnabled(true);
         List<ComarCategory> cats = loadCategories();
@@ -190,16 +183,20 @@ public class ComarPanelProductEdit extends ComarPanelCard {
         if (cats.isEmpty()) {
             comboCategory.setEnabled(false);
         }
+
+        this.textCode.setText(product.getCode());
+        this.textName.setText(product.getName());
+        if (product.getCategory() != null) {
+            this.comboCategory.setSelectedItem(product.getCategory());
+        }
+        this.comboUnit.setSelectedItem(product.getUnit());
+        this.comboFormat.setSelectedItem(product.getDecimalFormat());
     }
 
-    @Override
-    public void hideCard() {
-    }
+    private class OkAction extends AbstractAction {
 
-    private class AddAction extends AbstractAction {
-
-        public AddAction() {
-            putValue(NAME, "Agregar");
+        public OkAction() {
+            putValue(NAME, "Aceptar");
         }
 
         @Override
@@ -214,19 +211,6 @@ public class ComarPanelProductEdit extends ComarPanelCard {
                 validate = false;
             }
 
-//            JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-//            JTransaction.setCurrent(jtx);
-//            try {
-//                if (ComarProductKite.existsCode(strCode)) {
-//                    TooltipManager.showOneTimeTooltip(textCode, null, ComarIconLoader.load(ComarIconLoader.ERROR), "El codigo ya existe", TooltipWay.trailing);
-//                    validate = false;
-//                }
-//            } catch (Exception ex) {
-//                ex.printStackTrace();
-//            } finally {
-//                jtx.rollback();
-//                JTransaction.setCurrent(null);
-//            }
             String strName = textName.getText();
             if (strName == null || strName.isEmpty()) {
                 TooltipManager.showOneTimeTooltip(textName, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Nombre nulo o vacio", TooltipWay.trailing);
@@ -239,24 +223,26 @@ public class ComarPanelProductEdit extends ComarPanelCard {
 
             JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
             JTransaction.setCurrent(jtx);
-            if (validate) {
-                try {
-                    ComarProduct product = ComarProductKite.getByCode(strCode);
-                    product.setName(strName);
-                    product.setCategory(category);
-                    product.setUnit(unit);
-                    product.setDecimalFormat(format);
-                    jtx.commit();
+            if (!validate) {
+                return;
+            }
 
-                    ComarUtils.showInfo("Producto editado");
-                    clear();
-                } catch (Exception ex) {
-                    jtx.rollback();
-                    ex.printStackTrace();
-                    ComarUtils.showWarn(ex.getMessage());
-                } finally {
-                    JTransaction.setCurrent(null);
-                }
+            try {
+                ComarProduct product = ComarProductKite.getByCode(strCode);
+                product.setName(strName);
+                product.setCategory(category);
+                product.setUnit(unit);
+                product.setDecimalFormat(format);
+                jtx.commit();
+
+                ComarUtils.showInfo("Producto editado");
+//                clear();
+            } catch (Exception ex) {
+                jtx.rollback();
+                ex.printStackTrace();
+                ComarUtils.showWarn(ex.getMessage());
+            } finally {
+                JTransaction.setCurrent(null);
             }
         }
 
@@ -278,6 +264,8 @@ public class ComarPanelProductEdit extends ComarPanelCard {
     private void clear() {
         this.textCode.clear();
         this.textName.clear();
+        this.comboUnit.setSelectedIndex(0);
+        this.comboFormat.setSelectedIndex(0);
     }
 
     private class SearchAction extends AbstractAction {
@@ -288,9 +276,6 @@ public class ComarPanelProductEdit extends ComarPanelCard {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            ComarPanelCard card = ComarSystem.getInstance().getFrame().getPanelCard().getCard("ADM");
-            ComarPanelAdministration cardAdm = (ComarPanelAdministration) card;
-            cardAdm.showCard("PRODUCTS_SEARCH");
         }
 
     }

@@ -14,6 +14,8 @@ import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.menu.WebPopupMenu;
+import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
@@ -24,14 +26,17 @@ import io.permazen.ValidationMode;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
-import static javax.swing.Action.NAME;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -39,16 +44,14 @@ import java.util.stream.Collectors;
  */
 public class ComarPanelProductSearch extends ComarPanelCard {
 
-    private ComarPanelAdministration parent;
-    //
     private WebPanel panelContent;
     private WebTable table;
     private ProductTableModel tableModel;
     private WebTextField textSearch;
     private WebButton buttonSearch;
+    private WebButton buttonClear;
 
-    public ComarPanelProductSearch(ComarPanelAdministration parent) {
-        this.parent = parent;
+    public ComarPanelProductSearch() {
         initValues();
     }
 
@@ -84,12 +87,14 @@ public class ComarPanelProductSearch extends ComarPanelCard {
         buttonSearch = new WebButton(new SearchAction());
         panelSearch.add(buttonSearch);
 
+        buttonClear = new WebButton(new ClearAction());
+        panelSearch.add(buttonClear);
+
         WebPanel panelButtons = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 
-        WebButton buttonAdd = new WebButton(new AddAction());
-        buttonAdd.setFocusable(true);
-        panelButtons.add(buttonAdd);
-
+//        WebButton buttonAdd = new WebButton(new AddAction());
+//        buttonAdd.setFocusable(true);
+//        panelButtons.add(buttonAdd);
         WebButton buttonEdit = new WebButton(new EditAction());
         buttonEdit.setFocusable(true);
         panelButtons.add(buttonEdit);
@@ -107,11 +112,24 @@ public class ComarPanelProductSearch extends ComarPanelCard {
     private WebPanel buildTable() {
         WebPanel panel = new WebPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-//        panel.setLayout(new BorderLayout());
 
         tableModel = new ProductTableModel();
         table = new WebTable(tableModel);
         panel.add(new WebScrollPane(table));
+
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+                    new EditAction().actionPerformed(null);
+                }
+            }
+        });
+
+        WebPopupMenu popup = new WebPopupMenu();
+        popup.add(new EditAction());
+        popup.add(new DeleteAction());
+        table.setComponentPopupMenu(popup);
 
         return panel;
     }
@@ -130,16 +148,7 @@ public class ComarPanelProductSearch extends ComarPanelCard {
 //        WebButton buttonDelete = new WebButton(new DeleteAction());
 //        buttonDelete.setFocusable(true);
 //        panel.add(buttonDelete);
-
         return panel;
-    }
-
-    @Override
-    public void updateCard() {
-    }
-
-    @Override
-    public void hideCard() {
     }
 
     private class ProductTableModel extends AbstractTableModel {
@@ -228,6 +237,8 @@ public class ComarPanelProductSearch extends ComarPanelCard {
 
     private void clear() {
         this.textSearch.clear();
+        this.tableModel.setProducts(null);
+        this.tableModel.fireTableDataChanged();
     }
 
     private List<ComarProduct> loadProducts(String strText) {
@@ -250,19 +261,6 @@ public class ComarPanelProductSearch extends ComarPanelCard {
         return rows;
     }
 
-    private class AddAction extends AbstractAction {
-
-        public AddAction() {
-            putValue(NAME, "Agregar");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            parent.showCard("PRODUCTS_ADD");
-        }
-
-    }
-
     private class EditAction extends AbstractAction {
 
         public EditAction() {
@@ -271,7 +269,18 @@ public class ComarPanelProductSearch extends ComarPanelCard {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            parent.showCard("PRODUCTS_EDIT");
+            int vrow = table.getSelectedRow();
+            if (vrow == -1) {
+                ComarUtils.showWarn("Seleccione un producto");
+                return;
+            }
+
+            int mrow = table.convertRowIndexToModel(vrow);
+            ComarProduct product = tableModel.getProducts().get(mrow);
+            ComarDialogProductEdit dialog = new ComarDialogProductEdit(null, product);
+            dialog.setSize(500, 400);
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
         }
 
     }
@@ -284,6 +293,27 @@ public class ComarPanelProductSearch extends ComarPanelCard {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            int[] vrows = table.getSelectedRows();
+            if (vrows.length == 0) {
+                ComarUtils.showWarn("Seleccione al menos un producto");
+                return;
+            }
+
+            int r = ComarUtils.showYesNo(null, "Desea eliminar los productos seleccionados?", "Eliminar");
+            if (r == WebOptionPane.NO_OPTION) {
+                return;
+            }
+
+            List<ComarProduct> list = new ArrayList<>();
+            for (int i = 0; i < vrows.length; i++) {
+                int vrow = vrows[i];
+                int mrow = table.convertRowIndexToModel(vrow);
+                ComarProduct product = tableModel.getProducts().get(mrow);
+                list.add(product);
+            }
+
+            
+            
         }
 
     }

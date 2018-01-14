@@ -31,11 +31,11 @@ public class ComarPanelCardContainer extends WebPanel {
 
     public final void showCard(String cardName) {
         if (actualCardName != null) {
-            map.get(actualCardName).hideCard();
+            map.get(actualCardName).hide();
         }
 
         this.actualCardName = cardName;
-        map.get(actualCardName).updateCard();
+        map.get(actualCardName).preload();
         layout.show(this, cardName);
     }
 

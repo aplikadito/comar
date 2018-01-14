@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
-import static javax.swing.Action.NAME;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
@@ -167,7 +166,7 @@ public class ComarPanelProductAdd extends ComarPanelCard {
     }
 
     @Override
-    public void updateCard() {
+    public void preload() {
         comboCategory.removeAllItems();
         comboCategory.setEnabled(true);
         List<ComarCategory> cats = loadCategories();
@@ -179,7 +178,7 @@ public class ComarPanelProductAdd extends ComarPanelCard {
     }
 
     @Override
-    public void hideCard() {
+    public void hide() {
     }
 
     private class AddAction extends AbstractAction {

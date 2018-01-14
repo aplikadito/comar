@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
+import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.swing.util.ComarPanelCardContainer;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.util.ComarMenuButton;
@@ -12,7 +13,6 @@ import cl.rworks.comar.swing.util.ComarPanelCard;
 import com.alee.extended.panel.WebAccordion;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import static com.alee.managers.style.StyleableComponent.button;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
@@ -56,9 +56,8 @@ public class ComarPanelAdministration extends ComarPanelCard {
         panelContent.add(panelCardContainer, BorderLayout.CENTER);
 
         List<MenuAndCard> productButtons = new ArrayList<>();
-        productButtons.add(create("PRODUCTS_SEARCH", "Buscar", new ComarPanelProductSearch(this)));
+        productButtons.add(create("PRODUCTS_SEARCH", "Buscar", new ComarPanelProductSearch()));
         productButtons.add(create("PRODUCTS_ADD", "Agregar", new ComarPanelProductAdd()));
-        productButtons.add(create("PRODUCTS_EDIT", "Editar", new ComarPanelProductEdit()));
 
         List<MenuAndCard> stockButtons = new ArrayList<>();
         stockButtons.add(create("STOCK_ADD", "Agregar"));
