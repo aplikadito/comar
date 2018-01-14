@@ -39,13 +39,16 @@ import java.util.stream.Collectors;
  */
 public class ComarPanelProductSearch extends ComarPanelCard {
 
+    private ComarPanelAdministration parent;
+    //
     private WebPanel panelContent;
     private WebTable table;
     private ProductTableModel tableModel;
     private WebTextField textSearch;
     private WebButton buttonSearch;
 
-    public ComarPanelProductSearch() {
+    public ComarPanelProductSearch(ComarPanelAdministration parent) {
+        this.parent = parent;
         initValues();
     }
 
@@ -66,21 +69,38 @@ public class ComarPanelProductSearch extends ComarPanelCard {
         panel.setLayout(new BorderLayout());
         panel.add(buildTableOptions(), BorderLayout.NORTH);
         panel.add(buildTable(), BorderLayout.CENTER);
-        panel.add(buildTableStatus(), BorderLayout.SOUTH);
+        panel.add(buildTableButtons(), BorderLayout.SOUTH);
 
         return panelContent;
     }
 
     private WebPanel buildTableOptions() {
-        WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new WebLabel("Buscar"));
+        WebPanel panelSearch = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+        panelSearch.add(new WebLabel("Buscar"));
 
         textSearch = new WebTextField(20);
-        panel.add(textSearch);
+        panelSearch.add(textSearch);
 
         buttonSearch = new WebButton(new SearchAction());
-        panel.add(buttonSearch);
+        panelSearch.add(buttonSearch);
 
+        WebPanel panelButtons = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+
+        WebButton buttonAdd = new WebButton(new AddAction());
+        buttonAdd.setFocusable(true);
+        panelButtons.add(buttonAdd);
+
+        WebButton buttonEdit = new WebButton(new EditAction());
+        buttonEdit.setFocusable(true);
+        panelButtons.add(buttonEdit);
+
+        WebButton buttonDelete = new WebButton(new DeleteAction());
+        buttonDelete.setFocusable(true);
+        panelButtons.add(buttonDelete);
+
+        WebPanel panel = new WebPanel(new BorderLayout());
+        panel.add(panelSearch, BorderLayout.WEST);
+        panel.add(panelButtons, BorderLayout.EAST);
         return panel;
     }
 
@@ -96,21 +116,22 @@ public class ComarPanelProductSearch extends ComarPanelCard {
         return panel;
     }
 
-    private WebPanel buildTableStatus() {
-        WebPanel panelFormButtons = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-//        panelFormButtons.setMinimumSize(new Dimension(300, 30));
-//        panelFormButtons.setPreferredSize(new Dimension(300, 30));
-//        panelFormButtons.setMaximumSize(new Dimension(300, 30));
-//        panelFormButtons.setAlignmentX(0.0f);
+    private WebPanel buildTableButtons() {
+        WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 
-//        WebButton buttonOk = new WebButton(new AddAction());
-//        buttonOk.setFocusable(true);
-//        panelFormButtons.add(buttonOk);
-//        
-//        WebButton buttonClear = new WebButton(new ClearAction());
-//        buttonClear.setFocusable(true);
-//        panelFormButtons.add(buttonClear);
-        return panelFormButtons;
+//        Web buttonAdd = new WebButton(new AddAction());
+//        buttonAdd.setFocusable(true);
+//        panel.add(buttonAdd);
+//
+//        WebButton buttonEdit = new WebButton(new EditAction());
+//        buttonEdit.setFocusable(true);
+//        panel.add(buttonEdit);
+//
+//        WebButton buttonDelete = new WebButton(new DeleteAction());
+//        buttonDelete.setFocusable(true);
+//        panel.add(buttonDelete);
+
+        return panel;
     }
 
     @Override
@@ -229,4 +250,41 @@ public class ComarPanelProductSearch extends ComarPanelCard {
         return rows;
     }
 
+    private class AddAction extends AbstractAction {
+
+        public AddAction() {
+            putValue(NAME, "Agregar");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            parent.showCard("PRODUCTS_ADD");
+        }
+
+    }
+
+    private class EditAction extends AbstractAction {
+
+        public EditAction() {
+            putValue(NAME, "Editar");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            parent.showCard("PRODUCTS_EDIT");
+        }
+
+    }
+
+    private class DeleteAction extends AbstractAction {
+
+        public DeleteAction() {
+            putValue(NAME, "Eliminar");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        }
+
+    }
 }

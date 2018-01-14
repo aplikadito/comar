@@ -12,12 +12,15 @@ import cl.rworks.comar.swing.util.ComarPanelCard;
 import com.alee.extended.panel.WebAccordion;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import static com.alee.managers.style.StyleableComponent.button;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BoxLayout;
 
 /**
@@ -30,7 +33,8 @@ public class ComarPanelAdministration extends ComarPanelCard {
     private WebPanel panelContent;
     //
     private List<MenuAndCard> allMenuAndCard;
-    private ComarMenuButton selectedMenuButton;
+    private Map<String, MenuAndCard> codeToMenuAndCard;
+    private MenuAndCard selectedMenuAndCard;
 
     public ComarPanelAdministration() {
         initValues();
@@ -40,6 +44,8 @@ public class ComarPanelAdministration extends ComarPanelCard {
         setLayout(new BorderLayout());
         add(new ComarPanelTitle("Administracion"), BorderLayout.NORTH);
         add(buildContent(), BorderLayout.CENTER);
+
+        showCard("PRODUCTS_SEARCH");
     }
 
     private WebPanel buildContent() {
@@ -50,10 +56,9 @@ public class ComarPanelAdministration extends ComarPanelCard {
         panelContent.add(panelCardContainer, BorderLayout.CENTER);
 
         List<MenuAndCard> productButtons = new ArrayList<>();
-        productButtons.add(create("PRODUCTS_SEARCH", "Buscar", new ComarPanelProductSearch()));
+        productButtons.add(create("PRODUCTS_SEARCH", "Buscar", new ComarPanelProductSearch(this)));
         productButtons.add(create("PRODUCTS_ADD", "Agregar", new ComarPanelProductAdd()));
         productButtons.add(create("PRODUCTS_EDIT", "Editar", new ComarPanelProductEdit()));
-        productButtons.add(create("PRODUCTS_DELETE", "Eliminar"));
 
         List<MenuAndCard> stockButtons = new ArrayList<>();
         stockButtons.add(create("STOCK_ADD", "Agregar"));
@@ -70,10 +75,12 @@ public class ComarPanelAdministration extends ComarPanelCard {
         allMenuAndCard.addAll(stockButtons);
         allMenuAndCard.addAll(sellsButtons);
 
+        codeToMenuAndCard = new HashMap<>();
         MenuMouseAdapter listener = new MenuMouseAdapter();
-        for (MenuAndCard menuAndCard: allMenuAndCard) {
+        for (MenuAndCard menuAndCard : allMenuAndCard) {
             panelCardContainer.addCard(menuAndCard.getCode(), menuAndCard.getCard());
             menuAndCard.getMenu().addMouseListener(listener);
+            codeToMenuAndCard.put(menuAndCard.getCode(), menuAndCard);
         }
 
         WebPanel panelProducts = new WebPanel();
@@ -159,17 +166,8 @@ public class ComarPanelAdministration extends ComarPanelCard {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            ComarMenuButton button = (ComarMenuButton) e.getSource();
-            button.setSelected(true);
-            button.updateStateUi();
-            
-            selectedMenuButton = button;
-            for (MenuAndCard item : allMenuAndCard) {
-                item.getMenu().setSelected(selectedMenuButton == item.getMenu());
-                item.getMenu().updateStateUi();
-            }
-            
-            panelCardContainer.showCard(button.getCode());
+            ComarMenuButton menu = (ComarMenuButton) e.getSource();
+            showCard(menu.getCode());
         }
 
         @Override
@@ -187,8 +185,28 @@ public class ComarPanelAdministration extends ComarPanelCard {
         }
     }
 
-    public void showCard(String cardName) {
+    public void showCard(String code) {
+        MenuAndCard menuAndCard = codeToMenuAndCard.get(code);
 
+//        ComarMenuButton menu = menuAndCard.getMenu();
+//        menu.setSelected(true);
+//        menu.updateStateUi();
+        if (selectedMenuAndCard != null) {
+            selectedMenuAndCard.getMenu().setSelected(false);
+            selectedMenuAndCard.getMenu().updateStateUi();
+        }
+
+        selectedMenuAndCard = menuAndCard;
+        selectedMenuAndCard.getMenu().setSelected(true);
+        selectedMenuAndCard.getMenu().updateStateUi();
+
+//        selectedMenuButton = menu;
+//        for (MenuAndCard item : allMenuAndCard) {
+//            item.getMenu().setSelected(selectedMenuButton == item.getMenu());
+//            item.getMenu().updateStateUi();
+//        }
+
+        panelCardContainer.showCard(menuAndCard.getCode());
     }
 
 }

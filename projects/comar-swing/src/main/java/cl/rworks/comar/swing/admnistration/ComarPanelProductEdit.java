@@ -290,7 +290,7 @@ public class ComarPanelProductEdit extends ComarPanelCard {
         public void actionPerformed(ActionEvent e) {
             ComarPanelCard card = ComarSystem.getInstance().getFrame().getPanelCard().getCard("ADM");
             ComarPanelAdministration cardAdm = (ComarPanelAdministration) card;
-            cardAdm.updateCard();
+            cardAdm.showCard("PRODUCTS_SEARCH");
         }
 
     }
