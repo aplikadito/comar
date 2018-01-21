@@ -6,25 +6,16 @@
 package cl.rworks.comar.swing.admnistration;
 
 import cl.rworks.comar.core.data.ComarCategoryKite;
-import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.model.ComarDecimalFormat;
-import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.model.ComarUnit;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
-import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.button.WebButton;
-import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.splitpane.WebSplitPane;
-import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
@@ -32,46 +23,36 @@ import io.permazen.JTransaction;
 import io.permazen.Permazen;
 import io.permazen.ValidationMode;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
 
 /**
  *
  * @author rgonzalez
  */
-public class ComarPanelProductEdit extends WebPanel {
+public class ComarPanelCategoryEdit extends WebPanel {
 
     private WebPanel panelContent;
     private WebPanel panelForm;
     //
-    private WebTextField textCode;
     private WebTextField textName;
-    private WebComboBox comboCategory;
-    private WebComboBox comboUnit;
-    private WebComboBox comboFormat;
     //
     private WebPanel panelFormButtons;
+    private String oldName = null;
 
-    public ComarPanelProductEdit() {
+    public ComarPanelCategoryEdit() {
         initValues();
     }
 
     private void initValues() {
         setLayout(new BorderLayout());
 
-        add(new ComarPanelSubtitle("Editar Producto"), BorderLayout.NORTH);
+        add(new ComarPanelSubtitle("Editar Categoria"), BorderLayout.NORTH);
         add(buildContent(), BorderLayout.CENTER);
     }
 
@@ -96,66 +77,12 @@ public class ComarPanelProductEdit extends WebPanel {
         panelForm.setMaximumSize(new Dimension(300, 200));
         panelForm.setAlignmentX(0.0f);
 
-        textCode = new WebTextField(20);
-        textCode.setFocusable(false);
-        textCode.setEditable(false);
-        textCode.setEnabled(false);
-        textCode.setBoldFont();
-
-        panelForm.add(new WebLabel("Codigo"));
-        panelForm.add(textCode);
-
         textName = new WebTextField();
         textName.setFocusable(true);
         panelForm.add(new WebLabel("Nombre"));
         panelForm.add(textName);
 
-        comboCategory = new WebComboBox();
-        panelForm.add(new WebLabel("Categoria"));
-        panelForm.add(comboCategory);
-
-        comboCategory.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    ComarCategory c = (ComarCategory) value;
-                    label.setText(c.getName());
-                }
-                return label;
-            }
-
-        });
-
-        comboUnit = new WebComboBox(ComarUnit.values());
-        panelForm.add(new WebLabel("Unidad"));
-        panelForm.add(comboUnit);
-
-        comboFormat = new WebComboBox(ComarDecimalFormat.values());
-        panelForm.add(new WebLabel("Formato"));
-        panelForm.add(comboFormat);
-
         return panelForm;
-    }
-
-    private List<ComarCategory> loadCategories() {
-        ComarService service = ComarSystem.getInstance().getService();
-        Permazen db = service.getKitedb().get();
-
-        List<ComarCategory> list;
-        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
-        try {
-            list = ComarCategoryKite.getAll().stream().map(e -> (ComarCategory) e.copyOut()).collect(Collectors.toList());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            list = Collections.EMPTY_LIST;
-        } finally {
-            jtx.rollback();
-            JTransaction.setCurrent(null);
-        }
-
-        return list;
     }
 
     private WebPanel buildFormButtons() {
@@ -176,23 +103,11 @@ public class ComarPanelProductEdit extends WebPanel {
         return panelFormButtons;
     }
 
-    public void updateForm(ComarProduct product) {
-        comboCategory.removeAllItems();
-        comboCategory.setEnabled(true);
-        List<ComarCategory> cats = loadCategories();
-        cats.forEach(e -> comboCategory.addItem(e));
+    public void updateForm(ComarCategory category) {
+        this.textName.setText(category.getName());
+        this.textName.selectAll();
 
-        if (cats.isEmpty()) {
-            comboCategory.setEnabled(false);
-        }
-
-        this.textCode.setText(product.getCode());
-        this.textName.setText(product.getName());
-        if (product.getCategory() != null) {
-            this.comboCategory.setSelectedItem(product.getCategory());
-        }
-        this.comboUnit.setSelectedItem(product.getUnit());
-        this.comboFormat.setSelectedItem(product.getDecimalFormat());
+        this.oldName = category.getName();
     }
 
     private class OkAction extends AbstractAction {
@@ -207,38 +122,45 @@ public class ComarPanelProductEdit extends WebPanel {
             Permazen db = service.getKitedb().get();
 
             boolean validate = true;
-            String strCode = textCode.getText();
-            if (strCode == null || strCode.isEmpty()) {
-                TooltipManager.showOneTimeTooltip(textCode, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Codigo nulo o vacio", TooltipWay.trailing);
-                validate = false;
-            }
-
             String strName = textName.getText();
             if (strName == null || strName.isEmpty()) {
                 TooltipManager.showOneTimeTooltip(textName, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Nombre nulo o vacio", TooltipWay.trailing);
                 validate = false;
             }
 
-            ComarCategory category = (ComarCategory) comboCategory.getSelectedItem();
-            ComarUnit unit = (ComarUnit) comboUnit.getSelectedItem();
-            ComarDecimalFormat format = (ComarDecimalFormat) comboFormat.getSelectedItem();
-
             JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
             JTransaction.setCurrent(jtx);
+
+            try {
+                ComarCategory cat = ComarCategoryKite.getByName(strName);
+                if (cat != null) {
+                    TooltipManager.showOneTimeTooltip(textName, null, ComarIconLoader.load(ComarIconLoader.ERROR), "El nombre ya existe", TooltipWay.trailing);
+                    validate = false;
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                ComarUtils.showWarn(ex.getMessage());
+            } finally {
+                jtx.rollback();
+                JTransaction.setCurrent(null);
+            }
+
+            if (oldName == null) {
+                ComarUtils.showWarn("Nombre original de la categoria no encontrada");
+            }
+
             if (!validate) {
                 return;
             }
 
+            jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
+            JTransaction.setCurrent(jtx);
             try {
-                ComarProduct product = ComarProductKite.getByCode(strCode);
-                product.setName(strName);
-                product.setCategory(category);
-                product.setUnit(unit);
-                product.setDecimalFormat(format);
+                ComarCategory cat = ComarCategoryKite.getByName(oldName);
+                cat.setName(strName);
                 jtx.commit();
 
-                ComarUtils.showInfo("Producto editado");
-//                clear();
+                ComarUtils.showInfo("Categoria editada");
             } catch (Exception ex) {
                 jtx.rollback();
                 ex.printStackTrace();
@@ -264,10 +186,7 @@ public class ComarPanelProductEdit extends WebPanel {
     }
 
     private void clear() {
-        this.textCode.clear();
         this.textName.clear();
-        this.comboUnit.setSelectedIndex(0);
-        this.comboFormat.setSelectedIndex(0);
     }
 
     public WebPanel getPanelFormButtons() {

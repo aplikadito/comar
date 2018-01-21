@@ -17,19 +17,19 @@ import javax.swing.AbstractAction;
  *
  * @author aplik
  */
-public class ComarDialogProductEdit extends WebDialog {
+public class ComarDialogProductAdd extends WebDialog {
 
-    public ComarDialogProductEdit(Window window, ComarProduct product) {
-        super(window, "Editar Producto", ModalityType.APPLICATION_MODAL);
+    public ComarDialogProductAdd(Window window) {
+        super(window, "Agregar Producto", ModalityType.APPLICATION_MODAL);
         getContentPane().setLayout(new BorderLayout());
 
-        ComarPanelProductEdit panel = new ComarPanelProductEdit();
+        ComarPanelProductAdd panel = new ComarPanelProductAdd();
 
         WebButton buttonClose = new WebButton(new CloseAction());
         buttonClose.setFocusable(true);
         panel.getPanelFormButtons().add(buttonClose);
 
-        panel.updateForm(product);
+//        panel.updateForm(product);
         getContentPane().add(panel);
     }
 

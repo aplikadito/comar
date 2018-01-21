@@ -25,6 +25,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
+import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.Permazen;
 import io.permazen.ValidationMode;
@@ -33,6 +34,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,6 +59,8 @@ public class ComarPanelProductAdd extends ComarPanelCard {
     private WebComboBox comboCategory;
     private WebComboBox comboUnit;
     private WebComboBox comboFormat;
+    //
+    private WebPanel panelFormButtons;
 
     public ComarPanelProductAdd() {
         initValues();
@@ -108,7 +112,7 @@ public class ComarPanelProductAdd extends ComarPanelCard {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
+                if (value != null && (value instanceof ComarCategory)) {
                     ComarCategory c = (ComarCategory) value;
                     label.setText(c.getName());
                 }
@@ -148,7 +152,7 @@ public class ComarPanelProductAdd extends ComarPanelCard {
     }
 
     private WebPanel buildFormButtons() {
-        WebPanel panelFormButtons = new WebPanel(new FlowLayout());
+        panelFormButtons = new WebPanel(new FlowLayout());
         panelFormButtons.setMinimumSize(new Dimension(300, 30));
         panelFormButtons.setPreferredSize(new Dimension(300, 30));
         panelFormButtons.setMaximumSize(new Dimension(300, 30));
@@ -166,19 +170,16 @@ public class ComarPanelProductAdd extends ComarPanelCard {
     }
 
     @Override
-    public void preload() {
+    public void loadCard() {
         comboCategory.removeAllItems();
         comboCategory.setEnabled(true);
         List<ComarCategory> cats = loadCategories();
-        cats.forEach(e -> comboCategory.addItem(e));
 
+        comboCategory.addItem(" ");
+        cats.forEach(e -> comboCategory.addItem(e));
         if (cats.isEmpty()) {
             comboCategory.setEnabled(false);
         }
-    }
-
-    @Override
-    public void hide() {
     }
 
     private class AddAction extends AbstractAction {
@@ -220,7 +221,8 @@ public class ComarPanelProductAdd extends ComarPanelCard {
                 validate = false;
             }
 
-            ComarCategory category = (ComarCategory) comboCategory.getSelectedItem();
+            Object item = comboCategory.getSelectedItem();
+            ComarCategory category = item instanceof ComarCategory ? (ComarCategory) item : null;
             ComarUnit unit = (ComarUnit) comboUnit.getSelectedItem();
             ComarDecimalFormat format = (ComarDecimalFormat) comboFormat.getSelectedItem();
 
@@ -266,6 +268,10 @@ public class ComarPanelProductAdd extends ComarPanelCard {
     private void clear() {
         this.textCode.clear();
         this.textName.clear();
+    }
+
+    public WebPanel getPanelFormButtons() {
+        return panelFormButtons;
     }
 
 }

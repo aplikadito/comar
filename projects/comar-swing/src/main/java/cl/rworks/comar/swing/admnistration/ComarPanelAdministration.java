@@ -5,7 +5,6 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
-import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.swing.util.ComarPanelCardContainer;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.util.ComarMenuButton;
@@ -45,7 +44,7 @@ public class ComarPanelAdministration extends ComarPanelCard {
         add(new ComarPanelTitle("Administracion"), BorderLayout.NORTH);
         add(buildContent(), BorderLayout.CENTER);
 
-        showCard("PRODUCTS_SEARCH");
+        showCard("PRODUCTS");
     }
 
     private WebPanel buildContent() {
@@ -55,24 +54,14 @@ public class ComarPanelAdministration extends ComarPanelCard {
         panelCardContainer = new ComarPanelCardContainer();
         panelContent.add(panelCardContainer, BorderLayout.CENTER);
 
-        List<MenuAndCard> productButtons = new ArrayList<>();
-        productButtons.add(create("PRODUCTS_SEARCH", "Buscar", new ComarPanelProductSearch()));
-        productButtons.add(create("PRODUCTS_ADD", "Agregar", new ComarPanelProductAdd()));
-
-        List<MenuAndCard> stockButtons = new ArrayList<>();
-        stockButtons.add(create("STOCK_ADD", "Agregar"));
-        stockButtons.add(create("STOCK_EDIT", "Editar"));
-        stockButtons.add(create("STOCK_DELETE", "Eliminar"));
-
-        List<MenuAndCard> sellsButtons = new ArrayList<>();
-        sellsButtons.add(create("SELLS_ADD", "Agregar"));
-        sellsButtons.add(create("SELLS_EDIT", "Editar"));
-        sellsButtons.add(create("SELLS_DELETE", "Eliminar"));
+        List<MenuAndCard> buttons = new ArrayList<>();
+        buttons.add(create("PRODUCTS", "Products", new ComarPanelProduct()));
+        buttons.add(create("CATEGORIES", "Categorias", new ComarPanelCategory()));
+        buttons.add(create("STOCK", "Inventario"));
+        buttons.add(create("SELLS", "Ventas"));
 
         allMenuAndCard = new ArrayList<>();
-        allMenuAndCard.addAll(productButtons);
-        allMenuAndCard.addAll(stockButtons);
-        allMenuAndCard.addAll(sellsButtons);
+        allMenuAndCard.addAll(buttons);
 
         codeToMenuAndCard = new HashMap<>();
         MenuMouseAdapter listener = new MenuMouseAdapter();
@@ -82,31 +71,17 @@ public class ComarPanelAdministration extends ComarPanelCard {
             codeToMenuAndCard.put(menuAndCard.getCode(), menuAndCard);
         }
 
-        WebPanel panelProducts = new WebPanel();
-        panelProducts.setBackground(Color.BLACK);
-        panelProducts.setLayout(new BoxLayout(panelProducts, BoxLayout.PAGE_AXIS));
-        for (MenuAndCard menuAndCard : productButtons) {
-            panelProducts.add(menuAndCard.getMenu());
+        WebPanel panels = new WebPanel();
+        panels.setBackground(Color.BLACK);
+        panels.setLayout(new BoxLayout(panels, BoxLayout.PAGE_AXIS));
+        for (MenuAndCard menuAndCard : buttons) {
+            panels.add(menuAndCard.getMenu());
         }
-
-        WebPanel panelStock = new WebPanel();
-        panelStock.setLayout(new BoxLayout(panelStock, BoxLayout.PAGE_AXIS));
-        for (MenuAndCard menuAndCard : stockButtons) {
-            panelStock.add(menuAndCard.getMenu());
-        }
-
-        WebPanel panelSells = new WebPanel();
-        panelSells.setLayout(new BoxLayout(panelSells, BoxLayout.PAGE_AXIS));
-        for (MenuAndCard menuAndCard : sellsButtons) {
-            panelSells.add(menuAndCard.getMenu());
-        }
-
+        
         WebAccordion ac = new WebAccordion();
         ac.setFillSpace(false);
         ac.setMinimumWidth(200);
-        ac.addPane("Productos", panelProducts);
-        ac.addPane("Inventario", panelStock);
-        ac.addPane("Ventas", panelSells);
+        ac.addPane("Menu", panels);
         panelContent.add(ac, BorderLayout.WEST);
 
         return panelContent;

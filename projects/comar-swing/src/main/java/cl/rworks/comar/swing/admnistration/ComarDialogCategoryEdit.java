@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
-import cl.rworks.comar.core.model.ComarProduct;
+import cl.rworks.comar.core.model.ComarCategory;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.rootpane.WebDialog;
 import java.awt.BorderLayout;
@@ -17,19 +17,19 @@ import javax.swing.AbstractAction;
  *
  * @author aplik
  */
-public class ComarDialogProductEdit extends WebDialog {
+public class ComarDialogCategoryEdit extends WebDialog {
 
-    public ComarDialogProductEdit(Window window, ComarProduct product) {
-        super(window, "Editar Producto", ModalityType.APPLICATION_MODAL);
+    public ComarDialogCategoryEdit(Window window, ComarCategory category) {
+        super(window, "Editar Categoria", ModalityType.APPLICATION_MODAL);
         getContentPane().setLayout(new BorderLayout());
 
-        ComarPanelProductEdit panel = new ComarPanelProductEdit();
+        ComarPanelCategoryEdit panel = new ComarPanelCategoryEdit();
 
         WebButton buttonClose = new WebButton(new CloseAction());
         buttonClose.setFocusable(true);
         panel.getPanelFormButtons().add(buttonClose);
 
-        panel.updateForm(product);
+        panel.updateForm(category);
         getContentPane().add(panel);
     }
 
