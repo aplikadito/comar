@@ -6,9 +6,7 @@
 package cl.rworks.comar.swing.admnistration;
 
 import cl.rworks.comar.core.data.ComarCategoryKite;
-import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarPanelCard;
@@ -94,9 +92,10 @@ public class ComarPanelCategory extends ComarPanelCard {
 
         WebPanel panelButtons = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 
-//        WebButton buttonAdd = new WebButton(new AddAction());
-//        buttonAdd.setFocusable(true);
-//        panelButtons.add(buttonAdd);
+        WebButton buttonAdd = new WebButton(new AddAction());
+        buttonAdd.setFocusable(true);
+        panelButtons.add(buttonAdd);
+        
         WebButton buttonEdit = new WebButton(new EditAction());
         buttonEdit.setFocusable(true);
         panelButtons.add(buttonEdit);
@@ -253,6 +252,22 @@ public class ComarPanelCategory extends ComarPanelCard {
             JTransaction.setCurrent(null);
         }
         return rows;
+    }
+    
+    private class AddAction extends AbstractAction {
+
+        public AddAction() {
+            putValue(NAME, "Agregar");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ComarDialogCategoryAdd dialog = new ComarDialogCategoryAdd(null);
+            dialog.setSize(500, 200);
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+        }
+
     }
 
     private class EditAction extends AbstractAction {

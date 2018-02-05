@@ -80,8 +80,20 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
     public static void delete(ComarCategory c) {
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(c.getId());
-        JObject pp = jtx.get(oid);
+        ComarCategoryKite pp = (ComarCategoryKite) jtx.get(oid);
+
+        NavigableSet<ComarProductKite> set = getProducts(pp);
+        if (set != null) {
+            set.stream().forEach(e -> e.setCategory(null));
+        }
+
         jtx.delete(pp);
+    }
+
+    public static NavigableSet<ComarProductKite> getProducts(ComarCategory category) {
+        JTransaction jtx = JTransaction.getCurrent();
+        NavigableSet<ComarProductKite> map = jtx.queryIndex(ComarProductKite.class, "category", ComarCategory.class).asMap().get(category);
+        return map != null && !map.isEmpty() ? map : null;
     }
 
     public static NavigableSet<ComarCategoryKite> search(final String text) {
@@ -102,5 +114,5 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         }
 
     }
-    
+
 }

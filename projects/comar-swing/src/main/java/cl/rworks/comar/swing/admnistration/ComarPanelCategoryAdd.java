@@ -30,6 +30,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -40,6 +41,7 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
 
     private WebPanel panelContent;
     private WebPanel panelForm;
+    private WebPanel panelFormButtons;
     //
     private WebTextField textName;
 
@@ -84,7 +86,7 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
     }
 
     private WebPanel buildFormButtons() {
-        WebPanel panelFormButtons = new WebPanel(new FlowLayout());
+        panelFormButtons = new WebPanel(new FlowLayout());
         panelFormButtons.setMinimumSize(new Dimension(300, 30));
         panelFormButtons.setPreferredSize(new Dimension(300, 30));
         panelFormButtons.setMaximumSize(new Dimension(300, 30));
@@ -98,6 +100,10 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
         buttonClear.setFocusable(true);
         panelFormButtons.add(buttonClear);
 
+        return panelFormButtons;
+    }
+
+    public JPanel getPanelFormButtons() {
         return panelFormButtons;
     }
 
