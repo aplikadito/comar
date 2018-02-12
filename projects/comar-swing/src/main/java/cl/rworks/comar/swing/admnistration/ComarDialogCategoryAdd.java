@@ -30,7 +30,7 @@ public class ComarDialogCategoryAdd extends WebDialog {
         buttonClose.setFocusable(true);
         panel.getPanelFormButtons().add(buttonClose);
 
-//        panel.updateForm(product);
+        panel.updateForm();
         getContentPane().add(panel);
     }
 

@@ -26,6 +26,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
 import javax.swing.BoxLayout;
@@ -41,9 +43,11 @@ public class ComarPanelCategoryEdit extends WebPanel {
     private WebPanel panelForm;
     //
     private WebTextField textName;
+    private WebTextField textTax;
     //
     private WebPanel panelFormButtons;
     private String oldName = null;
+    private DecimalFormat df = new DecimalFormat("#0%");
 
     public ComarPanelCategoryEdit() {
         initValues();
@@ -82,6 +86,11 @@ public class ComarPanelCategoryEdit extends WebPanel {
         panelForm.add(new WebLabel("Nombre"));
         panelForm.add(textName);
 
+        textTax = new WebTextField();
+        textTax.setFocusable(true);
+        panelForm.add(new WebLabel("Impuestos"));
+        panelForm.add(textTax);
+
         return panelForm;
     }
 
@@ -103,11 +112,23 @@ public class ComarPanelCategoryEdit extends WebPanel {
         return panelFormButtons;
     }
 
-    public void updateForm(ComarCategory category) {
-        this.textName.setText(category.getName());
-        this.textName.selectAll();
+    public void updateForm(ComarCategory catRef) {
+        Permazen db = ComarSystem.getInstance().getService().getKitedb().get();
+        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
+        JTransaction.setCurrent(jtx);
+        ComarCategory cat = null;
+        try {
+            cat = (ComarCategory) ComarCategoryKite.getByName(catRef.getName()).copyOut();
+            jtx.rollback();
+        } finally {
+            JTransaction.setCurrent(null);
+        }
 
-        this.oldName = category.getName();
+        this.textName.setText(cat.getName());
+        this.textName.selectAll();
+        this.oldName = cat.getName();
+
+        this.textTax.setText(df.format(cat.getTax()));
     }
 
     private class OkAction extends AbstractAction {
@@ -128,45 +149,62 @@ public class ComarPanelCategoryEdit extends WebPanel {
                 validate = false;
             }
 
-            JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-            JTransaction.setCurrent(jtx);
-
-            try {
-                ComarCategory cat = ComarCategoryKite.getByName(strName);
-                if (cat != null) {
-                    TooltipManager.showOneTimeTooltip(textName, null, ComarIconLoader.load(ComarIconLoader.ERROR), "El nombre ya existe", TooltipWay.trailing);
+            double tax = -1;
+            String strTax = textTax.getText();
+            if (strTax == null || strTax.isEmpty()) {
+                TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto nulo o vacio", TooltipWay.trailing);
+                validate = false;
+            } else {
+                try {
+                    tax = df.parse(strTax).doubleValue();
+                    if (tax < 0 || tax > 1) {
+                        tax = -1;
+                        TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto con formato erroneo", TooltipWay.trailing);
+                        validate = false;
+                    }
+                } catch (ParseException ex) {
+                    TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto con formato erroneo", TooltipWay.trailing);
                     validate = false;
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                ComarUtils.showWarn(ex.getMessage());
-            } finally {
-                jtx.rollback();
-                JTransaction.setCurrent(null);
             }
 
-            if (oldName == null) {
-                ComarUtils.showWarn("Nombre original de la categoria no encontrada");
+            if (!oldName.equals(strName)) {
+                JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
+                JTransaction.setCurrent(jtx);
+                try {
+                    ComarCategory cat = ComarCategoryKite.getByName(strName);
+                    if (cat != null) {
+                        TooltipManager.showOneTimeTooltip(textName, null, ComarIconLoader.load(ComarIconLoader.ERROR), "El nombre ya existe", TooltipWay.trailing);
+                        validate = false;
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    ComarUtils.showWarn(ex.getMessage());
+                } finally {
+                    jtx.rollback();
+                    JTransaction.setCurrent(null);
+                }
             }
 
-            if (!validate) {
-                return;
-            }
+            if (validate) {
+                JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
+                JTransaction.setCurrent(jtx);
+                try {
+                    ComarCategory cat = ComarCategoryKite.getByName(oldName);
+                    if (!oldName.equals(strName)) {
+                        cat.setName(strName);
+                    }
+                    cat.setTax(tax);
+                    jtx.commit();
 
-            jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-            JTransaction.setCurrent(jtx);
-            try {
-                ComarCategory cat = ComarCategoryKite.getByName(oldName);
-                cat.setName(strName);
-                jtx.commit();
-
-                ComarUtils.showInfo("Categoria editada");
-            } catch (Exception ex) {
-                jtx.rollback();
-                ex.printStackTrace();
-                ComarUtils.showWarn(ex.getMessage());
-            } finally {
-                JTransaction.setCurrent(null);
+                    ComarUtils.showInfo("Categoria editada");
+                } catch (Exception ex) {
+                    jtx.rollback();
+                    ex.printStackTrace();
+                    ComarUtils.showWarn(ex.getMessage());
+                } finally {
+                    JTransaction.setCurrent(null);
+                }
             }
         }
 

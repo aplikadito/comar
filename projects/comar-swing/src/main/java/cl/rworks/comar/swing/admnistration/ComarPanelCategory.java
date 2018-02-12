@@ -24,10 +24,12 @@ import io.permazen.JTransaction;
 import io.permazen.Permazen;
 import io.permazen.ValidationMode;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -36,7 +38,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -50,6 +55,8 @@ public class ComarPanelCategory extends ComarPanelCard {
     private WebTextField textSearch;
     private WebButton buttonSearch;
     private WebButton buttonClear;
+    //
+    private DecimalFormat df = new DecimalFormat("#0%");
 
     public ComarPanelCategory() {
         initValues();
@@ -95,7 +102,7 @@ public class ComarPanelCategory extends ComarPanelCard {
         WebButton buttonAdd = new WebButton(new AddAction());
         buttonAdd.setFocusable(true);
         panelButtons.add(buttonAdd);
-        
+
         WebButton buttonEdit = new WebButton(new EditAction());
         buttonEdit.setFocusable(true);
         panelButtons.add(buttonEdit);
@@ -154,7 +161,7 @@ public class ComarPanelCategory extends ComarPanelCard {
 
     private class ProductTableModel extends AbstractTableModel {
 
-        private String[] columnNames = new String[]{"Nombre"};
+        private String[] columnNames = new String[]{"Nombre", "Impuestos"};
 
         private List<ComarCategory> items;
 
@@ -187,6 +194,8 @@ public class ComarPanelCategory extends ComarPanelCard {
             switch (columnIndex) {
                 case 0:
                     return c.getName();
+                case 1:
+                    return df.format(c.getTax());
                 default:
                     return "";
             }
@@ -253,7 +262,7 @@ public class ComarPanelCategory extends ComarPanelCard {
         }
         return rows;
     }
-    
+
     private class AddAction extends AbstractAction {
 
         public AddAction() {
@@ -263,7 +272,7 @@ public class ComarPanelCategory extends ComarPanelCard {
         @Override
         public void actionPerformed(ActionEvent e) {
             ComarDialogCategoryAdd dialog = new ComarDialogCategoryAdd(null);
-            dialog.setSize(500, 200);
+            dialog.setSize(550, 300);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
         }
@@ -287,7 +296,7 @@ public class ComarPanelCategory extends ComarPanelCard {
             int mrow = table.convertRowIndexToModel(vrow);
             ComarCategory cat = tableModel.getItems().get(mrow);
             ComarDialogCategoryEdit dialog = new ComarDialogCategoryEdit(null, cat);
-            dialog.setSize(500, 400);
+            dialog.setSize(550, 400);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
         }
@@ -329,10 +338,10 @@ public class ComarPanelCategory extends ComarPanelCard {
                     ComarCategoryKite.delete(c);
                 }
                 jtx.commit();
-                
+
                 tableModel.getItems().removeAll(list);
                 tableModel.fireTableDataChanged();
-                
+
                 ComarUtils.showInfo("Categorias eliminadas correctamente");
             } catch (Exception ex) {
                 ex.printStackTrace();

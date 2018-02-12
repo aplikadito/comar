@@ -14,7 +14,6 @@ import cl.rworks.comar.core.model.ComarUnit;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
-import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
@@ -22,9 +21,6 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.splitpane.WebSplitPane;
-import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
@@ -119,8 +115,10 @@ public class ComarPanelProductEdit extends WebPanel {
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value != null) {
-                    ComarCategory c = (ComarCategory) value;
-                    label.setText(c.getName());
+//                    ComarCategory c = (ComarCategory) value;
+                    label.setText((String) value);
+                } else {
+                    label.setText(" ");
                 }
                 return label;
             }
@@ -154,7 +152,6 @@ public class ComarPanelProductEdit extends WebPanel {
             jtx.rollback();
             JTransaction.setCurrent(null);
         }
-
         return list;
     }
 
@@ -176,20 +173,34 @@ public class ComarPanelProductEdit extends WebPanel {
         return panelFormButtons;
     }
 
-    public void updateForm(ComarProduct product) {
+    public void updateForm(ComarProduct productRef) {
         comboCategory.removeAllItems();
         comboCategory.setEnabled(true);
-        List<ComarCategory> cats = loadCategories();
-        cats.forEach(e -> comboCategory.addItem(e));
 
-        if (cats.isEmpty()) {
-            comboCategory.setEnabled(false);
+        comboCategory.addItem(" ");
+        List<ComarCategory> cats = loadCategories();
+        cats.forEach(e -> comboCategory.addItem(e.getName()));
+
+        ComarService service = ComarSystem.getInstance().getService();
+        Permazen db = service.getKitedb().get();
+        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
+        JTransaction.setCurrent(jtx);
+        ComarProduct product;
+        try {
+            product = (ComarProduct) ComarProductKite.getByCode(productRef.getCode()).copyOut("category");
+            jtx.rollback();
+        } finally {
+            JTransaction.setCurrent(null);
+        }
+
+        if (product == null) {
+            throw new RuntimeException("Error grave, producto no encontrado: " + productRef.getCode() + " - " + productRef.getName());
         }
 
         this.textCode.setText(product.getCode());
         this.textName.setText(product.getName());
         if (product.getCategory() != null) {
-            this.comboCategory.setSelectedItem(product.getCategory());
+            this.comboCategory.setSelectedItem(product.getCategory().getName());
         }
         this.comboUnit.setSelectedItem(product.getUnit());
         this.comboFormat.setSelectedItem(product.getDecimalFormat());
@@ -219,20 +230,25 @@ public class ComarPanelProductEdit extends WebPanel {
                 validate = false;
             }
 
-            ComarCategory category = (ComarCategory) comboCategory.getSelectedItem();
+            String catName = (String) comboCategory.getSelectedItem();
             ComarUnit unit = (ComarUnit) comboUnit.getSelectedItem();
             ComarDecimalFormat format = (ComarDecimalFormat) comboFormat.getSelectedItem();
 
-            JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-            JTransaction.setCurrent(jtx);
             if (!validate) {
                 return;
             }
 
+            JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
+            JTransaction.setCurrent(jtx);
             try {
+                ComarCategory cat = null;
+                if (!catName.trim().isEmpty()) {
+                    cat = ComarCategoryKite.getByName(catName);
+                }
+
                 ComarProduct product = ComarProductKite.getByCode(strCode);
                 product.setName(strName);
-                product.setCategory(category);
+                product.setCategory(cat);
                 product.setUnit(unit);
                 product.setDecimalFormat(format);
                 jtx.commit();

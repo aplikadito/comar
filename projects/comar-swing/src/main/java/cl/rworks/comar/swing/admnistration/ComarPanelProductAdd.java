@@ -25,7 +25,6 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
-import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.Permazen;
 import io.permazen.ValidationMode;
@@ -35,7 +34,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
@@ -49,7 +47,7 @@ import javax.swing.border.EmptyBorder;
  *
  * @author rgonzalez
  */
-public class ComarPanelProductAdd extends ComarPanelCard {
+public class ComarPanelProductAdd extends WebPanel {
 
     private WebPanel panelContent;
     private WebPanel panelForm;
@@ -112,9 +110,11 @@ public class ComarPanelProductAdd extends ComarPanelCard {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null && (value instanceof ComarCategory)) {
+                if (value != null) {
                     ComarCategory c = (ComarCategory) value;
                     label.setText(c.getName());
+                } else {
+                    label.setText(" ");
                 }
                 return label;
             }
@@ -132,6 +132,13 @@ public class ComarPanelProductAdd extends ComarPanelCard {
         return panelForm;
     }
 
+    public void updateForm() {
+        comboCategory.removeAllItems();
+        comboCategory.setEnabled(true);
+        List<ComarCategory> cats = loadCategories();
+        cats.forEach(e -> comboCategory.addItem(e));
+    }
+
     private List<ComarCategory> loadCategories() {
         ComarService service = ComarSystem.getInstance().getService();
         Permazen permazen = service.getKitedb().get();
@@ -143,11 +150,13 @@ public class ComarPanelProductAdd extends ComarPanelCard {
             list = ComarCategoryKite.getAll().stream().map(e -> (ComarCategory) e.copyOut()).collect(Collectors.toList());
         } catch (Exception ex) {
             ex.printStackTrace();
-            list = Collections.EMPTY_LIST;
+            list = new ArrayList<>();
         } finally {
             jtx.rollback();
             JTransaction.setCurrent(null);
         }
+
+        list.add(0, null);
         return list;
     }
 
@@ -167,19 +176,6 @@ public class ComarPanelProductAdd extends ComarPanelCard {
         panelFormButtons.add(buttonClear);
 
         return panelFormButtons;
-    }
-
-    @Override
-    public void loadCard() {
-        comboCategory.removeAllItems();
-        comboCategory.setEnabled(true);
-        List<ComarCategory> cats = loadCategories();
-
-        comboCategory.addItem(" ");
-        cats.forEach(e -> comboCategory.addItem(e));
-        if (cats.isEmpty()) {
-            comboCategory.setEnabled(false);
-        }
     }
 
     private class AddAction extends AbstractAction {

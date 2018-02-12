@@ -5,7 +5,6 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
-import cl.rworks.comar.core.model.ComarProduct;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.rootpane.WebDialog;
 import java.awt.BorderLayout;
@@ -29,7 +28,7 @@ public class ComarDialogProductAdd extends WebDialog {
         buttonClose.setFocusable(true);
         panel.getPanelFormButtons().add(buttonClose);
 
-//        panel.updateForm(product);
+        panel.updateForm();
         getContentPane().add(panel);
     }
 

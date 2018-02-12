@@ -8,6 +8,7 @@ package cl.rworks.comar.swing.admnistration;
 import cl.rworks.comar.core.data.ComarCategoryKite;
 import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.properties.ComarProperties;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
@@ -28,6 +29,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -44,6 +49,9 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
     private WebPanel panelFormButtons;
     //
     private WebTextField textName;
+    private WebTextField textTax;
+    //
+    private DecimalFormat df = new DecimalFormat("#0%");
 
     public ComarPanelCategoryAdd() {
         initValues();
@@ -72,15 +80,20 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
 
     private WebPanel buildForm() {
         panelForm = new WebPanel(new FormLayout(false, true, 10, 10));
-        panelForm.setMinimumSize(new Dimension(300, 50));
-        panelForm.setPreferredSize(new Dimension(300, 50));
-        panelForm.setMaximumSize(new Dimension(300, 70));
+        panelForm.setMinimumSize(new Dimension(300, 100));
+        panelForm.setPreferredSize(new Dimension(300, 100));
+        panelForm.setMaximumSize(new Dimension(300, 100));
         panelForm.setAlignmentX(0.0f);
 
         textName = new WebTextField();
         textName.setFocusable(true);
         panelForm.add(new WebLabel("Nombre"));
         panelForm.add(textName);
+
+        textTax = new WebTextField();
+        textTax.setFocusable(true);
+        panelForm.add(new WebLabel("Impuestos"));
+        panelForm.add(textTax);
 
         return panelForm;
     }
@@ -101,6 +114,12 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
         panelFormButtons.add(buttonClear);
 
         return panelFormButtons;
+    }
+
+    public void updateForm() {
+        ComarProperties cp = ComarSystem.getInstance().getService().getProperties();
+        double iva = cp.getIva();
+        this.textTax.setText(df.format(iva));
     }
 
     public JPanel getPanelFormButtons() {
@@ -125,6 +144,25 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
                 validate = false;
             }
 
+            double tax = -1;
+            String strTax = textTax.getText();
+            if (strTax == null || strTax.isEmpty()) {
+                TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto nulo o vacio", TooltipWay.trailing);
+                validate = false;
+            } else {
+                try {
+                    tax = df.parse(strTax).doubleValue();
+                    if (tax < 0 || tax > 1) {
+                        tax = -1;
+                        TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto con formato erroneo", TooltipWay.trailing);
+                        validate = false;
+                    }
+                } catch (ParseException ex) {
+                    TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto con formato erroneo", TooltipWay.trailing);
+                    validate = false;
+                }
+            }
+
             JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
             JTransaction.setCurrent(jtx);
             try {
@@ -147,6 +185,7 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
 
                     ComarCategory cat = ComarCategoryKite.create();
                     cat.setName(strName);
+                    cat.setTax(tax);
                     jtx.commit();
 
                     ComarUtils.showInfo("Categoria agregada");
