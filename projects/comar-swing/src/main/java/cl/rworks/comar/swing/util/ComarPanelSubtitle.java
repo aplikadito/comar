@@ -7,7 +7,6 @@ package cl.rworks.comar.swing.util;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.separator.WebSeparator;
 import java.awt.BorderLayout;
 import javax.swing.border.EmptyBorder;
 
@@ -22,7 +21,7 @@ public class ComarPanelSubtitle extends WebPanel {
 
         WebLabel labelTitle = new WebLabel(title);
         labelTitle.setBoldFont();
-        labelTitle.setFontSize(14);
+        labelTitle.setFontSize(20);
 //        labelTitle.setForeground(Color.WHITE);
 
         add(labelTitle, BorderLayout.PAGE_START);

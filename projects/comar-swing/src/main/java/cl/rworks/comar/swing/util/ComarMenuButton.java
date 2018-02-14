@@ -32,7 +32,7 @@ public class ComarMenuButton extends WebLabel {
         setForeground(Color.WHITE);
         setBackground(Color.BLACK);
         setBorder(new EmptyBorder(20, 10, 20, 10));
-        setFontSize(12);
+        setFontSize(18);
         setBoldFont();
 
         setPreferredHeight(30);

@@ -6,7 +6,9 @@
 package cl.rworks.comar.swing.admnistration;
 
 import cl.rworks.comar.core.data.ComarCategoryKite;
+import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
@@ -16,6 +18,8 @@ import com.alee.extended.layout.FormLayout;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
@@ -28,10 +32,13 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NavigableSet;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
-import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.AbstractTableModel;
 
 /**
  *
@@ -39,7 +46,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class ComarPanelCategoryEdit extends WebPanel {
 
-    private WebPanel panelContent;
+    private WebPanel panelCenter;
     private WebPanel panelForm;
     //
     private WebTextField textName;
@@ -48,6 +55,7 @@ public class ComarPanelCategoryEdit extends WebPanel {
     private WebPanel panelFormButtons;
     private String oldName = null;
     private DecimalFormat df = new DecimalFormat("#0%");
+    private TableModel tableModel;
 
     public ComarPanelCategoryEdit() {
         initValues();
@@ -57,28 +65,24 @@ public class ComarPanelCategoryEdit extends WebPanel {
         setLayout(new BorderLayout());
 
         add(new ComarPanelSubtitle("Editar Categoria"), BorderLayout.NORTH);
-        add(buildContent(), BorderLayout.CENTER);
-    }
+        panelCenter = new WebPanel(new BorderLayout());
+        panelCenter.setBorder(new EmptyBorder(10, 10, 10, 10));
+        add(panelCenter, BorderLayout.CENTER);
 
-    private WebPanel buildContent() {
-        panelContent = new WebPanel(new BorderLayout());
-        panelContent.setBorder(new EmptyBorder(10, 10, 10, 10));
+        WebPanel panelForm = new WebPanel();
+        panelForm.setLayout(new BorderLayout());
+        panelForm.add(buildForm(), BorderLayout.NORTH);
+        panelForm.add(buildTable(), BorderLayout.CENTER);
 
-        WebPanel panelFormContainer = new WebPanel();
-        panelFormContainer.setLayout(new BoxLayout(panelFormContainer, BoxLayout.PAGE_AXIS));
-
-        panelFormContainer.add(buildForm());
-        panelFormContainer.add(buildFormButtons());
-        panelContent.add(panelFormContainer, BorderLayout.CENTER);
-
-        return panelContent;
+        panelCenter.add(panelForm, BorderLayout.CENTER);
+        panelCenter.add(buildFormButtons(), BorderLayout.SOUTH);
     }
 
     private WebPanel buildForm() {
         panelForm = new WebPanel(new FormLayout(false, true, 10, 10));
-        panelForm.setMinimumSize(new Dimension(300, 100));
-        panelForm.setPreferredSize(new Dimension(300, 100));
-        panelForm.setMaximumSize(new Dimension(300, 200));
+        panelForm.setMinimumSize(new Dimension(300, 80));
+        panelForm.setPreferredSize(new Dimension(300, 80));
+        panelForm.setMaximumSize(new Dimension(300, 80));
         panelForm.setAlignmentX(0.0f);
 
         textName = new WebTextField();
@@ -92,6 +96,15 @@ public class ComarPanelCategoryEdit extends WebPanel {
         panelForm.add(textTax);
 
         return panelForm;
+    }
+
+    private WebPanel buildTable() {
+        WebPanel panel = new WebPanel(new BorderLayout());
+        WebTable table = new WebTable();
+        tableModel = new TableModel();
+        table.setModel(tableModel);
+        panel.add(new WebScrollPane(table));
+        return panel;
     }
 
     private WebPanel buildFormButtons() {
@@ -113,12 +126,22 @@ public class ComarPanelCategoryEdit extends WebPanel {
     }
 
     public void updateForm(ComarCategory catRef) {
+        final List<ComarProduct> rows = new ArrayList<>();
         Permazen db = ComarSystem.getInstance().getService().getKitedb().get();
         JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
         JTransaction.setCurrent(jtx);
         ComarCategory cat = null;
         try {
             cat = (ComarCategory) ComarCategoryKite.getByName(catRef.getName()).copyOut();
+            NavigableSet<ComarProduct> nav = ComarCategoryKite.getProducts(cat);
+            if (nav != null) {
+                nav.stream().forEach((ComarProduct e) -> {
+                    ComarProductKite ref = (ComarProductKite) e;
+                    ComarProduct obj = (ComarProduct) ref.copyOut("");
+                    rows.add(obj);
+                });
+            }
+
             jtx.rollback();
         } finally {
             JTransaction.setCurrent(null);
@@ -129,6 +152,55 @@ public class ComarPanelCategoryEdit extends WebPanel {
         this.oldName = cat.getName();
 
         this.textTax.setText(df.format(cat.getTax()));
+        
+        this.tableModel.setRows(rows);
+        this.tableModel.fireTableDataChanged();
+    }
+
+    private class TableModel extends AbstractTableModel {
+
+        private String[] colNames = new String[]{"Codigo", "Nombre"};
+
+        private List<ComarProduct> rows;
+
+        public TableModel() {
+        }
+
+        public List<ComarProduct> getRows() {
+            return rows;
+        }
+
+        public void setRows(List<ComarProduct> rows) {
+            this.rows = rows;
+        }
+
+        @Override
+        public int getRowCount() {
+            return rows != null ? rows.size() : 0;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return colNames.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return colNames[column];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            ComarProduct row = rows.get(rowIndex);
+            switch (columnIndex) {
+                case 0:
+                    return row.getCode();
+                case 1:
+                    return row.getName();
+                default:
+                    return "";
+            }
+        }
     }
 
     private class OkAction extends AbstractAction {

@@ -51,6 +51,9 @@ public class ComarPanelProduct extends ComarPanelCard {
     private WebTextField textSearch;
     private WebButton buttonSearch;
     private WebButton buttonClear;
+    //
+    private int textFontSize = 18;
+    private int tableFontSize = 20;
 
     public ComarPanelProduct() {
         initValues();
@@ -80,28 +83,36 @@ public class ComarPanelProduct extends ComarPanelCard {
 
     private WebPanel buildTableOptions() {
         WebPanel panelSearch = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-        panelSearch.add(new WebLabel("Buscar"));
+        WebLabel labelSearch = new WebLabel("Buscar");
+        labelSearch.setFontSize(textFontSize);
+        panelSearch.add(labelSearch);
 
         textSearch = new WebTextField(20);
+        textSearch.setFontSize(textFontSize);
         panelSearch.add(textSearch);
 
         buttonSearch = new WebButton(new SearchAction());
+        buttonSearch.setFontSize(textFontSize);
         panelSearch.add(buttonSearch);
 
         buttonClear = new WebButton(new ClearAction());
+        buttonClear.setFontSize(textFontSize);
         panelSearch.add(buttonClear);
 
         WebPanel panelButtons = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 
         WebButton buttonAdd = new WebButton(new AddAction());
+        buttonAdd.setFontSize(textFontSize);
         buttonAdd.setFocusable(true);
         panelButtons.add(buttonAdd);
-        
+
         WebButton buttonEdit = new WebButton(new EditAction());
+        buttonEdit.setFontSize(textFontSize);
         buttonEdit.setFocusable(true);
         panelButtons.add(buttonEdit);
 
         WebButton buttonDelete = new WebButton(new DeleteAction());
+        buttonDelete.setFontSize(textFontSize);
         buttonDelete.setFocusable(true);
         panelButtons.add(buttonDelete);
 
@@ -127,6 +138,11 @@ public class ComarPanelProduct extends ComarPanelCard {
                 }
             }
         });
+
+        // CONFIGURACION TABLA
+        table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont((float) tableFontSize));
+        table.setFontSize(tableFontSize);
+        table.setRowHeight(tableFontSize);
 
         WebPopupMenu popup = new WebPopupMenu();
         popup.add(new EditAction());
@@ -262,7 +278,7 @@ public class ComarPanelProduct extends ComarPanelCard {
         }
         return rows;
     }
-    
+
     private class AddAction extends AbstractAction {
 
         public AddAction() {
@@ -338,8 +354,6 @@ public class ComarPanelProduct extends ComarPanelCard {
                 list.add(product);
             }
 
-            
-            
         }
 
     }

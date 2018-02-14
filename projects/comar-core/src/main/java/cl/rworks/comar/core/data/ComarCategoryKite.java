@@ -6,6 +6,7 @@
 package cl.rworks.comar.core.data;
 
 import cl.rworks.comar.core.model.ComarCategory;
+import cl.rworks.comar.core.model.ComarProduct;
 import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.annotation.JField;
@@ -82,7 +83,7 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         ObjId oid = new ObjId(c.getId());
         ComarCategoryKite pp = (ComarCategoryKite) jtx.get(oid);
 
-        NavigableSet<ComarProductKite> set = getProducts(pp);
+        NavigableSet<ComarProduct> set = getProducts(pp);
         if (set != null) {
             set.stream().forEach(e -> e.setCategory(null));
         }
@@ -90,10 +91,9 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         jtx.delete(pp);
     }
 
-    public static NavigableSet<ComarProductKite> getProducts(ComarCategory category) {
+    public static NavigableSet<ComarProduct> getProducts(ComarCategory category) {
         JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarProductKite> map = jtx.queryIndex(ComarProductKite.class, "category", ComarCategory.class).asMap().get(category);
-        return map != null && !map.isEmpty() ? map : null;
+        return jtx.queryIndex(ComarProduct.class, "category", ComarCategory.class).asMap().get(category);
     }
 
     public static NavigableSet<ComarCategoryKite> search(final String text) {
