@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing.util;
 
+import cl.rworks.comar.swing.ComarSystem;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import java.awt.Color;
@@ -16,17 +17,19 @@ import javax.swing.border.EmptyBorder;
  */
 public class ComarPanelTitle extends WebPanel {
 
+    private int fontSize = ComarSystem.getInstance().getProperties().getLargeFontSize();
+    
     public ComarPanelTitle(String title) {
         
         WebLabel labelTitle = new WebLabel(title);
         labelTitle.setBoldFont();
-        labelTitle.setFontSize(20);
+        labelTitle.setFontSize(fontSize);
         labelTitle.setForeground(Color.WHITE);
         
         add(labelTitle);
-        setMinimumHeight(40);
-        setPreferredHeight(40);
-        setMaximumHeight(40);
+        setMinimumHeight(fontSize + 20);
+        setPreferredHeight(fontSize + 20);
+        setMaximumHeight(fontSize + 20);
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(Color.BLACK);
     }

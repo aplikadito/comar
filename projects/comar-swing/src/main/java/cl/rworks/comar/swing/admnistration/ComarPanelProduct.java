@@ -9,6 +9,7 @@ import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
@@ -52,8 +53,7 @@ public class ComarPanelProduct extends ComarPanelCard {
     private WebButton buttonSearch;
     private WebButton buttonClear;
     //
-    private int textFontSize = 18;
-    private int tableFontSize = 20;
+    private int normalFontSize = ComarSystem.getInstance().getProperties().getNormalFontSize();
 
     public ComarPanelProduct() {
         initValues();
@@ -62,7 +62,7 @@ public class ComarPanelProduct extends ComarPanelCard {
     private void initValues() {
         setLayout(new BorderLayout());
 
-        add(new ComarPanelSubtitle("Buscar Producto"), BorderLayout.NORTH);
+        add(new ComarPanelSubtitle("Productos"), BorderLayout.NORTH);
         add(buildContent(), BorderLayout.CENTER);
     }
 
@@ -84,35 +84,35 @@ public class ComarPanelProduct extends ComarPanelCard {
     private WebPanel buildTableOptions() {
         WebPanel panelSearch = new WebPanel(new FlowLayout(FlowLayout.LEFT));
         WebLabel labelSearch = new WebLabel("Buscar");
-        labelSearch.setFontSize(textFontSize);
+        labelSearch.setFontSize(normalFontSize);
         panelSearch.add(labelSearch);
 
         textSearch = new WebTextField(20);
-        textSearch.setFontSize(textFontSize);
+        textSearch.setFontSize(normalFontSize);
         panelSearch.add(textSearch);
 
         buttonSearch = new WebButton(new SearchAction());
-        buttonSearch.setFontSize(textFontSize);
+        buttonSearch.setFontSize(normalFontSize);
         panelSearch.add(buttonSearch);
 
         buttonClear = new WebButton(new ClearAction());
-        buttonClear.setFontSize(textFontSize);
+        buttonClear.setFontSize(normalFontSize);
         panelSearch.add(buttonClear);
 
         WebPanel panelButtons = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 
         WebButton buttonAdd = new WebButton(new AddAction());
-        buttonAdd.setFontSize(textFontSize);
+        buttonAdd.setFontSize(normalFontSize);
         buttonAdd.setFocusable(true);
         panelButtons.add(buttonAdd);
 
         WebButton buttonEdit = new WebButton(new EditAction());
-        buttonEdit.setFontSize(textFontSize);
+        buttonEdit.setFontSize(normalFontSize);
         buttonEdit.setFocusable(true);
         panelButtons.add(buttonEdit);
 
         WebButton buttonDelete = new WebButton(new DeleteAction());
-        buttonDelete.setFontSize(textFontSize);
+        buttonDelete.setFontSize(normalFontSize);
         buttonDelete.setFocusable(true);
         panelButtons.add(buttonDelete);
 
@@ -140,9 +140,9 @@ public class ComarPanelProduct extends ComarPanelCard {
         });
 
         // CONFIGURACION TABLA
-        table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont((float) tableFontSize));
-        table.setFontSize(tableFontSize);
-        table.setRowHeight(tableFontSize);
+        table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont((float) normalFontSize));
+        table.setFontSize(normalFontSize);
+        table.setRowHeight(normalFontSize + 4);
 
         WebPopupMenu popup = new WebPopupMenu();
         popup.add(new EditAction());

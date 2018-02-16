@@ -8,7 +8,7 @@ package cl.rworks.comar.swing.admnistration;
 import cl.rworks.comar.core.data.ComarCategoryKite;
 import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.properties.ComarProperties;
+import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
@@ -92,6 +92,7 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
 
         textTax = new WebTextField();
         textTax.setFocusable(true);
+        textTax.setText(df.format(ComarSystem.getInstance().getProperties().getDefaultTax()));
         panelForm.add(new WebLabel("Impuestos"));
         panelForm.add(textTax);
 
@@ -117,9 +118,6 @@ public class ComarPanelCategoryAdd extends ComarPanelCard {
     }
 
     public void updateForm() {
-        ComarProperties cp = ComarSystem.getInstance().getService().getProperties();
-        double iva = cp.getIva();
-        this.textTax.setText(df.format(iva));
     }
 
     public JPanel getPanelFormButtons() {

@@ -5,7 +5,6 @@
  */
 package cl.rworks.comar.core.service;
 
-import cl.rworks.comar.core.properties.ComarProperties;
 import cl.rworks.kite.KiteDb;
 
 /**
@@ -20,5 +19,4 @@ public interface ComarService {
 
     KiteDb getKitedb();
     
-    ComarProperties getProperties();
 }

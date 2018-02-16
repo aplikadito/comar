@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.properties;
+package cl.rworks.comar.swing.properties;
 
 /**
  *
  * @author aplik
  */
-public enum ComarRedondeo {
+public enum ComarRoundingMode {
     NONE, CHILE;
 
-    public static ComarRedondeo parse(String rm) {
+    public static ComarRoundingMode parse(String rm) {
         if (rm == null || rm.isEmpty()) {
             return null;
         }

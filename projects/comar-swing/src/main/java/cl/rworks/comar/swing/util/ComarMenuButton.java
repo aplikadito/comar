@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing.util;
 
+import cl.rworks.comar.swing.ComarSystem;
 import com.alee.laf.label.WebLabel;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -21,6 +22,7 @@ public class ComarMenuButton extends WebLabel {
     //
     private int state = EXIT;
     private boolean selected = false;
+    private int fontSize = ComarSystem.getInstance().getProperties().getMediumFontSize();
 
     public ComarMenuButton(String code, String title) {
         super(title);
@@ -32,8 +34,8 @@ public class ComarMenuButton extends WebLabel {
         setForeground(Color.WHITE);
         setBackground(Color.BLACK);
         setBorder(new EmptyBorder(20, 10, 20, 10));
-        setFontSize(18);
-        setBoldFont();
+        setFontSize(fontSize);
+//        setBoldFont();
 
         setPreferredHeight(30);
         setMaximumSize(new Dimension(2000, 2000));

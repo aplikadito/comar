@@ -7,9 +7,9 @@ package cl.rworks.comar.swing;
 
 import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelCardContainer;
+import cl.rworks.comar.swing.util.IconLoader;
 import com.alee.laf.rootpane.WebFrame;
 import java.awt.BorderLayout;
-import java.util.logging.Logger;
 import javax.swing.Action;
 
 /**
@@ -18,15 +18,20 @@ import javax.swing.Action;
  */
 public class ComarFrame extends WebFrame {
 
+    private static final String VERSION = "v1.0";
+    //
     private ComarMenuBar menuBar;
     private ComarPanelCardContainer panelCard;
     private ComarStatusBar statusBar;
 
     public ComarFrame() {
+        super("Comar " + VERSION);
         initValues();
     }
 
     private void initValues() {
+        setIconImage(IconLoader.load("/comar_32.png"));
+        
         menuBar = new ComarMenuBar();
         setJMenuBar(menuBar);
 

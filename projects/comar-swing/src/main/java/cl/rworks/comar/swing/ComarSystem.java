@@ -8,8 +8,10 @@ package cl.rworks.comar.swing;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceImpl;
 import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
-import cl.rworks.comar.swing.options.ComarPanelOptions;
+import cl.rworks.comar.swing.settings.ComarPanelSettings;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
+import cl.rworks.comar.swing.properties.ComarProperties;
+import cl.rworks.comar.swing.properties.ComarPropertiesImpl;
 import cl.rworks.comar.swing.util.ComarPanelCardContainer;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -27,6 +29,7 @@ public class ComarSystem {
     //
     private ComarFrame frame;
     private ComarService service;
+    private ComarProperties properties;
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
@@ -36,6 +39,7 @@ public class ComarSystem {
     private ComarSystem() {
         System.out.println(System.getProperty("user.dir"));
         this.service = new ComarServiceImpl(ComarService.DISK);
+        this.properties = new ComarPropertiesImpl();
     }
 
     public void setFrame(ComarFrame frame) {
@@ -51,6 +55,7 @@ public class ComarSystem {
     }
 
     public void startup() {
+        ComarSystem.getInstance().getProperties().save();
         startupDb();
         startupCards();
         startupKeyboard();
@@ -79,7 +84,7 @@ public class ComarSystem {
     private void startupCards() {
         ComarPanelPointOfSell panelPointOfSell = new ComarPanelPointOfSell();
         ComarPanelAdministration panelAdmnistration = new ComarPanelAdministration();
-        ComarPanelOptions panelOptions = new ComarPanelOptions();
+        ComarPanelSettings panelOptions = new ComarPanelSettings();
 
         frame.addCard("POS", panelPointOfSell, new ShowViewAction("Punto de Venta", frame.getPanelCard(), "POS"));
         frame.addCard("ADM", panelAdmnistration, new ShowViewAction("Administracion", frame.getPanelCard(), "ADM"));
@@ -111,6 +116,10 @@ public class ComarSystem {
                 return false;
             }
         });
+    }
+
+    public ComarProperties getProperties() {
+        return properties;
     }
 
     public class ShowViewAction extends AbstractAction {

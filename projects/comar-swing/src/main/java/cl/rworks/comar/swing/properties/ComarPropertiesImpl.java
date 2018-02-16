@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.properties;
+package cl.rworks.comar.swing.properties;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,7 +27,7 @@ public class ComarPropertiesImpl implements ComarProperties {
     //
     private Properties properties;
     private File file = new File("comar.properties");
-    private DecimalFormat dfIva = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
+    private DecimalFormat dfTax = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
     public ComarPropertiesImpl() {
         load();
@@ -66,21 +66,21 @@ public class ComarPropertiesImpl implements ComarProperties {
     }
 
     @Override
-    public ComarRedondeo getRedondeo() {
-        String rm = properties.getProperty(REDONDEO);
-        return ComarRedondeo.parse(rm);
+    public ComarRoundingMode getRoundingMode() {
+        String rm = properties.getProperty(ROUNDING_MODE);
+        return ComarRoundingMode.parse(rm);
     }
 
     @Override
-    public void setRedondeo(ComarRedondeo redondeo) {
-        properties.setProperty(REDONDEO, redondeo.name());
+    public void setRoundingMode(ComarRoundingMode redondeo) {
+        properties.setProperty(ROUNDING_MODE, redondeo.name());
     }
 
     @Override
-    public double getIva() {
+    public double getDefaultTax() {
         try {
-            String strIva = properties.getProperty(IVA);
-            return dfIva.parse(strIva).doubleValue();
+            String strIva = properties.getProperty(DEFAULT_TAX);
+            return dfTax.parse(strIva).doubleValue();
         } catch (ParseException ex) {
             LOG.error("Error al parsear IVA", ex);
             return 0.19;
@@ -88,12 +88,52 @@ public class ComarPropertiesImpl implements ComarProperties {
     }
 
     @Override
-    public void setIva(double iva) {
-        properties.setProperty(IVA, dfIva.format(iva));
+    public void setDefaultTax(double iva) {
+        properties.setProperty(DEFAULT_TAX, dfTax.format(iva));
     }
 
-    public static void main(String[] args) throws ParseException {
-        ComarPropertiesImpl p = new ComarPropertiesImpl();
-        System.out.println(p.getIva());
+    private int getInt(String property, int defaultValue) {
+        try {
+            String strValue = properties.getProperty(property);
+            return strValue != null ? Integer.parseInt(strValue) : defaultValue;
+        } catch (NumberFormatException ex) {
+            LOG.error("Error al parsear " + property, ex);
+            return defaultValue;
+        }
+    }
+
+    private void setInt(String property, int value) {
+        String strValue = Integer.toString(value);
+        properties.setProperty(property, strValue);
+    }
+
+    @Override
+    public int getNormalFontSize() {
+        return getInt(NORMAL_FONT_SIZE, 16);
+    }
+
+    @Override
+    public void setNormalFontSize(int size) {
+        setInt(NORMAL_FONT_SIZE, size);
+    }
+
+    @Override
+    public int getMediumFontSize() {
+        return getInt(MEDIUM_FONT_SIZE, 18);
+    }
+
+    @Override
+    public void setMediumFontSize(int size) {
+        setInt(MEDIUM_FONT_SIZE, size);
+    }
+
+    @Override
+    public int getLargeFontSize() {
+        return getInt(LARGE_FONT_SIZE, 20);
+    }
+
+    @Override
+    public void setLargeFontSize(int size) {
+        setInt(LARGE_FONT_SIZE, size);
     }
 }

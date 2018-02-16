@@ -5,11 +5,13 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
+import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarPanelCardContainer;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.util.ComarMenuButton;
 import cl.rworks.comar.swing.util.ComarPanelCard;
 import com.alee.extended.panel.WebAccordion;
+import com.alee.extended.panel.WebCollapsiblePane;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import java.awt.BorderLayout;
@@ -81,7 +83,8 @@ public class ComarPanelAdministration extends ComarPanelCard {
         WebAccordion ac = new WebAccordion();
         ac.setFillSpace(false);
         ac.setMinimumWidth(250);
-        ac.addPane("Menu", panels);
+        WebCollapsiblePane pane = ac.addPane("Menu", panels);
+        pane.setFont(pane.getFont().deriveFont(ComarSystem.getInstance().getProperties().getMediumFontSize()));
         panelContent.add(ac, BorderLayout.WEST);
 
         return panelContent;

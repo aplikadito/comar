@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing.admnistration;
 
+import cl.rworks.comar.swing.ComarSystem;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.rootpane.WebDialog;
 import java.awt.BorderLayout;
@@ -26,6 +27,7 @@ public class ComarDialogProductAdd extends WebDialog {
 
         WebButton buttonClose = new WebButton(new CloseAction());
         buttonClose.setFocusable(true);
+        buttonClose.setFontSize(ComarSystem.getInstance().getProperties().getNormalFontSize());
         panel.getPanelFormButtons().add(buttonClose);
 
         panel.updateForm();

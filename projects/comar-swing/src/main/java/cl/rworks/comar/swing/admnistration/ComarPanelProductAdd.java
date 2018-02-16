@@ -59,6 +59,7 @@ public class ComarPanelProductAdd extends WebPanel {
     private WebComboBox comboFormat;
     //
     private WebPanel panelFormButtons;
+    private int fontSize = ComarSystem.getInstance().getProperties().getNormalFontSize();
 
     public ComarPanelProductAdd() {
         initValues();
@@ -87,23 +88,35 @@ public class ComarPanelProductAdd extends WebPanel {
 
     private WebPanel buildForm() {
         panelForm = new WebPanel(new FormLayout(false, true, 10, 10));
-        panelForm.setMinimumSize(new Dimension(300, 100));
-        panelForm.setPreferredSize(new Dimension(300, 100));
-        panelForm.setMaximumSize(new Dimension(300, 200));
+        panelForm.setMinimumSize(new Dimension(100, 100));
+        panelForm.setPreferredSize(new Dimension(300, 250));
+        panelForm.setMaximumSize(new Dimension(300, 300));
         panelForm.setAlignmentX(0.0f);
 
         textCode = new WebTextField(20);
         textCode.setFocusable(true);
-        panelForm.add(new WebLabel("Codigo"));
+        textCode.setFontSize(fontSize);
+
+        WebLabel label = new WebLabel("Codigo");
+        label.setFontSize(fontSize);
+        panelForm.add(label);
         panelForm.add(textCode);
 
         textName = new WebTextField();
         textName.setFocusable(true);
-        panelForm.add(new WebLabel("Nombre"));
+        textName.setFontSize(fontSize);
+
+        label = new WebLabel("Nombre");
+        label.setFontSize(fontSize);
+        panelForm.add(label);
         panelForm.add(textName);
 
         comboCategory = new WebComboBox();
-        panelForm.add(new WebLabel("Categoria"));
+        comboCategory.setFontSize(fontSize);
+
+        label = new WebLabel("Categoria");
+        label.setFontSize(fontSize);
+        panelForm.add(label);
         panelForm.add(comboCategory);
 
         comboCategory.setRenderer(new DefaultListCellRenderer() {
@@ -122,11 +135,19 @@ public class ComarPanelProductAdd extends WebPanel {
         });
 
         comboUnit = new WebComboBox(ComarUnit.values());
-        panelForm.add(new WebLabel("Unidad"));
+        comboUnit.setFontSize(fontSize);
+        
+        label = new WebLabel("Unidad");
+        label.setFontSize(fontSize);
+        panelForm.add(label);
         panelForm.add(comboUnit);
 
         comboFormat = new WebComboBox(ComarDecimalFormat.values());
-        panelForm.add(new WebLabel("Formato"));
+        comboFormat.setFontSize(fontSize);
+        
+        label = new WebLabel("Formato");
+        label.setFontSize(fontSize);
+        panelForm.add(label);
         panelForm.add(comboFormat);
 
         return panelForm;
@@ -163,16 +184,18 @@ public class ComarPanelProductAdd extends WebPanel {
     private WebPanel buildFormButtons() {
         panelFormButtons = new WebPanel(new FlowLayout());
         panelFormButtons.setMinimumSize(new Dimension(300, 30));
-        panelFormButtons.setPreferredSize(new Dimension(300, 30));
-        panelFormButtons.setMaximumSize(new Dimension(300, 30));
+        panelFormButtons.setPreferredSize(new Dimension(300, 40));
+        panelFormButtons.setMaximumSize(new Dimension(300, 50));
         panelFormButtons.setAlignmentX(0.0f);
 
-        WebButton buttonOk = new WebButton(new AddAction());
-        buttonOk.setFocusable(true);
-        panelFormButtons.add(buttonOk);
+        WebButton buttonAdd = new WebButton(new AddAction());
+        buttonAdd.setFocusable(true);
+        buttonAdd.setFontSize(fontSize);
+        panelFormButtons.add(buttonAdd);
 
         WebButton buttonClear = new WebButton(new ClearAction());
         buttonClear.setFocusable(true);
+        buttonClear.setFontSize(fontSize);
         panelFormButtons.add(buttonClear);
 
         return panelFormButtons;
