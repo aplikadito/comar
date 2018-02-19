@@ -7,17 +7,11 @@ package cl.rworks.comar.swing;
 
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceImpl;
-import cl.rworks.comar.swing.admnistration.ComarPanelAdministration;
-import cl.rworks.comar.swing.settings.ComarPanelSettings;
-import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
 import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.properties.ComarPropertiesImpl;
-import cl.rworks.comar.swing.util.ComarPanelCardContainer;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.AbstractAction;
 
 /**
  *
@@ -57,10 +51,7 @@ public class ComarSystem {
     public void startup() {
         ComarSystem.getInstance().getProperties().save();
         startupDb();
-        startupCards();
         startupKeyboard();
-
-        frame.getPanelCard().showCard("ADM");
     }
 
     private void startupDb() {
@@ -79,16 +70,6 @@ public class ComarSystem {
 //        } finally {
 //            JTransaction.setCurrent(null);
 //        }
-    }
-
-    private void startupCards() {
-        ComarPanelPointOfSell panelPointOfSell = new ComarPanelPointOfSell();
-        ComarPanelAdministration panelAdmnistration = new ComarPanelAdministration();
-        ComarPanelSettings panelOptions = new ComarPanelSettings();
-
-        frame.addCard("POS", panelPointOfSell, new ShowViewAction("Punto de Venta", frame.getPanelCard(), "POS"));
-        frame.addCard("ADM", panelAdmnistration, new ShowViewAction("Administracion", frame.getPanelCard(), "ADM"));
-        frame.addCard("OPT", panelOptions, new ShowViewAction("Opciones", frame.getPanelCard(), "OPT"));
     }
 
     private void startupKeyboard() {
@@ -121,26 +102,5 @@ public class ComarSystem {
     public ComarProperties getProperties() {
         return properties;
     }
-
-    public class ShowViewAction extends AbstractAction {
-
-        private String title;
-        private ComarPanelCardContainer cardContainer;
-        private String id;
-
-        public ShowViewAction(String title, ComarPanelCardContainer cardContainer, String id) {
-            this.title = title;
-            this.cardContainer = cardContainer;
-            this.id = id;
-
-            putValue(NAME, title);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            cardContainer.showCard(id);
-        }
-
-    }
-
+    
 }

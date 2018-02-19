@@ -7,7 +7,6 @@ package cl.rworks.comar.core.data;
 
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
 import io.permazen.JObject;
@@ -42,12 +41,11 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
 
     @OnCreate
     void onCreate() {
-        setDecimalFormat(ComarDecimalFormat.ZERO);
         setUnit(ComarUnit.UNIDAD);
     }
 
     public String toString() {
-        return String.format("[%s, %s, %s, %s, %s, %s]", getId(), getCode(), getName(), getUnit(), getDecimalFormat(), getCategory());
+        return String.format("[%s, %s, %s, %s, %s]", getId(), getCode(), getName(), getUnit(), getCategory());
     }
 
     public static ComarProductKite create() {
@@ -55,7 +53,6 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         ComarProductKite o = jtx.create(ComarProductKite.class);
         o.setId(o.getObjId().asLong());
         o.setUnit(ComarUnit.UNIDAD);
-        o.setDecimalFormat(ComarDecimalFormat.ZERO);
         return o;
     }
 
@@ -78,7 +75,6 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
     public static void update(ComarProduct source, ComarProduct destiny) {
         destiny.setCode(source.getCode());
         destiny.setName(source.getName());
-        destiny.setDecimalFormat(source.getDecimalFormat());
         destiny.setUnit(source.getUnit());
 
         ComarCategory c = source.getCategory();

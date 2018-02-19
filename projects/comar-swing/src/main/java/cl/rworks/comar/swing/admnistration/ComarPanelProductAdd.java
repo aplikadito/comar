@@ -8,7 +8,6 @@ package cl.rworks.comar.swing.admnistration;
 import cl.rworks.comar.core.data.ComarCategoryKite;
 import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
 import cl.rworks.comar.core.service.ComarService;
@@ -56,7 +55,6 @@ public class ComarPanelProductAdd extends WebPanel {
     private WebTextField textName;
     private WebComboBox comboCategory;
     private WebComboBox comboUnit;
-    private WebComboBox comboFormat;
     //
     private WebPanel panelFormButtons;
     private int fontSize = ComarSystem.getInstance().getProperties().getNormalFontSize();
@@ -141,15 +139,7 @@ public class ComarPanelProductAdd extends WebPanel {
         label.setFontSize(fontSize);
         panelForm.add(label);
         panelForm.add(comboUnit);
-
-        comboFormat = new WebComboBox(ComarDecimalFormat.values());
-        comboFormat.setFontSize(fontSize);
         
-        label = new WebLabel("Formato");
-        label.setFontSize(fontSize);
-        panelForm.add(label);
-        panelForm.add(comboFormat);
-
         return panelForm;
     }
 
@@ -243,7 +233,6 @@ public class ComarPanelProductAdd extends WebPanel {
             Object item = comboCategory.getSelectedItem();
             ComarCategory category = item instanceof ComarCategory ? (ComarCategory) item : null;
             ComarUnit unit = (ComarUnit) comboUnit.getSelectedItem();
-            ComarDecimalFormat format = (ComarDecimalFormat) comboFormat.getSelectedItem();
 
             if (validate) {
                 jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
@@ -255,7 +244,6 @@ public class ComarPanelProductAdd extends WebPanel {
                     product.setName(strName);
                     product.setCategory(category);
                     product.setUnit(unit);
-                    product.setDecimalFormat(format);
                     jtx.commit();
 
                     ComarUtils.showInfo("Producto Agregado");

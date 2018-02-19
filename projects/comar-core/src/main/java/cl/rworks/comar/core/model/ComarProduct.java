@@ -27,10 +27,6 @@ public interface ComarProduct {
 
     void setUnit(ComarUnit unit);
 
-    ComarDecimalFormat getDecimalFormat();
-
-    void setDecimalFormat(ComarDecimalFormat decimalFormat);
-
     ComarCategory getCategory();
 
     void setCategory(ComarCategory category);

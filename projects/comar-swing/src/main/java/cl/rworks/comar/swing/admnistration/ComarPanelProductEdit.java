@@ -8,7 +8,6 @@ package cl.rworks.comar.swing.admnistration;
 import cl.rworks.comar.core.data.ComarCategoryKite;
 import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.model.ComarDecimalFormat;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarUnit;
 import cl.rworks.comar.core.service.ComarService;
@@ -56,7 +55,6 @@ public class ComarPanelProductEdit extends WebPanel {
     private WebTextField textName;
     private WebComboBox comboCategory;
     private WebComboBox comboUnit;
-    private WebComboBox comboFormat;
     //
     private WebPanel panelFormButtons;
 
@@ -129,10 +127,6 @@ public class ComarPanelProductEdit extends WebPanel {
         panelForm.add(new WebLabel("Unidad"));
         panelForm.add(comboUnit);
 
-        comboFormat = new WebComboBox(ComarDecimalFormat.values());
-        panelForm.add(new WebLabel("Formato"));
-        panelForm.add(comboFormat);
-
         return panelForm;
     }
 
@@ -203,7 +197,6 @@ public class ComarPanelProductEdit extends WebPanel {
             this.comboCategory.setSelectedItem(product.getCategory().getName());
         }
         this.comboUnit.setSelectedItem(product.getUnit());
-        this.comboFormat.setSelectedItem(product.getDecimalFormat());
     }
 
     private class OkAction extends AbstractAction {
@@ -232,7 +225,6 @@ public class ComarPanelProductEdit extends WebPanel {
 
             String catName = (String) comboCategory.getSelectedItem();
             ComarUnit unit = (ComarUnit) comboUnit.getSelectedItem();
-            ComarDecimalFormat format = (ComarDecimalFormat) comboFormat.getSelectedItem();
 
             if (!validate) {
                 return;
@@ -250,7 +242,6 @@ public class ComarPanelProductEdit extends WebPanel {
                 product.setName(strName);
                 product.setCategory(cat);
                 product.setUnit(unit);
-                product.setDecimalFormat(format);
                 jtx.commit();
 
                 ComarUtils.showInfo("Producto editado");
@@ -283,7 +274,6 @@ public class ComarPanelProductEdit extends WebPanel {
         this.textCode.clear();
         this.textName.clear();
         this.comboUnit.setSelectedIndex(0);
-        this.comboFormat.setSelectedIndex(0);
     }
 
     public WebPanel getPanelFormButtons() {

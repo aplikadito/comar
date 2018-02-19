@@ -13,20 +13,14 @@ import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.separator.WebSeparator;
 import com.alee.laf.table.WebTable;
-import com.alee.laf.text.WebTextField;
 import io.permazen.JTransaction;
 import io.permazen.Permazen;
 import io.permazen.ValidationMode;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,7 +28,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import java.util.NavigableSet;
@@ -46,86 +39,28 @@ import javax.swing.SwingUtilities;
  */
 public class ComarPanelCategory extends ComarPanelCard {
 
-    private WebPanel panelCenter;
-    private WebTable table;
+    private ComarPanelBaseEditor panelEditor;
     private TableModel tableModel;
-    private WebTextField textSearch;
-    private WebButton buttonSearch;
-    private WebButton buttonClear;
     //
     private DecimalFormat df = new DecimalFormat("#0%");
-    private int normalFontSize = ComarSystem.getInstance().getProperties().getNormalFontSize();
 
     public ComarPanelCategory() {
-        initValues();
-    }
-
-    private void initValues() {
         setLayout(new BorderLayout());
-
-        add(new ComarPanelSubtitle("Categorias"), BorderLayout.NORTH);
-
-        panelCenter = new WebPanel(new BorderLayout());
-        panelCenter.setBorder(new EmptyBorder(10, 10, 10, 10));
-        add(panelCenter, BorderLayout.CENTER);
-
-        WebPanel panelContent = new WebPanel();
-        panelContent.setLayout(new BorderLayout());
-        panelContent.add(buildTableOptions(), BorderLayout.NORTH);
-        panelContent.add(buildTable(), BorderLayout.CENTER);
-        panelContent.add(buildTableButtons(), BorderLayout.SOUTH);
-        panelCenter.add(panelContent, BorderLayout.CENTER);
+        add(new ComarPanelSubtitle("Categorías"), BorderLayout.NORTH);
+        add(buildContent(), BorderLayout.CENTER);
     }
 
-    private WebPanel buildTableOptions() {
-        WebPanel panelSearch = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-        WebLabel labelSearch = new WebLabel("Buscar");
-        labelSearch.setFontSize(normalFontSize);
-        panelSearch.add(labelSearch);
-
-        textSearch = new WebTextField(20);
-        textSearch.setFontSize(normalFontSize);
-        panelSearch.add(textSearch);
-
-        buttonSearch = new WebButton(new SearchAction());
-        buttonSearch.setFontSize(normalFontSize);
-        panelSearch.add(buttonSearch);
-
-        buttonClear = new WebButton(new ClearAction());
-        buttonClear.setFontSize(normalFontSize);
-        panelSearch.add(buttonClear);
-
-        WebPanel panelButtons = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-
-        WebButton buttonAdd = new WebButton(new AddAction());
-        buttonAdd.setFontSize(normalFontSize);
-        buttonAdd.setFocusable(true);
-        panelButtons.add(buttonAdd);
-
-        WebButton buttonEdit = new WebButton(new EditAction());
-        buttonEdit.setFontSize(normalFontSize);
-        buttonEdit.setFocusable(true);
-        panelButtons.add(buttonEdit);
-
-        WebButton buttonDelete = new WebButton(new DeleteAction());
-        buttonDelete.setFontSize(normalFontSize);
-        buttonDelete.setFocusable(true);
-        panelButtons.add(buttonDelete);
-
-        WebPanel panel = new WebPanel(new BorderLayout());
-        panel.add(panelSearch, BorderLayout.WEST);
-        panel.add(panelButtons, BorderLayout.EAST);
-        return panel;
-    }
-
-    private WebPanel buildTable() {
+    private WebPanel buildContent() {
         WebPanel panel = new WebPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.setLayout(new BorderLayout());
+        panel.setBorder(new EmptyBorder(0, 10, 10, 10));
 
-        tableModel = new TableModel();
-        table = new WebTable(tableModel);
-        panel.add(new WebScrollPane(table));
-
+        this.panelEditor = new ComarPanelBaseEditor();
+        panel.add(panelEditor, BorderLayout.CENTER);
+        
+        this.tableModel = new TableModel();
+        WebTable table = panelEditor.getTable();
+        table.setModel(tableModel);
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -135,25 +70,20 @@ public class ComarPanelCategory extends ComarPanelCard {
             }
         });
 
-        // CONFIGURACION TABLA
-        table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont((float) normalFontSize));
-        table.setFontSize(normalFontSize);
-        table.setRowHeight(normalFontSize + 4);
-
         WebPopupMenu popup = new WebPopupMenu();
         popup.add(new EditAction());
         popup.add(new DeleteAction());
-        popup.add(new WebSeparator());
         table.setComponentPopupMenu(popup);
+        
+        this.panelEditor.getButtonSearch().setAction(new SearchAction());
+        this.panelEditor.getButtonClear().setAction(new ClearAction());
+        this.panelEditor.getButtonAdd().setAction(new AddAction());
+        this.panelEditor.getButtonEdit().setAction(new EditAction());
+        this.panelEditor.getButtonDelete().setAction(new DeleteAction());
 
         return panel;
     }
-
-    private WebPanel buildTableButtons() {
-        WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-        return panel;
-    }
-
+    
     private class TableModel extends AbstractTableModel {
 
         private String[] columnNames = new String[]{"Nombre", "Impuestos", "Productos"};
@@ -247,7 +177,7 @@ public class ComarPanelCategory extends ComarPanelCard {
     }
 
     private void search() {
-        String strText = this.textSearch.getText();
+        String strText = panelEditor.getTextSearch().getText();
         List<Row> rows = loadCategories(strText);
         tableModel.setItems(rows);
         tableModel.fireTableDataChanged();
@@ -255,7 +185,7 @@ public class ComarPanelCategory extends ComarPanelCard {
     }
 
     private void clear() {
-        this.textSearch.clear();
+        this.panelEditor.getTextSearch().clear();
         this.tableModel.setItems(null);
         this.tableModel.fireTableDataChanged();
     }
@@ -319,13 +249,13 @@ public class ComarPanelCategory extends ComarPanelCard {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int vrow = table.getSelectedRow();
+            int vrow = panelEditor.getTable().getSelectedRow();
             if (vrow == -1) {
                 ComarUtils.showWarn("Seleccione un producto");
                 return;
             }
 
-            int mrow = table.convertRowIndexToModel(vrow);
+            int mrow = panelEditor.getTable().convertRowIndexToModel(vrow);
             Row row = tableModel.getItems().get(mrow);
             ComarCategory cat = row.getCategory();
             ComarDialogCategoryEdit dialog = new ComarDialogCategoryEdit(null, cat);
@@ -344,7 +274,7 @@ public class ComarPanelCategory extends ComarPanelCard {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int[] vrows = table.getSelectedRows();
+            int[] vrows = panelEditor.getTable().getSelectedRows();
             if (vrows.length == 0) {
                 ComarUtils.showWarn("Seleccione al menos una categoria");
                 return;
@@ -358,7 +288,7 @@ public class ComarPanelCategory extends ComarPanelCard {
             List<Row> list = new ArrayList<>();
             for (int i = 0; i < vrows.length; i++) {
                 int vrow = vrows[i];
-                int mrow = table.convertRowIndexToModel(vrow);
+                int mrow = panelEditor.getTable().convertRowIndexToModel(vrow);
                 Row row = tableModel.getItems().get(mrow);
                 list.add(row);
             }

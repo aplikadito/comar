@@ -59,7 +59,7 @@ public class ComarPanelAdministration extends ComarPanelCard {
         List<MenuAndCard> buttons = new ArrayList<>();
         buttons.add(create("PRODUCTS", "Productos", new ComarPanelProduct()));
         buttons.add(create("CATEGORIES", "Categorias", new ComarPanelCategory()));
-        buttons.add(create("STOCK", "Inventario"));
+        buttons.add(create("STOCK", "Inventario", new ComarPanelStock()));
         buttons.add(create("SELLS", "Ventas"));
 
         allMenuAndCard = new ArrayList<>();
@@ -82,7 +82,7 @@ public class ComarPanelAdministration extends ComarPanelCard {
         
         WebAccordion ac = new WebAccordion();
         ac.setFillSpace(false);
-        ac.setMinimumWidth(250);
+        ac.setMinimumWidth(200);
         WebCollapsiblePane pane = ac.addPane("Menu", panels);
         pane.setFont(pane.getFont().deriveFont(ComarSystem.getInstance().getProperties().getMediumFontSize()));
         panelContent.add(ac, BorderLayout.WEST);
