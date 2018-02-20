@@ -9,11 +9,10 @@ import cl.rworks.comar.core.data.ComarCategoryKite;
 import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.model.ComarUnit;
+import cl.rworks.comar.core.model.ComarMetric;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarIconLoader;
-import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
@@ -46,7 +45,7 @@ import javax.swing.border.EmptyBorder;
  *
  * @author rgonzalez
  */
-public class ComarPanelProductAdd extends WebPanel {
+public class ComarPanelProductEditor extends WebPanel {
 
     private WebPanel panelContent;
     private WebPanel panelForm;
@@ -54,12 +53,12 @@ public class ComarPanelProductAdd extends WebPanel {
     private WebTextField textCode;
     private WebTextField textName;
     private WebComboBox comboCategory;
-    private WebComboBox comboUnit;
+    private WebComboBox comboMetric;
     //
     private WebPanel panelFormButtons;
     private int fontSize = ComarSystem.getInstance().getProperties().getNormalFontSize();
 
-    public ComarPanelProductAdd() {
+    public ComarPanelProductEditor() {
         initValues();
     }
 
@@ -132,33 +131,37 @@ public class ComarPanelProductAdd extends WebPanel {
 
         });
 
-        comboUnit = new WebComboBox(ComarUnit.values());
-        comboUnit.setFontSize(fontSize);
-        
-        label = new WebLabel("Unidad");
+        comboMetric = new WebComboBox(ComarMetric.values());
+        comboMetric.setFontSize(fontSize);
+
+        label = new WebLabel("Medida");
         label.setFontSize(fontSize);
         panelForm.add(label);
-        panelForm.add(comboUnit);
-        
+        panelForm.add(comboMetric);
+
         return panelForm;
     }
 
-    public void updateForm() {
+    public void updateForm(ComarPanelProductRow row) {
         comboCategory.removeAllItems();
         comboCategory.setEnabled(true);
-        List<ComarCategory> cats = loadCategories();
-        cats.forEach(e -> comboCategory.addItem(e));
+        loadCategories().forEach(e -> comboCategory.addItem(e));
+
+        this.textCode.setText(row.getCode() != null ? row.getCode() : "");
+        this.textName.setText(row.getName() != null ? row.getName() : "");
+        this.comboCategory.setSelectedItem(row.getCategoryName());
+        this.comboMetric.setSelectedItem(row.getMetric() != null ? row.getMetric() : ComarMetric.UNIDAD);
     }
 
-    private List<ComarCategory> loadCategories() {
+    private List<String> loadCategories() {
         ComarService service = ComarSystem.getInstance().getService();
         Permazen permazen = service.getKitedb().get();
 
         JTransaction jtx = permazen.createTransaction(true, ValidationMode.AUTOMATIC);
         JTransaction.setCurrent(jtx);
-        List<ComarCategory> list;
+        List<String> list;
         try {
-            list = ComarCategoryKite.getAll().stream().map(e -> (ComarCategory) e.copyOut()).collect(Collectors.toList());
+            list = ComarCategoryKite.getAll().stream().map(e -> e.getName()).collect(Collectors.toList());
         } catch (Exception ex) {
             ex.printStackTrace();
             list = new ArrayList<>();
@@ -178,85 +181,7 @@ public class ComarPanelProductAdd extends WebPanel {
         panelFormButtons.setMaximumSize(new Dimension(300, 50));
         panelFormButtons.setAlignmentX(0.0f);
 
-        WebButton buttonAdd = new WebButton(new AddAction());
-        buttonAdd.setFocusable(true);
-        buttonAdd.setFontSize(fontSize);
-        panelFormButtons.add(buttonAdd);
-
-        WebButton buttonClear = new WebButton(new ClearAction());
-        buttonClear.setFocusable(true);
-        buttonClear.setFontSize(fontSize);
-        panelFormButtons.add(buttonClear);
-
         return panelFormButtons;
-    }
-
-    private class AddAction extends AbstractAction {
-
-        public AddAction() {
-            putValue(NAME, "Agregar");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            ComarService service = ComarSystem.getInstance().getService();
-            Permazen db = service.getKitedb().get();
-
-            boolean validate = true;
-            String strCode = textCode.getText();
-            if (strCode == null || strCode.isEmpty()) {
-                TooltipManager.showOneTimeTooltip(textCode, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Codigo nulo o vacio", TooltipWay.trailing);
-                validate = false;
-            }
-
-            JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-            JTransaction.setCurrent(jtx);
-            try {
-                ComarProductKite product = ComarProductKite.getByCode(strCode);
-                if (product != null) {
-                    TooltipManager.showOneTimeTooltip(textCode, null, ComarIconLoader.load(ComarIconLoader.ERROR), "El codigo ya existe", TooltipWay.trailing);
-                    validate = false;
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            } finally {
-                jtx.rollback();
-                JTransaction.setCurrent(null);
-            }
-
-            String strName = textName.getText();
-            if (strName == null || strName.isEmpty()) {
-                TooltipManager.showOneTimeTooltip(textName, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Nombre nulo o vacio", TooltipWay.trailing);
-                validate = false;
-            }
-
-            Object item = comboCategory.getSelectedItem();
-            ComarCategory category = item instanceof ComarCategory ? (ComarCategory) item : null;
-            ComarUnit unit = (ComarUnit) comboUnit.getSelectedItem();
-
-            if (validate) {
-                jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-                JTransaction.setCurrent(jtx);
-                try {
-
-                    ComarProduct product = ComarProductKite.create();
-                    product.setCode(strCode);
-                    product.setName(strName);
-                    product.setCategory(category);
-                    product.setUnit(unit);
-                    jtx.commit();
-
-                    ComarUtils.showInfo("Producto Agregado");
-                    clear();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    ComarUtils.showWarn(ex.getMessage());
-                } finally {
-                    JTransaction.setCurrent(null);
-                }
-            }
-        }
-
     }
 
     private class ClearAction extends AbstractAction {
@@ -281,4 +206,20 @@ public class ComarPanelProductAdd extends WebPanel {
         return panelFormButtons;
     }
 
+    public WebTextField getTextCode() {
+        return textCode;
+    }
+
+    public WebTextField getTextName() {
+        return textName;
+    }
+
+    public WebComboBox getComboCategory() {
+        return comboCategory;
+    }
+
+    public WebComboBox getComboMetric() {
+        return comboMetric;
+    }
+    
 }

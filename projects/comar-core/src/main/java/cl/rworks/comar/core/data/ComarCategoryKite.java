@@ -52,16 +52,6 @@ public interface ComarCategoryKite extends JObject, ComarCategory {
         return jtx.getAll(ComarCategoryKite.class);
     }
 
-    public static void update(ComarCategory o) {
-        JTransaction jtx = JTransaction.getCurrent();
-        ComarCategory odb = (ComarCategory) jtx.get(new ObjId(o.getId()));
-        update(o, odb);
-    }
-
-    public static void update(ComarCategory source, ComarCategory destiny) {
-        destiny.setName(source.getName());
-    }
-
     public static ComarCategoryKite get(Long id) {
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(id);

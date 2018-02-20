@@ -9,7 +9,7 @@ package cl.rworks.comar.core.model;
  *
  * @author rgonzalez
  */
-public enum ComarUnit {
+public enum ComarMetric {
     
     UNIDAD("Unidad","[u]"),
     KILO("Kilo","[Kg]"),
@@ -19,7 +19,7 @@ public enum ComarUnit {
     private final String name;
     private final String symbol;
 
-    ComarUnit(String name, String symbol) {
+    ComarMetric(String name, String symbol) {
         this.name = name;
         this.symbol = symbol;
     }

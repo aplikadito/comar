@@ -11,10 +11,6 @@ package cl.rworks.comar.core.model;
  */
 public interface ComarProduct {
 
-    Long getId();
-
-    void setId(Long id);
-
     String getCode();
 
     void setCode(String code);
@@ -23,9 +19,9 @@ public interface ComarProduct {
 
     void setName(String name);
 
-    ComarUnit getUnit();
+    ComarMetric getMetric();
 
-    void setUnit(ComarUnit unit);
+    void setMetric(ComarMetric metric);
 
     ComarCategory getCategory();
 

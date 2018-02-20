@@ -8,11 +8,11 @@ package cl.rworks.comar.core.service;
 import cl.rworks.comar.core.data.ComarCategoryKite;
 import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.data.ComarSellKite;
-import cl.rworks.comar.core.data.ComarStockKite;
 import cl.rworks.kite.KiteDb;
 import cl.rworks.kite.KiteDbDisk;
 import cl.rworks.kite.KiteDbMemory;
 import cl.rworks.kite.KiteDbMysql;
+import cl.rworks.comar.core.data.ComarStockEntryKite;
 
 /**
  *
@@ -25,7 +25,7 @@ public class ComarServiceImpl implements ComarService {
         ComarProductKite.class,
         ComarCategoryKite.class,
         ComarSellKite.class,
-        ComarStockKite.class,};
+        ComarStockEntryKite.class,};
 
     public ComarServiceImpl(int option) {
         switch (option) {

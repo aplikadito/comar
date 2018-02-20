@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.core.data;
 
-import cl.rworks.comar.core.model.ComarStock;
+import cl.rworks.comar.core.model.ComarProduct;
 import io.permazen.JObject;
 import io.permazen.JTransaction;
 import io.permazen.annotation.JField;
@@ -17,13 +17,15 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import cl.rworks.comar.core.model.ComarStockEntry;
+import cl.rworks.comar.core.service.ComarServiceException;
 
 /**
  *
  * @author rgonzalez
  */
 @PermazenType
-public interface ComarStockKite extends JObject, ComarStock {
+public interface ComarStockEntryKite extends JObject, ComarStockEntry {
 
     @JField(indexed = true)
     default Long getId() {
@@ -37,54 +39,47 @@ public interface ComarStockKite extends JObject, ComarStock {
 
     void setCode(String code);
     
-    public static ComarStockKite create() {
+    public static ComarStockEntryKite create() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.create(ComarStockKite.class);
+        return jtx.create(ComarStockEntryKite.class);
     }
 
-    public static NavigableSet<ComarStockKite> getAll() {
+    public static NavigableSet<ComarStockEntryKite> getAll() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.getAll(ComarStockKite.class);
+        return jtx.getAll(ComarStockEntryKite.class);
     }
 
-    public static void insert(ComarStock p) {
-        ComarStockKite pp = create();
-        pp.setId(pp.getObjId().asLong());
-        pp.setCode(p.getCode());
-        p.setId(pp.getId());
-    }
-
-    public static ComarStockKite get(Long id) {
+    public static ComarStockEntryKite get(Long id) {
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(id);
-        return (ComarStockKite) jtx.get(oid);
+        return (ComarStockEntryKite) jtx.get(oid);
     }
 
-    public static ComarStockKite getByCode(String code) {
+    public static ComarStockEntryKite getByCode(String code) {
         JTransaction jtx = JTransaction.getCurrent();
         NavigableSet<ComarCategoryKite> result = jtx.queryIndex(ComarCategoryKite.class, "name", String.class).asMap().get(code);
-        return result != null ? (ComarStockKite) result.first() : null;
+        return result != null ? (ComarStockEntryKite) result.first() : null;
     }
     
-    public static void delete(ComarStock p) {
+    public static void delete(ComarStockEntry p) {
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(p.getId());
         JObject pp = jtx.get(oid);
         jtx.delete(pp);
     }
 
-    public static NavigableSet<ComarStockKite> search(final String text) {
+    public static NavigableSet<ComarStockEntryKite> search(final String text) {
         if (text == null) {
             return new TreeSet<>();
         }
 
         JTransaction jtx = JTransaction.getCurrent();
         String ttext = text.trim();
-        NavigableSet<ComarStockKite> all = jtx.getAll(ComarStockKite.class);
+        NavigableSet<ComarStockEntryKite> all = jtx.getAll(ComarStockEntryKite.class);
         if (!ttext.isEmpty()) {
             Pattern pattern = Pattern.compile(".*" + ttext + ".*");
-            Predicate<ComarStockKite> filterName = e -> pattern.matcher(e.getCode()).matches();
-            Stream<ComarStockKite> stream = all.stream().filter(filterName);
+            Predicate<ComarStockEntryKite> filterName = e -> pattern.matcher(e.getCode()).matches();
+            Stream<ComarStockEntryKite> stream = all.stream().filter(filterName);
             return stream.collect(Collectors.toCollection(TreeSet::new));
         } else {
             return all;
