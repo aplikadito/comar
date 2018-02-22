@@ -16,6 +16,7 @@ import cl.rworks.comar.swing.util.ComarPanelSubtitle;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.button.WebButton;
+import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
@@ -44,20 +45,20 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author rgonzalez
  */
-public class ComarPanelCategoryEdit extends WebPanel {
+public class ComarPanelCategoryEditor extends WebPanel {
 
     private WebPanel panelCenter;
     private WebPanel panelForm;
     //
     private WebTextField textName;
-    private WebTextField textTax;
+    private WebComboBox comboInclude;
     //
     private WebPanel panelFormButtons;
     private String oldName = null;
     private DecimalFormat df = new DecimalFormat("#0%");
     private TableModel tableModel;
 
-    public ComarPanelCategoryEdit() {
+    public ComarPanelCategoryEditor() {
         initValues();
     }
 
@@ -90,10 +91,13 @@ public class ComarPanelCategoryEdit extends WebPanel {
         panelForm.add(new WebLabel("Nombre"));
         panelForm.add(textName);
 
-        textTax = new WebTextField();
-        textTax.setFocusable(true);
-        panelForm.add(new WebLabel("Impuestos"));
-        panelForm.add(textTax);
+        comboInclude = new WebComboBox();
+        comboInclude.setFocusable(true);
+        panelForm.add(new WebLabel("Incluir en boleta"));
+        panelForm.add(comboInclude);
+
+        comboInclude.addItem("Si");
+        comboInclude.addItem("No");
 
         return panelForm;
     }
@@ -125,34 +129,16 @@ public class ComarPanelCategoryEdit extends WebPanel {
         return panelFormButtons;
     }
 
-    public void updateForm(ComarCategory catRef) {
+    public void updateForm(ComarPanelCategoryRow row) {
         final List<ComarProduct> rows = new ArrayList<>();
-        Permazen db = ComarSystem.getInstance().getService().getKitedb().get();
-        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
-        ComarCategory cat = null;
-        try {
-            cat = (ComarCategory) ComarCategoryKite.getByName(catRef.getName()).copyOut();
-            NavigableSet<ComarProduct> nav = ComarCategoryKite.getProducts(cat);
-            if (nav != null) {
-                nav.stream().forEach((ComarProduct e) -> {
-                    ComarProductKite ref = (ComarProductKite) e;
-                    ComarProduct obj = (ComarProduct) ref.copyOut("");
-                    rows.add(obj);
-                });
-            }
-
-            jtx.rollback();
-        } finally {
-            JTransaction.setCurrent(null);
-        }
-
-        this.textName.setText(cat.getName());
-        this.textName.selectAll();
-        this.oldName = cat.getName();
-
-        this.textTax.setText(df.format(cat.getTax()));
         
+
+        this.textName.setText(row.getName());
+        this.textName.selectAll();
+        this.oldName = row.getName();
+
+        this.comboInclude.setSelectedIndex(row.isIncludeInBill() ? 0 : 1);
+
         this.tableModel.setRows(rows);
         this.tableModel.fireTableDataChanged();
     }
@@ -222,23 +208,7 @@ public class ComarPanelCategoryEdit extends WebPanel {
             }
 
             double tax = -1;
-            String strTax = textTax.getText();
-            if (strTax == null || strTax.isEmpty()) {
-                TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto nulo o vacio", TooltipWay.trailing);
-                validate = false;
-            } else {
-                try {
-                    tax = df.parse(strTax).doubleValue();
-                    if (tax < 0 || tax > 1) {
-                        tax = -1;
-                        TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto con formato erroneo", TooltipWay.trailing);
-                        validate = false;
-                    }
-                } catch (ParseException ex) {
-                    TooltipManager.showOneTimeTooltip(textTax, null, ComarIconLoader.load(ComarIconLoader.ERROR), "Impuesto con formato erroneo", TooltipWay.trailing);
-                    validate = false;
-                }
-            }
+            boolean include = comboInclude.getSelectedIndex() == 0;
 
             if (!oldName.equals(strName)) {
                 JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
@@ -266,7 +236,7 @@ public class ComarPanelCategoryEdit extends WebPanel {
                     if (!oldName.equals(strName)) {
                         cat.setName(strName);
                     }
-                    cat.setTax(tax);
+                    cat.setIncludeInBill(include);
                     jtx.commit();
 
                     ComarUtils.showInfo("Categoria editada");
