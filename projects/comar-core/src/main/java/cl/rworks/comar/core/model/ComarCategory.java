@@ -5,8 +5,6 @@
  */
 package cl.rworks.comar.core.model;
 
-import io.permazen.annotation.OnCreate;
-
 /**
  *
  * @author aplik
@@ -20,9 +18,9 @@ public interface ComarCategory {
     String getName();
 
     void setName(String name);
-    
-    double getTax();
 
-    void setTax(double tax);
-    
+    boolean isIncludeInBill();
+
+    void setIncludeInBill(boolean includeInBill);
+
 }

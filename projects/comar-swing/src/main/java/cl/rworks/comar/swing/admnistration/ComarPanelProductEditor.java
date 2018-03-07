@@ -6,23 +6,16 @@
 package cl.rworks.comar.swing.admnistration;
 
 import cl.rworks.comar.core.data.ComarCategoryKite;
-import cl.rworks.comar.core.data.ComarProductKite;
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarMetric;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
-import cl.rworks.comar.swing.util.ComarIconLoader;
 import cl.rworks.comar.swing.util.ComarPanelSubtitle;
-import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
-import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
-import com.alee.managers.language.data.TooltipWay;
-import com.alee.managers.tooltip.TooltipManager;
 import io.permazen.JTransaction;
 import io.permazen.Permazen;
 import io.permazen.ValidationMode;
