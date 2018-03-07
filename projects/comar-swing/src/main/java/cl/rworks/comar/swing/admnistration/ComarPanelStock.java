@@ -33,7 +33,7 @@ public class ComarPanelStock extends ComarPanelCard {
     public ComarPanelStock() {
         setLayout(new BorderLayout());
 
-        add(new ComarPanelSubtitle("Inventario"), BorderLayout.NORTH);
+//        add(new ComarPanelSubtitle("Inventario"), BorderLayout.NORTH);
         add(build(), BorderLayout.CENTER);
     }
 

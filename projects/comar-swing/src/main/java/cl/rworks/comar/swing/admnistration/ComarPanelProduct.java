@@ -55,7 +55,7 @@ public class ComarPanelProduct extends ComarPanelCard {
 
     public ComarPanelProduct() {
         setLayout(new BorderLayout());
-        add(new ComarPanelSubtitle("Productos"), BorderLayout.NORTH);
+//        add(new ComarPanelSubtitle("Productos"), BorderLayout.NORTH);
         add(buildContent(), BorderLayout.CENTER);
     }
 

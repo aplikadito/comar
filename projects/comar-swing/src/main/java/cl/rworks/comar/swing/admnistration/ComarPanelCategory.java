@@ -46,7 +46,7 @@ public class ComarPanelCategory extends ComarPanelCard {
 
     public ComarPanelCategory() {
         setLayout(new BorderLayout());
-        add(new ComarPanelSubtitle("Categorías"), BorderLayout.NORTH);
+//        add(new ComarPanelSubtitle("Categorías"), BorderLayout.NORTH);
         add(buildContent(), BorderLayout.CENTER);
     }
 
