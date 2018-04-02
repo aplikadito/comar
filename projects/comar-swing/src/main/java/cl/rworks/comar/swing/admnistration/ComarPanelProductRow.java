@@ -15,8 +15,10 @@ public class ComarPanelProductRow {
 
     private String code = "";
     private String name = "";
-    private String categoryName = "";
     private ComarMetric metric = ComarMetric.UNIDAD;
+    private double buyPrice;
+    private double sellPrice;
+    private double stock;
 
     public String getCode() {
         return code;
@@ -34,14 +36,6 @@ public class ComarPanelProductRow {
         this.name = name;
     }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
     public ComarMetric getMetric() {
         return metric;
     }
@@ -50,4 +44,28 @@ public class ComarPanelProductRow {
         this.metric = metric;
     }
 
+    public double getBuyPrice() {
+        return buyPrice;
+    }
+
+    public void setBuyPrice(double buyPrice) {
+        this.buyPrice = buyPrice;
+    }
+
+    public double getSellPrice() {
+        return sellPrice;
+    }
+
+    public void setSellPrice(double sellPrice) {
+        this.sellPrice = sellPrice;
+    }
+
+    public double getStock() {
+        return stock;
+    }
+
+    public void setStock(double stock) {
+        this.stock = stock;
+    }
+    
 }

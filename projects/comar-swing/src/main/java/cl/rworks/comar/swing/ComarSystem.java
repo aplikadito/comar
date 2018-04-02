@@ -55,7 +55,7 @@ public class ComarSystem {
     }
 
     private void startupDb() {
-//        Permazen db = service.getKitedb().get();
+//        Permazen db = service.getDb().get();
 //        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
 //        JTransaction.setCurrent(jtx);
 //        try {

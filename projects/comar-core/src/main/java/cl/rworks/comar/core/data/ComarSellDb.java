@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * @author rgonzalez
  */
 @PermazenType
-public interface ComarSellKite extends JObject, ComarSell {
+public interface ComarSellDb extends JObject, ComarSell {
 
     @JField(indexed = true, unique = true)
     @Override
@@ -32,53 +32,47 @@ public interface ComarSellKite extends JObject, ComarSell {
     @Override
     void setCode(String code);
 
-    public static ComarSellKite create() {
+    public static ComarSellDb create() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.create(ComarSellKite.class);
+        return jtx.create(ComarSellDb.class);
     }
 
-    public static NavigableSet<ComarSellKite> getAll() {
+    public static NavigableSet<ComarSellDb> getAll() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.getAll(ComarSellKite.class);
+        return jtx.getAll(ComarSellDb.class);
     }
 
-    public static void insert(ComarSellKite p) {
-        ComarSellKite pp = create();
+    public static void insert(ComarSellDb p) {
+        ComarSellDb pp = create();
         pp.setId(pp.getObjId().asLong());
         pp.setCode(p.getCode());
         p.setId(pp.getId());
     }
 
-    public static ComarCategoryKite get(Long id) {
+    public static ComarSellDb getByCode(String code) {
         JTransaction jtx = JTransaction.getCurrent();
-        ObjId oid = new ObjId(id);
-        return (ComarCategoryKite) jtx.get(oid);
+        NavigableSet<ComarSell> result = jtx.queryIndex(ComarSell.class, "code", String.class).asMap().get(code);
+        return result != null ? (ComarSellDb) result.first() : null;
     }
 
-    public static ComarSellKite getByCode(String code) {
-        JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarSellKite> result = jtx.queryIndex(ComarSellKite.class, "code", String.class).asMap().get(code);
-        return result != null ? (ComarSellKite) result.first() : null;
-    }
-
-    public static void delete(ComarSell p) {
+    public static void delete(ComarSellDb p) {
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(p.getId());
         JObject pp = jtx.get(oid);
         jtx.delete(pp);
     }
 
-    public static NavigableSet<ComarSellKite> search(final String text) {
+    public static NavigableSet<ComarSellDb> search(final String text) {
         if (text == null) {
             return new TreeSet<>();
         }
 
         String ttext = text.trim();
-        NavigableSet<ComarSellKite> all = ComarSellKite.getAll();
+        NavigableSet<ComarSellDb> all = ComarSellDb.getAll();
         if (!ttext.isEmpty()) {
             Pattern pattern = Pattern.compile(".*" + ttext + ".*");
-            Predicate<ComarSellKite> filter = e -> pattern.matcher(e.getCode()).matches();
-            Stream<ComarSellKite> stream = all.stream().filter(filter);
+            Predicate<ComarSell> filter = e -> pattern.matcher(e.getCode()).matches();
+            Stream<ComarSellDb> stream = all.stream().filter(filter);
             return stream.collect(Collectors.toCollection(TreeSet::new));
         } else {
             return all;

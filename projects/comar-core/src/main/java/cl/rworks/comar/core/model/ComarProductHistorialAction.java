@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.ui.test;
-
-import cl.rworks.comar.core.model.ComarProperties;
+package cl.rworks.comar.core.model;
 
 /**
  *
  * @author aplik
  */
-public class ComarPropertiesTest implements ComarProperties{
-    
+public enum ComarProductHistorialAction {
+    NEW, EDIT, DELETE;
 }

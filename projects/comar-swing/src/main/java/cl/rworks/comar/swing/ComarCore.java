@@ -6,8 +6,11 @@
 package cl.rworks.comar.swing;
 
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.rootpane.WebFrame;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -15,18 +18,23 @@ import javax.swing.SwingUtilities;
  */
 public class ComarCore {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ComarCore.class);
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 WebLookAndFeel.install();
 
+                LOG.info("Iniciando la aplicacion");
+                
                 ComarFrame frame = new ComarFrame();
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 frame.addWindowListener(new ComarFrameListener());
-                
+
                 ComarSystem.getInstance().setFrame(frame);
                 ComarSystem.getInstance().startup();
-                
+
+                frame.setExtendedState(WebFrame.MAXIMIZED_BOTH);
                 frame.showMe();
             }
         });

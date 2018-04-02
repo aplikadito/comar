@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.core.service;
 
-import cl.rworks.kite.KiteDb;
+import io.permazen.Permazen;
 
 /**
  *
@@ -17,6 +17,6 @@ public interface ComarService {
     int DISK = 1;
     int MYSQL = 2;
 
-    KiteDb getKitedb();
+    Permazen getDb();
     
 }

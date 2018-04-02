@@ -17,18 +17,16 @@ import io.permazen.core.ObjId;
 import java.util.Collections;
 import java.util.List;
 import java.util.NavigableSet;
-import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
  * @author rgonzalez
  */
 @PermazenType
-public abstract class ComarProductKite implements JObject, ComarProduct {
+public abstract class ComarProductDb implements JObject, ComarProduct {
 
     @JField(indexed = true, unique = true)
     public abstract String getCode();
@@ -41,23 +39,23 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
     }
 
     public String toString() {
-        return String.format("[%s, %s, %s, %s]", getCode(), getName(), getMetric(), getCategory());
+        return String.format("[%s, %s, %s, %s, %s]", getCode(), getName(), getMetric(), getBuyPrice(), getSellPrice());
     }
 
-    public static ComarProductKite create() {
+    public static ComarProduct create() {
         JTransaction jtx = JTransaction.getCurrent();
-        ComarProductKite o = jtx.create(ComarProductKite.class);
+        ComarProduct o = jtx.create(ComarProductDb.class);
         o.setMetric(ComarMetric.UNIDAD);
         return o;
     }
 
-    public static NavigableSet<ComarProductKite> getAll() {
+    public static NavigableSet<ComarProductDb> getAll() {
         JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarProductKite> products = jtx.getAll(ComarProductKite.class);
+        NavigableSet<ComarProductDb> products = jtx.getAll(ComarProductDb.class);
         return products;
     }
 
-    public static ComarProductKite get(Object id) throws ComarServiceException {
+    public static ComarProductDb get(Object id) throws ComarServiceException {
         if (id == null) {
             return null;
         }
@@ -69,20 +67,20 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         Long longId = (Long) id;
 
         JTransaction jtx = JTransaction.getCurrent();
-        return (ComarProductKite) jtx.get(new ObjId(longId));
+        return (ComarProductDb) jtx.get(new ObjId(longId));
     }
 
-    public static ComarProductKite getByCode(String code) {
+    public static ComarProductDb getByCode(String code) {
         if (code == null || code.isEmpty()) {
             return null;
         }
 
         JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarProductKite> result = jtx.queryIndex(ComarProductKite.class, "code", String.class).asMap().get(code);
+        NavigableSet<ComarProductDb> result = jtx.queryIndex(ComarProductDb.class, "code", String.class).asMap().get(code);
         return result != null ? result.first() : null;
     }
 
-    public static void delete(ComarProductKite p) {
+    public static void delete(ComarProductDb p) {
         if (p == null) {
             return;
         }
@@ -91,19 +89,19 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
         jtx.delete(p);
     }
 
-    public static List<ComarProductKite> search(final String text) {
+    public static List<ComarProduct> search(final String text) {
         if (text == null || text.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
 
         JTransaction jtx = JTransaction.getCurrent();
         String ttext = text.trim();
-        NavigableSet<ComarProductKite> all = jtx.getAll(ComarProductKite.class);
+        NavigableSet<ComarProduct> all = jtx.getAll(ComarProduct.class);
         if (!ttext.isEmpty()) {
             Pattern pattern = Pattern.compile(".*" + ttext + ".*");
-            Predicate<ComarProductKite> filterCode = e -> pattern.matcher(e.getCode()).matches();
-            Predicate<ComarProductKite> filterName = e -> pattern.matcher(e.getName()).matches();
-            Predicate<ComarProductKite> filter = e -> filterCode.test(e) || filterName.test(e);
+            Predicate<ComarProduct> filterCode = e -> pattern.matcher(e.getCode()).matches();
+            Predicate<ComarProduct> filterName = e -> pattern.matcher(e.getName()).matches();
+            Predicate<ComarProduct> filter = e -> filterCode.test(e) || filterName.test(e);
             return all.stream().filter(filter).collect(Collectors.toList());
         } else {
             return all.stream().collect(Collectors.toList());
@@ -112,7 +110,7 @@ public abstract class ComarProductKite implements JObject, ComarProduct {
     }
 
     public static boolean existsCode(String code) {
-        ComarProductKite product = getByCode(code);
+        ComarProduct product = getByCode(code);
         return product != null;
     }
 }

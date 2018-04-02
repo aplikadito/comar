@@ -19,11 +19,20 @@ public interface ComarProduct {
 
     void setName(String name);
 
+    double getBuyPrice();
+
+    void setBuyPrice(double buyPrice);
+
+    double getSellPrice();
+
+    void setSellPrice(double sellPrice);
+    
+    double getStock();
+
+    void setStock(double stock);
+
     ComarMetric getMetric();
 
     void setMetric(ComarMetric metric);
 
-    ComarCategory getCategory();
-
-    void setCategory(ComarCategory category);
 }

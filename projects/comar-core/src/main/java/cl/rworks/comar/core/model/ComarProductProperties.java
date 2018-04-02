@@ -9,18 +9,6 @@ package cl.rworks.comar.core.model;
  *
  * @author aplik
  */
-public interface ComarCategory {
-
-    Long getId();
-
-    void setId(Long id);
-
-    String getName();
-
-    void setName(String name);
-
-    boolean isIncludeInBill();
-
-    void setIncludeInBill(boolean includeInBill);
-
+public enum ComarProductProperties {
+    CODE, NAME, METRIC, BUYPRICE, SELLPRICE, STOCK;
 }
