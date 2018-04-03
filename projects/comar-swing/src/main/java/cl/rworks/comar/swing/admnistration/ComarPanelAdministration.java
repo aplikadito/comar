@@ -37,7 +37,7 @@ public class ComarPanelAdministration extends ComarPanelCard {
 
         this.tabbed = new WebTabbedPane();
         this.tabbed.addTab("Productos", new ComarPanelProduct());
-//        this.tabbed.addTab("Inventario", new ComarPanelStock());
+        this.tabbed.addTab("Historial", new ComarPanelHistorial());
         
         this.tabbed.setFontSize(ComarSystem.getInstance().getProperties().getNormalFontSize());
         this.panelContent.add(tabbed, BorderLayout.CENTER);

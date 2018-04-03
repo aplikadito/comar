@@ -13,9 +13,9 @@ import cl.rworks.comar.core.model.ComarProductHistorialAction;
 import cl.rworks.comar.core.model.ComarProductProperties;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.util.BorderLayoutPanel;
 import cl.rworks.comar.swing.util.ComarCloseAction;
 import cl.rworks.comar.swing.util.ComarIconLoader;
-import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
@@ -51,25 +51,22 @@ import javax.swing.SwingUtilities;
  *
  * @author rgonzalez
  */
-public class ComarPanelProduct extends ComarPanelCard {
+public class ComarPanelProduct extends BorderLayoutPanel {
 
-    private ComarPanelBaseEditor panelEditor;
+    private BaseEditorPanel panelEditor;
     private TableModel tableModel;
     private DecimalFormat nf = new DecimalFormat("#0.00");
     private DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern("dd/MM/yyyy HH:mm:ss").toFormatter();
 
     public ComarPanelProduct() {
-        setLayout(new BorderLayout());
-//        add(new ComarPanelSubtitle("Productos"), BorderLayout.NORTH);
-        add(buildContent(), BorderLayout.CENTER);
+        getPanelCenter().add(buildContent(), BorderLayout.CENTER);
     }
 
     private WebPanel buildContent() {
         WebPanel panel = new WebPanel();
         panel.setLayout(new BorderLayout());
-        panel.setBorder(new EmptyBorder(0, 10, 10, 10));
 
-        this.panelEditor = new ComarPanelBaseEditor();
+        this.panelEditor = new BaseEditorPanel();
         panel.add(panelEditor, BorderLayout.CENTER);
 
         this.tableModel = new TableModel();
@@ -302,11 +299,11 @@ public class ComarPanelProduct extends ComarPanelCard {
                     LocalDateTime now = LocalDateTime.now();
 //                    String nowStr = now.format(df);
                     ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.CODE.name(), "", code);
-                    ComarProductHistorialDb.create(name, now, "NEW", ComarProductProperties.NAME.name(), "", name);
-                    ComarProductHistorialDb.create(name, now, "NEW", ComarProductProperties.METRIC.name(), "", metric.name());
-                    ComarProductHistorialDb.create(name, now, "NEW", ComarProductProperties.BUYPRICE.name(), "", nf.format(buyPrice));
-                    ComarProductHistorialDb.create(name, now, "NEW", ComarProductProperties.SELLPRICE.name(), "", nf.format(sellPrice));
-                    ComarProductHistorialDb.create(name, now, "NEW", ComarProductProperties.STOCK.name(), "", nf.format(stock));
+                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.NAME.name(), "", name);
+                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.METRIC.name(), "", metric.name());
+                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.BUYPRICE.name(), "", nf.format(buyPrice));
+                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.SELLPRICE.name(), "", nf.format(sellPrice));
+                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.STOCK.name(), "", nf.format(stock));
                     jtx.commit();
 
 //                    ComarUtils.showInfo("Producto Agregado");

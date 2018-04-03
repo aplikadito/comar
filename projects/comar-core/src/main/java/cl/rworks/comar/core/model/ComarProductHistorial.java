@@ -17,9 +17,9 @@ public interface ComarProductHistorial {
 
     public void setCode(String code);
 
-    public LocalDateTime getTime();
+    public LocalDateTime getDateTime();
 
-    public void setTime(LocalDateTime now);
+    public void setDateTime(LocalDateTime now);
 
     public String getAction();
 

@@ -21,7 +21,7 @@ import javax.swing.BoxLayout;
  *
  * @author rgonzalez
  */
-public class ComarPanelBaseEditor extends WebPanel {
+public class BaseEditorPanel extends WebPanel {
 
 //    private WebPanel panelContent;
     private WebTable table;
@@ -35,7 +35,7 @@ public class ComarPanelBaseEditor extends WebPanel {
     private Dimension dimensionButton = new Dimension(100, 28);
     private int normalFontSize = ComarSystem.getInstance().getProperties().getNormalFontSize();
 
-    public ComarPanelBaseEditor() {
+    public BaseEditorPanel() {
         initValues();
     }
 
