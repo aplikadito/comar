@@ -6,6 +6,7 @@
 package cl.rworks.comar.swing.admnistration;
 
 import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.util.ComarTable;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -87,13 +88,9 @@ public class BaseEditorPanel extends WebPanel {
         WebPanel panel = new WebPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
-        table = new WebTable();
+        table = new ComarTable();
         panel.add(new WebScrollPane(table));
         
-        table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont((float) normalFontSize));
-        table.setFontSize(normalFontSize);
-        table.setRowHeight(normalFontSize + 4);
-
         return panel;
     }
 
