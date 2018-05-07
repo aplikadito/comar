@@ -25,6 +25,8 @@ public class ComarTable extends WebTable {
         getTableHeader().setFont(getTableHeader().getFont().deriveFont((float) normalFontSize));
         setFontSize(normalFontSize);
         setRowHeight(normalFontSize + 4);
+
+        setDefaultRenderer(Double.class, new DoubleTableRenderer());
     }
 
 }

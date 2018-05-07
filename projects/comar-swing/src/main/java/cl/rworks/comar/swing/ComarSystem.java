@@ -7,6 +7,7 @@ package cl.rworks.comar.swing;
 
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceImpl;
+import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
 import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.properties.ComarPropertiesImpl;
 import java.awt.KeyEventDispatcher;
@@ -48,12 +49,29 @@ public class ComarSystem {
         return service;
     }
 
-    public void startup() {
-        ComarSystem.getInstance().getProperties().save();
-    }
-
     public ComarProperties getProperties() {
         return properties;
+    }
+
+    public void startup() {
+        ComarSystem.getInstance().getProperties().save();
+        startupKeyboard();
+    }
+
+    private void startupKeyboard() {
+        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent e) {
+                if (frame.getActualCardName().equals("POS")) {
+                    ComarPanelPointOfSell panelPos = frame.getPanelPointOfSell();
+                    return panelPos.dispatchKeyEventPos(e);
+                }
+                return false;
+            }
+
+        });
     }
 
 }

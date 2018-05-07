@@ -12,7 +12,6 @@ import cl.rworks.comar.swing.util.ComarTable;
 import cl.rworks.comar.swing.util.ComarTextField;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
@@ -27,7 +26,7 @@ import javax.swing.BoxLayout;
  */
 public class BaseEditorPanel extends ComarPanel {
 
-    private WebTable table;
+    private ComarTable table;
     private WebTextField textSearch;
     private ComarButton buttonSearch;
     private ComarButton buttonClear;
@@ -136,7 +135,7 @@ public class BaseEditorPanel extends ComarPanel {
 //
 //        return panel;
 //    }
-    public WebTable getTable() {
+    public ComarTable getTable() {
         return table;
     }
 

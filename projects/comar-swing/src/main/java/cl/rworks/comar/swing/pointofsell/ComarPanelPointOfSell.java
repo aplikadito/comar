@@ -23,9 +23,12 @@ import io.permazen.JTransaction;
 import io.permazen.Permazen;
 import io.permazen.ValidationMode;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -34,12 +37,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -52,10 +55,10 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
     private static final String TOOLTIP_ADD = "Agregar el producto a la venta";
     private static final String TOOLTIP_EDIT = "Editar la cantidad del producto seleccionado\nPuede presionar F2 para editar el producto seleccionado";
     //
-    private ComarTextField textCode = new ComarTextField(20);
+    private ComarLabel labelCode;
+    private ComarTextField textCode;
     private ComarTable table;
     private TableModel tableModel;
-    //
     private ComarTextField textTotal;
     private ComarButton buttonAdd;
     private ComarButton buttonEdit;
@@ -68,20 +71,24 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
         add(buildContent(), BorderLayout.CENTER);
 
         initToolTipHelp();
-        initShortcuts();
     }
 
     public ComarPanel buildContent() {
         ComarPanel panel = new ComarPanel(new BorderLayout());
 
+        labelCode = new ComarLabel("Codigo");
+
+        textCode = new ComarTextField(20);
         textCode.setFocusable(true);
         textCode.addKeyListener(new KeyAdapter() {
+
             @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() == '\n') {
                     addProduct();
                 }
             }
+
         });
 
         buttonAdd = new ComarButton("Agregar");
@@ -96,12 +103,12 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
         buttonEdit.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                editProduct();
+                editProducts();
             }
         });
 
         ComarPanel panelWest = new ComarPanel(new FlowLayout());
-        panelWest.add(new ComarLabel("Codigo"));
+        panelWest.add(labelCode);
         panelWest.add(textCode);
         panelWest.add(buttonAdd);
         panelWest.add(buttonEdit);
@@ -119,18 +126,19 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
-                    editProduct();
+                    editProducts();
                 }
             }
-
         });
 
-        panel.add(new ComarPanel(new BorderLayout()) {
-            {
-                table.setFontSize(ComarSystem.getInstance().getProperties().getFontSize());
-                add(new WebScrollPane(table), BorderLayout.CENTER);
-            }
-        }, BorderLayout.CENTER);
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(new EditAction());
+        popup.add(new RemoveAction());
+        table.setComponentPopupMenu(popup);
+
+        ComarPanel panelTable = new ComarPanel(new BorderLayout());
+        panelTable.add(new WebScrollPane(table), BorderLayout.CENTER);
+        panel.add(panelTable, BorderLayout.CENTER);
 
         textTotal = new ComarTextField(10);
         textTotal.setFontSize(36);
@@ -156,26 +164,11 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
         }
     }
 
-    private void initShortcuts() {
-        this.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("F1"), "gotoCode");
-        this.getActionMap().put("gotoCode", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                textCode.requestFocus();
-            }
-        });
-
-        this.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("F2"), "edit");
-        this.getActionMap().put("edit", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editProduct();
-            }
-        });
-    }
-
     private void addProduct() {
         String text = textCode.getText();
+        if (text == null || text.isEmpty()) {
+            return;
+        }
 
         Row row = null;
         Permazen db = ComarSystem.getInstance().getService().getDb();
@@ -187,6 +180,8 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
                 row = new Row();
                 row.setCode(pdb.getCode());
                 row.setDescription(pdb.getDescription());
+                row.setCount(1);
+                row.setSellPrice(pdb.getSellPrice());
             }
         } finally {
             jtx.rollback();
@@ -203,38 +198,100 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
         }
     }
 
-    private void editProduct() {
-        table.requestFocus();
-
-        int vrow = table.getSelectedRow();
-        if (vrow < 0) {
-            ComarUtils.showWarn(this, "Seleccione un producto de la tabla");
+    private void editProducts() {
+        int[] vrows = table.getSelectedRows();
+        if (vrows.length <= 0) {
+//            ComarUtils.showWarn(this, "Seleccione un producto de la tabla");
             return;
         }
 
-        int mrow = table.convertRowIndexToModel(vrow);
-        Row row = tableModel.getRows().get(mrow);
+        List<Row> editList = new ArrayList<>();
+        for (int i = 0; i < vrows.length; i++) {
+            int mrow = table.convertRowIndexToModel(vrows[i]);
+            Row row = tableModel.getRows().get(mrow);
+            editList.add(row);
+        }
 
-        double count = row.getCount();
+        double count = editList.get(0).getCount();
+        String msg = editList.size() == 1 ? editList.get(0).getDescription() : " ... varios";
         String strCount = ComarUtils.formatDbl(count);
-        String str = (String) WebOptionPane.showInputDialog(ComarPanelPointOfSell.this, "Producto: " + row.getDescription(), "Cantidad", JOptionPane.PLAIN_MESSAGE, null, null, strCount);
+        String str = (String) WebOptionPane.showInputDialog(ComarPanelPointOfSell.this, "Producto: " + msg, "Cantidad", JOptionPane.PLAIN_MESSAGE, null, null, strCount);
         if (str == null) {
             return;
         }
 
-        count = 1;
         try {
             count = ComarUtils.parseDbl(str);
         } catch (ParseException ex) {
             return;
         }
 
-        row.setCount(count);
+        for (Row row : editList) {
+            row.setCount(count);
+        }
+        tableModel.fireTableDataChanged();
+    }
 
-//        textCode.requestFocus();
+    private void removeProducts() {
+        int[] vrows = table.getSelectedRows();
+        if (vrows.length <= 0) {
+//            ComarUtils.showWarn(this, "Seleccione un producto de la tabla");
+            return;
+        }
+
+        List<Row> deleteList = new ArrayList<>();
+        for (int i = 0; i < vrows.length; i++) {
+            int mrow = table.convertRowIndexToModel(vrows[i]);
+            Row row = tableModel.getRows().get(mrow);
+            deleteList.add(row);
+        }
+
+        tableModel.getRows().removeAll(deleteList);
+        tableModel.fireTableDataChanged();
     }
 
     public void loadCard() {
+    }
+
+    public boolean dispatchKeyEventPos(KeyEvent e) {
+        switch (e.getID()) {
+            case KeyEvent.KEY_PRESSED:
+                return keyPressed(e);
+            case KeyEvent.KEY_RELEASED:
+                return keyReleased(e);
+            case KeyEvent.KEY_TYPED:
+                return keyTyped(e);
+            default:
+                return false;
+        }
+    }
+
+    public boolean keyPressed(KeyEvent e) {
+//        System.out.println("keyPressed: " + e.getKeyCode());
+        return false;
+    }
+
+    public boolean keyReleased(KeyEvent e) {
+//        System.out.println("keyReleased: " + e.getKeyCode());
+        if (e.getKeyCode() == KeyEvent.VK_F1) {
+            textCode.requestFocus();
+            return true;
+        } else if (e.getKeyCode() == KeyEvent.VK_F2) {
+            table.requestFocus();
+            return true;
+        } else if (e.getKeyCode() == KeyEvent.VK_F3) {
+            editProducts();
+            return true;
+        } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+            removeProducts();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean keyTyped(KeyEvent e) {
+//        System.out.println("keyTyped: " + (e.getModifiers()));
+        return false;
     }
 
     private class TableModel extends AbstractTableModel {
@@ -271,6 +328,22 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
         }
 
         @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return String.class;
+                case 1:
+                    return String.class;
+                case 2:
+                    return Double.class;
+                case 3:
+                    return Double.class;
+                default:
+                    return String.class;
+            }
+        }
+
+        @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             Row row = rows.get(rowIndex);
             switch (columnIndex) {
@@ -286,7 +359,6 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
                     return "";
             }
         }
-
     }
 
     private class Row {
@@ -294,15 +366,16 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
         private String code;
         private String description;
         private double count;
-        private double subtotal;
+        private double sellPrice;
 
         public Row() {
-            this("", "");
+            this("", "", 0);
         }
 
-        public Row(String code, String name) {
+        public Row(String code, String name, double sellPrice) {
             this.code = code;
             this.description = name;
+            this.sellPrice = sellPrice;
         }
 
         public String getCode() {
@@ -329,12 +402,42 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
             this.count = count;
         }
 
-        public double getSubtotal() {
-            return subtotal;
+        public double getSellPrice() {
+            return sellPrice;
         }
 
-        public void setSubtotal(double subtotal) {
-            this.subtotal = subtotal;
+        public void setSellPrice(double sellPrice) {
+            this.sellPrice = sellPrice;
+        }
+
+        public double getSubtotal() {
+            return count * sellPrice;
+        }
+
+    }
+
+    private class EditAction extends AbstractAction {
+
+        public EditAction() {
+            putValue(NAME, "Editar");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            editProducts();
+        }
+
+    }
+
+    private class RemoveAction extends AbstractAction {
+
+        public RemoveAction() {
+            putValue(NAME, "Quitar");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            removeProducts();
         }
 
     }

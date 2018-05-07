@@ -13,16 +13,15 @@ import cl.rworks.comar.core.model.ComarProductHistorialAction;
 import cl.rworks.comar.core.model.ComarProductProperties;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
-import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
 import cl.rworks.comar.swing.util.ComarButton;
 import cl.rworks.comar.swing.util.ComarCloseAction;
 import cl.rworks.comar.swing.util.ComarIconLoader;
 import cl.rworks.comar.swing.util.ComarPanel;
+import cl.rworks.comar.swing.util.ComarTable;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.optionpane.WebOptionPane;
-import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
@@ -68,7 +67,7 @@ public class ComarPanelProductsSearch extends ComarPanel {
         panel.add(panelEditor, BorderLayout.CENTER);
 
         this.tableModel = new TableModel();
-        WebTable table = panelEditor.getTable();
+        ComarTable table = panelEditor.getTable();
         table.setModel(tableModel);
         table.addMouseListener(new MouseAdapter() {
             @Override
@@ -95,7 +94,7 @@ public class ComarPanelProductsSearch extends ComarPanel {
 
     private class TableModel extends AbstractTableModel {
 
-        private String[] columnNames = new String[]{"Codigo", "Nombre", "Unidad", "Precio Compra", "Precio Venta", "Stock"};
+        private String[] columnNames = new String[]{"Codigo", "Descripcion", "Unidad", "Precio Compra", "Precio Venta", "Stock"};
 
         private List<ComarPanelProductRow> products;
 
@@ -123,6 +122,26 @@ public class ComarPanelProductsSearch extends ComarPanel {
         }
 
         @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return String.class;
+                case 1:
+                    return String.class;
+                case 2:
+                    return String.class;
+                case 3:
+                    return Double.class;
+                case 4:
+                    return Double.class;
+                case 5:
+                    return Double.class;
+                default:
+                    return String.class;
+            }
+        }
+
+        @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             ComarPanelProductRow p = products.get(rowIndex);
             switch (columnIndex) {
@@ -133,11 +152,11 @@ public class ComarPanelProductsSearch extends ComarPanel {
                 case 2:
                     return p.getMetric().getName();
                 case 3:
-                    return ComarUtils.formatDbl(p.getBuyPrice());
+                    return p.getBuyPrice();
                 case 4:
-                    return ComarUtils.formatDbl(p.getSellPrice());
+                    return p.getSellPrice();
                 case 5:
-                    return ComarUtils.formatDbl(p.getStock());
+                    return p.getStock();
                 default:
                     return "";
             }

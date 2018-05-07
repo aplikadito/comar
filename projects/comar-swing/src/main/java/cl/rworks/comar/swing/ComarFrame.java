@@ -6,7 +6,6 @@
 package cl.rworks.comar.swing;
 
 import cl.rworks.comar.swing.products.ComarPanelProducts;
-import cl.rworks.comar.swing.products.ComarPanelProductsHistorial;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
 import cl.rworks.comar.swing.sells.ComarPanelSells;
 import cl.rworks.comar.swing.settings.ComarPanelSettings;
@@ -134,6 +133,7 @@ public class ComarFrame extends WebFrame {
         private ComarMenuButton(ShowViewAction action) {
             super(action);
             setMinimumWidth(250);
+            setMinimumHeight(50);
         }
 
     }
