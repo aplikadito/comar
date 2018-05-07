@@ -16,7 +16,7 @@ public class ComarTextField extends WebTextField {
 
     public ComarTextField(int columns) {
         super(columns);
-        setFontSize(ComarSystem.getInstance().getProperties().getNormalFontSize());
+        setFontSize(ComarSystem.getInstance().getProperties().getFontSize());
     }
 
 }

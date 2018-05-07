@@ -7,6 +7,7 @@ package cl.rworks.comar.swing.util;
 
 import cl.rworks.comar.swing.ComarSystem;
 import com.alee.laf.table.WebTable;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -15,7 +16,12 @@ import com.alee.laf.table.WebTable;
 public class ComarTable extends WebTable {
 
     public ComarTable() {
-        int normalFontSize = ComarSystem.getInstance().getProperties().getNormalFontSize();
+        this(null);
+    }
+
+    public ComarTable(TableModel model) {
+        super(model);
+        int normalFontSize = ComarSystem.getInstance().getProperties().getFontSize();
         getTableHeader().setFont(getTableHeader().getFont().deriveFont((float) normalFontSize));
         setFontSize(normalFontSize);
         setRowHeight(normalFontSize + 4);

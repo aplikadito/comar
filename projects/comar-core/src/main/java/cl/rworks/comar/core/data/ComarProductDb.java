@@ -39,7 +39,7 @@ public abstract class ComarProductDb implements JObject, ComarProduct {
     }
 
     public String toString() {
-        return String.format("[%s, %s, %s, %s, %s]", getCode(), getName(), getMetric(), getBuyPrice(), getSellPrice());
+        return String.format("[%s, %s, %s, %s, %s]", getCode(), getDescription(), getMetric(), getBuyPrice(), getSellPrice());
     }
 
     public static ComarProduct create() {
@@ -100,7 +100,7 @@ public abstract class ComarProductDb implements JObject, ComarProduct {
         if (!ttext.isEmpty()) {
             Pattern pattern = Pattern.compile(".*" + ttext + ".*");
             Predicate<ComarProduct> filterCode = e -> pattern.matcher(e.getCode()).matches();
-            Predicate<ComarProduct> filterName = e -> pattern.matcher(e.getName()).matches();
+            Predicate<ComarProduct> filterName = e -> pattern.matcher(e.getDescription()).matches();
             Predicate<ComarProduct> filter = e -> filterCode.test(e) || filterName.test(e);
             return all.stream().filter(filter).collect(Collectors.toList());
         } else {

@@ -19,8 +19,12 @@ public class ComarLabel extends WebLabel {
     }
 
     public ComarLabel(String text) {
+        this(text, ComarSystem.getInstance().getProperties().getFontSize());
+    }
+
+    public ComarLabel(String text, int fontSize) {
         super(text);
-        setFontSize(ComarSystem.getInstance().getProperties().getNormalFontSize());
+        setFontSize(fontSize);
     }
 
 }

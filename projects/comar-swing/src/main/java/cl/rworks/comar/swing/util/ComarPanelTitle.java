@@ -17,19 +17,17 @@ import javax.swing.border.EmptyBorder;
  */
 public class ComarPanelTitle extends WebPanel {
 
-    private int fontSize = ComarSystem.getInstance().getProperties().getLargeFontSize();
-    
     public ComarPanelTitle(String title) {
         
         WebLabel labelTitle = new WebLabel(title);
         labelTitle.setBoldFont();
-        labelTitle.setFontSize(fontSize);
+        labelTitle.setFontSize(24);
         labelTitle.setForeground(Color.WHITE);
         
         add(labelTitle);
-        setMinimumHeight(fontSize + 20);
-        setPreferredHeight(fontSize + 20);
-        setMaximumHeight(fontSize + 20);
+        setMinimumHeight(24 + 20);
+        setPreferredHeight(24 + 20);
+        setMaximumHeight(24 + 20);
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(Color.BLACK);
     }

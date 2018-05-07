@@ -18,14 +18,12 @@ import javax.swing.border.EmptyBorder;
  */
 public class ComarPanelSubtitle extends WebPanel {
 
-    private int fontSize = ComarSystem.getInstance().getProperties().getMediumFontSize();
-    
     public ComarPanelSubtitle(String title) {
         setLayout(new BorderLayout());
 
         WebLabel labelTitle = new WebLabel(title);
 //        labelTitle.setBoldFont();
-        labelTitle.setFontSize(fontSize);
+        labelTitle.setFontSize(22);
 
         add(labelTitle, BorderLayout.PAGE_START);
 

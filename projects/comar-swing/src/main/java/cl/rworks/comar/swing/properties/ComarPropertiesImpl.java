@@ -39,11 +39,10 @@ public class ComarPropertiesImpl implements ComarProperties {
         try {
             properties.load(new FileReader(file));
         } catch (IOException ex) {
-            try {
-                properties.load(getClass().getResourceAsStream("/comar.properties"));
-            } catch (IOException ex1) {
-                LOG.error("comar.properties no fue encontrado en 'resources'");
-            }
+            setIva(IVA_DEFAULT);
+            setFontSize(LETRA_DEFAULT);
+            setHelpActive(AYUDA_DEFAULT == 1);
+            LOG.info("Cargando propiedades por defecto");
         }
     }
 
@@ -66,20 +65,9 @@ public class ComarPropertiesImpl implements ComarProperties {
     }
 
     @Override
-    public ComarRoundingMode getRoundingMode() {
-        String rm = properties.getProperty(ROUNDING_MODE);
-        return ComarRoundingMode.parse(rm);
-    }
-
-    @Override
-    public void setRoundingMode(ComarRoundingMode redondeo) {
-        properties.setProperty(ROUNDING_MODE, redondeo.name());
-    }
-
-    @Override
-    public double getDefaultTax() {
+    public double getIva() {
         try {
-            String strIva = properties.getProperty(DEFAULT_TAX);
+            String strIva = properties.getProperty(IVA);
             return dfTax.parse(strIva).doubleValue();
         } catch (ParseException ex) {
             LOG.error("Error al parsear IVA", ex);
@@ -88,8 +76,8 @@ public class ComarPropertiesImpl implements ComarProperties {
     }
 
     @Override
-    public void setDefaultTax(double iva) {
-        properties.setProperty(DEFAULT_TAX, dfTax.format(iva));
+    public void setIva(double iva) {
+        properties.setProperty(IVA, dfTax.format(iva));
     }
 
     private int getInt(String property, int defaultValue) {
@@ -108,32 +96,23 @@ public class ComarPropertiesImpl implements ComarProperties {
     }
 
     @Override
-    public int getNormalFontSize() {
-        return getInt(NORMAL_FONT_SIZE, 16);
+    public int getFontSize() {
+        return getInt(LETRA, LETRA_DEFAULT);
     }
 
     @Override
-    public void setNormalFontSize(int size) {
-        setInt(NORMAL_FONT_SIZE, size);
+    public void setFontSize(int size) {
+        setInt(LETRA, size);
     }
 
     @Override
-    public int getMediumFontSize() {
-        return getInt(MEDIUM_FONT_SIZE, 18);
+    public boolean isHelpActive() {
+        return getInt(AYUDA, 1) == 1;
     }
 
     @Override
-    public void setMediumFontSize(int size) {
-        setInt(MEDIUM_FONT_SIZE, size);
+    public void setHelpActive(boolean helpActive) {
+        setInt(AYUDA, helpActive ? 1 : 0);
     }
 
-    @Override
-    public int getLargeFontSize() {
-        return getInt(LARGE_FONT_SIZE, 20);
-    }
-
-    @Override
-    public void setLargeFontSize(int size) {
-        setInt(LARGE_FONT_SIZE, size);
-    }
 }

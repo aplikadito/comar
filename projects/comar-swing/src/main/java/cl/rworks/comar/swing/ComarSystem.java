@@ -50,57 +50,10 @@ public class ComarSystem {
 
     public void startup() {
         ComarSystem.getInstance().getProperties().save();
-        startupDb();
-        startupKeyboard();
-    }
-
-    private void startupDb() {
-//        Permazen db = service.getDb().get();
-//        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-//        JTransaction.setCurrent(jtx);
-//        try {
-//            ComarCategoryKite category = ComarCategoryKite.getByName("General");
-//            if (category == null) {
-//                ComarCategoryKite.create("General");
-//            }
-//            jtx.commit();
-//        } catch (Exception ex) {
-//            jtx.rollback();
-//            ex.printStackTrace();
-//        } finally {
-//            JTransaction.setCurrent(null);
-//        }
-    }
-
-    private void startupKeyboard() {
-        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
-
-            StringBuilder sb = new StringBuilder();
-
-            @Override
-            public boolean dispatchKeyEvent(KeyEvent e) {
-//                String actualCardName = frame.getPanelCard().getActualCardName();
-//                if (actualCardName.equals("POS")) {
-//                    if (KeyEvent.KEY_TYPED == e.getID()) {
-//                        System.out.println("Got key event!");
-//
-//                        sb.append(e.getKeyChar());
-//                        panelPointOfSell.getLabelKeyboard().setText(sb.toString());
-//                        return false;
-//                    } else {
-//                        return true;
-//                    }
-//                } else {
-//                    return true;
-//                }
-                return false;
-            }
-        });
     }
 
     public ComarProperties getProperties() {
         return properties;
     }
-    
+
 }

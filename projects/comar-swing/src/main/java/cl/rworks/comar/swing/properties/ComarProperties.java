@@ -11,33 +11,28 @@ package cl.rworks.comar.swing.properties;
  */
 public interface ComarProperties {
 
-    String ROUNDING_MODE = "ROUNDING_MODE";
-    String DEFAULT_TAX = "DEFAULT_TAX";
-    String NORMAL_FONT_SIZE = "NORMAL_FONT_SIZE";
-    String MEDIUM_FONT_SIZE = "MEDIUM_FONT_SIZE";
-    String LARGE_FONT_SIZE = "LARGE_FONT_SIZE";
+    String IVA = "comar.iva";
+    double IVA_DEFAULT = 0.19;
+    //
+    String LETRA = "comar.tamano.letra";
+    int LETRA_DEFAULT = 20;
+    //
+    String AYUDA = "comar.ayuda.activa";
+    int AYUDA_DEFAULT = 1;
 
     void load();
 
     void save();
 
-    ComarRoundingMode getRoundingMode();
+    double getIva();
 
-    void setRoundingMode(ComarRoundingMode roundingMode);
+    void setIva(double iva);
 
-    double getDefaultTax();
+    int getFontSize();
 
-    void setDefaultTax(double defaultTax);
-    
-    int getNormalFontSize();
-    
-    void setNormalFontSize(int size);
-    
-    int getMediumFontSize();
-    
-    void setMediumFontSize(int size);
-    
-    int getLargeFontSize();
-    
-    void setLargeFontSize(int size);
+    void setFontSize(int size);
+
+    boolean isHelpActive();
+
+    void setHelpActive(boolean helpActive);
 }

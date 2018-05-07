@@ -6,12 +6,13 @@
 package cl.rworks.comar.swing.util;
 
 import com.alee.laf.panel.WebPanel;
+import java.awt.Color;
 
 /**
  *
  * @author aplik
  */
-public abstract class ComarPanelCard extends WebPanel {
+public abstract class ComarPanelCard extends ComarPanel {
 
     public void loadCard() {
     }
