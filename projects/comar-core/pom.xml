@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cl.rworks.comar</groupId>
     <artifactId>comar-core</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     
     <properties>
@@ -13,19 +13,32 @@
     </properties>
     
     <dependencies>
-        <dependency>
-            <groupId>cl.rworks</groupId>
-            <artifactId>kite</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        
         <dependency> 
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.25</version>
         </dependency>
-        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cl.rworks</groupId>
+            <artifactId>rservices</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.permazen</groupId>
+            <artifactId>permazen-kv-derby</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.permazen</groupId>
+            <artifactId>permazen-kv-mysql</artifactId>
+            <version>4.1.1</version>
+        </dependency>
     </dependencies>
     
 </project>

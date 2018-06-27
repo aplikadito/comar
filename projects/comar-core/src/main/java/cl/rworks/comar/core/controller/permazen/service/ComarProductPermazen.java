@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.data;
+package cl.rworks.comar.core.controller.permazen.service;
 
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.model.ComarProduct;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * @author rgonzalez
  */
 @PermazenType
-public abstract class ComarProductDb implements JObject, ComarProduct {
+public abstract class ComarProductPermazen implements JObject, ComarProduct {
 
     @JField(indexed = true, unique = true)
     public abstract String getCode();
@@ -35,7 +35,7 @@ public abstract class ComarProductDb implements JObject, ComarProduct {
 
     @OnCreate
     void onCreate() {
-        setMetric(ComarMetric.UNIDAD);
+        setMetric(ComarMetric.UNIDADES);
     }
 
     public String toString() {
@@ -44,18 +44,18 @@ public abstract class ComarProductDb implements JObject, ComarProduct {
 
     public static ComarProduct create() {
         JTransaction jtx = JTransaction.getCurrent();
-        ComarProduct o = jtx.create(ComarProductDb.class);
-        o.setMetric(ComarMetric.UNIDAD);
+        ComarProduct o = jtx.create(ComarProductPermazen.class);
+        o.setMetric(ComarMetric.UNIDADES);
         return o;
     }
 
-    public static NavigableSet<ComarProductDb> getAll() {
+    public static NavigableSet<ComarProductPermazen> getAll() {
         JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarProductDb> products = jtx.getAll(ComarProductDb.class);
+        NavigableSet<ComarProductPermazen> products = jtx.getAll(ComarProductPermazen.class);
         return products;
     }
 
-    public static ComarProductDb get(Object id) throws ComarServiceException {
+    public static ComarProductPermazen get(Object id) throws ComarServiceException {
         if (id == null) {
             return null;
         }
@@ -67,20 +67,20 @@ public abstract class ComarProductDb implements JObject, ComarProduct {
         Long longId = (Long) id;
 
         JTransaction jtx = JTransaction.getCurrent();
-        return (ComarProductDb) jtx.get(new ObjId(longId));
+        return (ComarProductPermazen) jtx.get(new ObjId(longId));
     }
 
-    public static ComarProductDb getByCode(String code) {
+    public static ComarProductPermazen getByCode(String code) {
         if (code == null || code.isEmpty()) {
             return null;
         }
 
         JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarProductDb> result = jtx.queryIndex(ComarProductDb.class, "code", String.class).asMap().get(code);
+        NavigableSet<ComarProductPermazen> result = jtx.queryIndex(ComarProductPermazen.class, "code", String.class).asMap().get(code);
         return result != null ? result.first() : null;
     }
 
-    public static void delete(ComarProductDb p) {
+    public static void delete(ComarProductPermazen p) {
         if (p == null) {
             return;
         }
@@ -89,14 +89,14 @@ public abstract class ComarProductDb implements JObject, ComarProduct {
         jtx.delete(p);
     }
 
-    public static List<ComarProduct> search(final String text) {
+    public static List<ComarProductPermazen> search(final String text) {
         if (text == null || text.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
 
         JTransaction jtx = JTransaction.getCurrent();
         String ttext = text.trim();
-        NavigableSet<ComarProduct> all = jtx.getAll(ComarProduct.class);
+        NavigableSet<ComarProductPermazen> all = jtx.getAll(ComarProductPermazen.class);
         if (!ttext.isEmpty()) {
             Pattern pattern = Pattern.compile(".*" + ttext + ".*");
             Predicate<ComarProduct> filterCode = e -> pattern.matcher(e.getCode()).matches();

@@ -5,15 +5,12 @@
  */
 package cl.rworks.comar.swing.products;
 
-import cl.rworks.comar.core.data.ComarProductHistorialDb;
+import cl.rworks.comar.core.controller.ComarController;
+import cl.rworks.comar.core.model.ComarProductHistorial;
 import cl.rworks.comar.swing.ComarSystem;
-import cl.rworks.comar.swing.products.BaseEditorPanel;
 import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
-import com.alee.laf.table.WebTable;
-import io.permazen.JTransaction;
-import io.permazen.Permazen;
-import io.permazen.ValidationMode;
+import cl.rworks.comar.swing.util.ComarTable;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.time.format.DateTimeFormatter;
@@ -38,12 +35,12 @@ public class ComarPanelProductsHistorial extends ComarPanelCard {
         setBorder(new EmptyBorder(30, 30, 30, 30));
 
         add(new ComarPanelTitle("Historial"), BorderLayout.NORTH);
-        
+
         this.panelEditor = new BaseEditorPanel();
         add(panelEditor, BorderLayout.CENTER);
 
         this.tableModel = new TableModel();
-        WebTable table = panelEditor.getTable();
+        ComarTable table = panelEditor.getTable();
         table.setModel(tableModel);
 //        table.addMouseListener(new MouseAdapter() {
 //            @Override
@@ -181,27 +178,29 @@ public class ComarPanelProductsHistorial extends ComarPanelCard {
         @Override
         public void actionPerformed(ActionEvent e) {
             String text = panelEditor.getTextSearch().getText();
-            Permazen db = ComarSystem.getInstance().getService().getDb();
-            JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-            JTransaction.setCurrent(jtx);
+            ComarController controller = ComarSystem.getInstance().getService().getController();
             try {
+                controller.createTransaction();
 
                 List<Row> rows = new ArrayList<>();
-                for (ComarProductHistorialDb element : ComarProductHistorialDb.search(text)) {
+                List<ComarProductHistorial> list = controller.searchProductHistorial(text);
+                for (ComarProductHistorial element : list) {
                     rows.add(toRow(element));
                 }
 
                 tableModel.setRows(rows);
                 tableModel.fireTableDataChanged();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             } finally {
-                jtx.rollback();
-                JTransaction.setCurrent(null);
+                controller.rollback();
+                controller.endTransaction();
             }
         }
 
     }
 
-    private Row toRow(ComarProductHistorialDb e) {
+    private Row toRow(ComarProductHistorial e) {
         DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("dd/MM/yyyy HH:mm:ss").toFormatter();
         String strDateTime = e.getDateTime().format(formatter);
         return new Row(e.getCode(), strDateTime, e.getAction(), e.getProperty(), e.getOldValue(), e.getNewValue());

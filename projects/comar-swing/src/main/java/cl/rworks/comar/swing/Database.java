@@ -5,7 +5,8 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.core.data.ComarProductHistorialDb;
+import cl.rworks.comar.core.controller.ComarController;
+import cl.rworks.comar.core.controller.ComarControllerException;
 import io.permazen.JField;
 import io.permazen.JTransaction;
 import io.permazen.Permazen;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedMap;
+import cl.rworks.comar.core.controller.permazen.service.ComarProductHistorialPermazen;
 
 /**
  *
@@ -25,12 +27,11 @@ public class Database {
         System.setProperty("user.dir", "D:\\trabajo\\comar\\home");
 
         ComarSystem system = ComarSystem.getInstance();
+        ComarController controller = system.getService().getController();
 
-        Permazen db = system.getService().getDb();
-        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
         try {
-            NavigableSet<ComarProductHistorialDb> nav = ComarProductHistorialDb.getAll();
+            controller.createTransaction();
+            NavigableSet<ComarProductHistorialPermazen> nav = ComarProductHistorialPermazen.getAll();
             nav.stream().forEach(e -> {
                 SortedMap<String, JField> map = e.getJClass().getJFieldsByName();
                 Set<Map.Entry<String, JField>> entrySet = map.entrySet();
@@ -41,10 +42,10 @@ public class Database {
                 System.out.println();
 
             });
-
+        } catch (ComarControllerException e) {
+            e.printStackTrace();
         } finally {
-            jtx.rollback();
-            JTransaction.setCurrent(null);
+            controller.endTransaction();
         }
     }
 }

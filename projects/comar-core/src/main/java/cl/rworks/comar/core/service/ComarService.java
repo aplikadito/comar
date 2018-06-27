@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.core.service;
 
-import io.permazen.Permazen;
+import cl.rworks.comar.core.controller.ComarController;
 
 /**
  *
@@ -13,10 +13,9 @@ import io.permazen.Permazen;
  */
 public interface ComarService {
 
-    int MEMORY = 0;
-    int DISK = 1;
-    int MYSQL = 2;
+    int PERMAZEN = 0;
+    int DERBY = 1;
 
-    Permazen getDb();
-    
+    ComarController getController();
+
 }

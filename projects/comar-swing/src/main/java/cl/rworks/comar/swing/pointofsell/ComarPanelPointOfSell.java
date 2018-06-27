@@ -5,7 +5,10 @@
  */
 package cl.rworks.comar.swing.pointofsell;
 
-import cl.rworks.comar.core.data.ComarProductDb;
+import cl.rworks.comar.core.controller.ComarController;
+import cl.rworks.comar.core.controller.ComarControllerException;
+import cl.rworks.comar.core.controller.permazen.service.ComarProductPermazen;
+import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarButton;
 import cl.rworks.comar.swing.util.ComarLabel;
@@ -19,20 +22,15 @@ import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
-import io.permazen.JTransaction;
-import io.permazen.Permazen;
-import io.permazen.ValidationMode;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +39,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -65,7 +61,7 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
 
     public ComarPanelPointOfSell() {
         setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(30, 30, 30, 30));
+//        setBorder(new EmptyBorder(30, 30, 30, 30));
 
         add(new ComarPanelTitle("Punto de Venta"), BorderLayout.NORTH);
         add(buildContent(), BorderLayout.CENTER);
@@ -75,6 +71,7 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
 
     public ComarPanel buildContent() {
         ComarPanel panel = new ComarPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(30, 30, 30, 30));
 
         labelCode = new ComarLabel("Codigo");
 
@@ -165,37 +162,45 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
     }
 
     private void addProduct() {
-        String text = textCode.getText();
-        if (text == null || text.isEmpty()) {
+        String code = textCode.getText().trim();
+        if (code == null || code.isEmpty()) {
             return;
         }
 
-        Row row = null;
-        Permazen db = ComarSystem.getInstance().getService().getDb();
-        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
         try {
-            ComarProductDb pdb = ComarProductDb.getByCode(text);
-            if (pdb != null) {
-                row = new Row();
-                row.setCode(pdb.getCode());
-                row.setDescription(pdb.getDescription());
-                row.setCount(1);
-                row.setSellPrice(pdb.getSellPrice());
-            }
-        } finally {
-            jtx.rollback();
-            JTransaction.setCurrent(null);
-        }
-
-        if (row != null) {
+            Row row = findProduct(code);
             tableModel.getRows().add(row);
             tableModel.fireTableDataChanged();
             table.setSelectedRow(tableModel.getRows().size() - 1);
             textCode.clear();
-        } else {
-            ComarUtils.showWarn(this, "Producto no encontrado: '" + text + "'");
+        } catch (ComarServiceException e) {
+            ComarUtils.showWarn(this, "Producto no encontrado: '" + code + "'");
         }
+    }
+
+    private Row findProduct(String code) throws ComarServiceException {
+        ComarController controller = ComarSystem.getInstance().getService().getController();
+        try {
+            controller.createTransaction();
+            ComarProductPermazen pdb = ComarProductPermazen.getByCode(code);
+
+            if (pdb != null) {
+                Row row = new Row();
+                row.setCode(pdb.getCode());
+                row.setDescription(pdb.getDescription());
+                row.setCount(BigDecimal.ONE);
+                row.setSellPrice(pdb.getSellPrice());
+                return row;
+            } else {
+                throw new ComarServiceException("Producto no encontrado: '" + code + "'");
+            }
+        } catch (ComarControllerException e) {
+            throw new ComarServiceException(e.getMessage());
+        } finally {
+            controller.rollback();
+            controller.endTransaction();
+        }
+
     }
 
     private void editProducts() {
@@ -212,16 +217,15 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
             editList.add(row);
         }
 
-        double count = editList.get(0).getCount();
+        BigDecimal count = editList.get(0).getCount();
         String msg = editList.size() == 1 ? editList.get(0).getDescription() : " ... varios";
-        String strCount = ComarUtils.formatDbl(count);
-        String str = (String) WebOptionPane.showInputDialog(ComarPanelPointOfSell.this, "Producto: " + msg, "Cantidad", JOptionPane.PLAIN_MESSAGE, null, null, strCount);
+        String str = (String) WebOptionPane.showInputDialog(ComarPanelPointOfSell.this, "Producto: " + msg, "Cantidad", JOptionPane.PLAIN_MESSAGE, null, null, count.toString());
         if (str == null) {
             return;
         }
 
         try {
-            count = ComarUtils.parseDbl(str);
+            count = ComarUtils.parse(str);
         } catch (ParseException ex) {
             return;
         }
@@ -365,14 +369,14 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
 
         private String code;
         private String description;
-        private double count;
-        private double sellPrice;
+        private BigDecimal count;
+        private BigDecimal sellPrice;
 
         public Row() {
-            this("", "", 0);
+            this("", "", BigDecimal.ZERO);
         }
 
-        public Row(String code, String name, double sellPrice) {
+        public Row(String code, String name, BigDecimal sellPrice) {
             this.code = code;
             this.description = name;
             this.sellPrice = sellPrice;
@@ -394,24 +398,24 @@ public class ComarPanelPointOfSell extends ComarPanelCard {
             this.description = description;
         }
 
-        public double getCount() {
+        public BigDecimal getCount() {
             return count;
         }
 
-        public void setCount(double count) {
+        public void setCount(BigDecimal count) {
             this.count = count;
         }
 
-        public double getSellPrice() {
+        public BigDecimal getSellPrice() {
             return sellPrice;
         }
 
-        public void setSellPrice(double sellPrice) {
+        public void setSellPrice(BigDecimal sellPrice) {
             this.sellPrice = sellPrice;
         }
 
-        public double getSubtotal() {
-            return count * sellPrice;
+        public BigDecimal getSubtotal() {
+            return sellPrice.multiply(count);
         }
 
     }

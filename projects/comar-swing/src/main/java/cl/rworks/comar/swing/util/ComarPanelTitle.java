@@ -29,7 +29,8 @@ public class ComarPanelTitle extends WebPanel {
         setPreferredHeight(24 + 20);
         setMaximumHeight(24 + 20);
         setBorder(new EmptyBorder(10, 10, 10, 10));
-        setBackground(Color.BLACK);
+//        setBackground(Color.BLACK);
+        setBackground(ComarSystem.getInstance().getProperties().getBannerColor());
     }
 
 }

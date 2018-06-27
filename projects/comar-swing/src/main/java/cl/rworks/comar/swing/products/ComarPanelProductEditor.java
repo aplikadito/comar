@@ -6,9 +6,11 @@
 package cl.rworks.comar.swing.products;
 
 import cl.rworks.comar.core.model.ComarMetric;
+import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarLabel;
 import cl.rworks.comar.swing.util.ComarPanel;
+import cl.rworks.comar.swing.util.ComarTextField;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.combobox.WebComboBox;
@@ -17,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -32,13 +35,14 @@ public class ComarPanelProductEditor extends ComarPanel {
     private WebTextField textDescription;
     private WebComboBox comboMetric;
     private WebTextField textBuyPrice;
+    private WebTextField textTax;
     private WebTextField textSellPrice;
     private WebTextField textStock;
     //
     private ComarPanel panelButtons;
     private int fontSize = ComarSystem.getInstance().getProperties().getFontSize();
     //
-    private ComarPanelProductRow oldRow;
+    private ComarProduct oldRow;
 
     public ComarPanelProductEditor() {
         initValues();
@@ -71,61 +75,55 @@ public class ComarPanelProductEditor extends ComarPanel {
         textCode.setFocusable(true);
         textCode.setFontSize(fontSize);
 
-        ComarLabel label = new ComarLabel("Codigo");
-        panelForm.add(label);
+        panelForm.add(new ComarLabel("Codigo"));
         panelForm.add(textCode);
 
-        textDescription = new WebTextField(30);
-        textDescription.setFocusable(true);
-        textDescription.setFontSize(fontSize);
-
-        label = new ComarLabel("Descripcion");
-        panelForm.add(label);
+        textDescription = new ComarTextField(30);
+        panelForm.add(new ComarLabel("Descripcion"));
         panelForm.add(textDescription);
 
         comboMetric = new WebComboBox(ComarMetric.values());
         comboMetric.setFontSize(fontSize);
-
-        label = new ComarLabel("Medida");
-        panelForm.add(label);
+        panelForm.add(new ComarLabel("Medida"));
         panelForm.add(comboMetric);
 
-        textBuyPrice = new WebTextField();
-        textBuyPrice.setFocusable(true);
-        textBuyPrice.setFontSize(fontSize);
-
-        label = new ComarLabel("Precio Compra");
-        panelForm.add(label);
+        textBuyPrice = new ComarTextField();
+        panelForm.add(new ComarLabel("Precio Compra"));
         panelForm.add(textBuyPrice);
 
-        textSellPrice = new WebTextField();
-        textSellPrice.setFocusable(true);
-        textSellPrice.setFontSize(fontSize);
+        textTax = new ComarTextField();
+        panelForm.add(new ComarLabel("Impuesto"));
+        panelForm.add(textTax);
 
-        label = new ComarLabel("Precio Venta");
-        panelForm.add(label);
+        textSellPrice = new ComarTextField();
+        panelForm.add(new ComarLabel("Precio Venta"));
         panelForm.add(textSellPrice);
 
-        textStock = new WebTextField();
-        textStock.setFocusable(true);
-        textStock.setFontSize(fontSize);
-
-        label = new ComarLabel("Stock");
-        panelForm.add(label);
+        textStock = new ComarTextField();
+        panelForm.add(new ComarLabel("Stock"));
         panelForm.add(textStock);
 
         return panelForm;
     }
 
-    public void updateForm(ComarPanelProductRow row) {
+//    private ComarPanel createNumberPanel(JTextField panelInt, JTextField panelDecs) {
+//        ComarPanel panel = new ComarPanel();
+//        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+//        panel.add(panelInt);
+//        panel.add(new ComarLabel(","));
+//        panel.add(panelDecs);
+//        return panel;
+//    }
+    public void updateForm(ComarProduct row) {
         this.oldRow = row;
-        
+
         this.textCode.setText(row.getCode() != null ? row.getCode() : "");
-        this.textDescription.setText(row.getName() != null ? row.getName() : "");
-        this.comboMetric.setSelectedItem(row.getMetric() != null ? row.getMetric() : ComarMetric.UNIDAD);
-        this.textBuyPrice.setText(ComarUtils.formatDbl(row.getBuyPrice()));
-        this.textSellPrice.setText(ComarUtils.formatDbl(row.getSellPrice()));
-        this.textStock.setText(ComarUtils.formatDbl(row.getStock()));
+        this.textDescription.setText(row.getDescription() != null ? row.getDescription() : "");
+        this.comboMetric.setSelectedItem(row.getMetric() != null ? row.getMetric() : ComarMetric.UNIDADES);
+        this.textBuyPrice.setText(ComarUtils.format(row.getBuyPrice()));
+        this.textSellPrice.setText(ComarUtils.format(row.getSellPrice()));
+        this.textStock.setText(ComarUtils.format(row.getStock()));
+        this.textTax.setText(ComarUtils.format(row.getTax()));
     }
 
     private ComarPanel buildPanelButtons() {
@@ -145,7 +143,7 @@ public class ComarPanelProductEditor extends ComarPanel {
         return textCode;
     }
 
-    public WebTextField getTextName() {
+    public WebTextField getTextDescription() {
         return textDescription;
     }
 
@@ -165,8 +163,12 @@ public class ComarPanelProductEditor extends ComarPanel {
         return textStock;
     }
 
-    public ComarPanelProductRow getOldRow() {
+    public WebTextField getTextTax() {
+        return textTax;
+    }
+
+    public ComarProduct getOldRow() {
         return oldRow;
     }
-    
+
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.service;
+package cl.rworks.comar.core.controller.permazen;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import io.permazen.Permazen;
@@ -20,9 +20,9 @@ import org.apache.derby.jdbc.EmbeddedDataSource;
  *
  * @author rgonzalez
  */
-public final class KiteUtils {
+public final class ComarControllerPermazenUtils {
 
-    private KiteUtils() {
+    private ComarControllerPermazenUtils() {
     }
 
     public static SimpleKVDatabase createOnMemoryDatabase() {

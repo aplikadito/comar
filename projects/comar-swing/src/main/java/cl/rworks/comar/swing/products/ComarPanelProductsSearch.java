@@ -5,12 +5,10 @@
  */
 package cl.rworks.comar.swing.products;
 
-import cl.rworks.comar.core.data.ComarProductDb;
-import cl.rworks.comar.core.data.ComarProductHistorialDb;
+import cl.rworks.comar.core.ComarNumberFormat;
 import cl.rworks.comar.core.model.ComarMetric;
 import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarProductHistorialAction;
-import cl.rworks.comar.core.model.ComarProductProperties;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.swing.ComarSystem;
 import cl.rworks.comar.swing.util.ComarButton;
@@ -19,21 +17,17 @@ import cl.rworks.comar.swing.util.ComarIconLoader;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarTable;
 import cl.rworks.comar.swing.util.ComarUtils;
-import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import io.permazen.JTransaction;
-import io.permazen.Permazen;
-import io.permazen.ValidationMode;
 import java.awt.BorderLayout;
 import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +37,18 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import cl.rworks.comar.core.controller.ComarController;
+import cl.rworks.comar.core.controller.ComarControllerException;
+import cl.rworks.comar.core.model.impl.ComarProductImpl;
+import cl.rworks.comar.swing.util.ComarPanelTitle;
+import java.awt.Component;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -62,6 +68,9 @@ public class ComarPanelProductsSearch extends ComarPanel {
     private ComarPanel buildContent() {
         ComarPanel panel = new ComarPanel();
         panel.setLayout(new BorderLayout());
+        panel.setBorder(new EmptyBorder(30, 30, 30, 30));
+
+        panel.add(new ComarPanelTitle("Inventario"), BorderLayout.NORTH);
 
         this.panelEditor = new BaseEditorPanel();
         panel.add(panelEditor, BorderLayout.CENTER);
@@ -76,6 +85,17 @@ public class ComarPanelProductsSearch extends ComarPanel {
                     new EditAction().actionPerformed(null);
                 }
             }
+        });
+
+        table.setDefaultRenderer(BigDecimal.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                String strValue = ComarUtils.format((BigDecimal) value);
+                label.setText(strValue);
+                return label;
+            }
+
         });
 
         WebPopupMenu popup = new WebPopupMenu();
@@ -94,15 +114,23 @@ public class ComarPanelProductsSearch extends ComarPanel {
 
     private class TableModel extends AbstractTableModel {
 
-        private String[] columnNames = new String[]{"Codigo", "Descripcion", "Unidad", "Precio Compra", "Precio Venta", "Stock"};
+        private final String[] columnNames = new String[]{
+            "Codigo",
+            "Descripcion",
+            "Unidad",
+            "Precio Compra",
+            "Impuestos",
+            "Precio Venta",
+            "Stock"
+        };
 
-        private List<ComarPanelProductRow> products;
+        private List<ComarProduct> products;
 
-        public List<ComarPanelProductRow> getProducts() {
+        public List<ComarProduct> getProducts() {
             return products;
         }
 
-        public void setProducts(List<ComarPanelProductRow> products) {
+        public void setProducts(List<ComarProduct> products) {
             this.products = products;
         }
 
@@ -131,11 +159,13 @@ public class ComarPanelProductsSearch extends ComarPanel {
                 case 2:
                     return String.class;
                 case 3:
-                    return Double.class;
+                    return BigDecimal.class;
                 case 4:
-                    return Double.class;
+                    return BigDecimal.class;
                 case 5:
-                    return Double.class;
+                    return BigDecimal.class;
+                case 6:
+                    return BigDecimal.class;
                 default:
                     return String.class;
             }
@@ -143,19 +173,21 @@ public class ComarPanelProductsSearch extends ComarPanel {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            ComarPanelProductRow p = products.get(rowIndex);
+            ComarProduct p = products.get(rowIndex);
             switch (columnIndex) {
                 case 0:
                     return p.getCode();
                 case 1:
-                    return p.getName();
+                    return p.getDescription();
                 case 2:
                     return p.getMetric().getName();
                 case 3:
                     return p.getBuyPrice();
                 case 4:
-                    return p.getSellPrice();
+                    return p.getTax();
                 case 5:
+                    return p.getSellPrice();
+                case 6:
                     return p.getStock();
                 default:
                     return "";
@@ -192,7 +224,7 @@ public class ComarPanelProductsSearch extends ComarPanel {
 
     private void search() {
         String strText = this.panelEditor.getTextSearch().getText();
-        List<ComarPanelProductRow> products = loadProducts(strText);
+        List<ComarProduct> products = loadProducts(strText);
         tableModel.setProducts(products);
         tableModel.fireTableDataChanged();
         ComarUtils.showInfo(products.size() + " productos encontrados");
@@ -204,29 +236,20 @@ public class ComarPanelProductsSearch extends ComarPanel {
         this.tableModel.fireTableDataChanged();
     }
 
-    private List<ComarPanelProductRow> loadProducts(String strText) {
+    private List<ComarProduct> loadProducts(String strText) {
         ComarService service = ComarSystem.getInstance().getService();
-        Permazen db = service.getDb();
+        List<ComarProduct> rows = new ArrayList<>();
 
-        List<ComarPanelProductRow> rows = new ArrayList<>();
-        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
+        ComarController controller = service.getController();
         try {
-            if (strText.isEmpty()) {
-                ComarProductDb.getAll().stream().forEach((ComarProduct p) -> {
-                    rows.add(toRow(p));
-                });
-            } else {
-                ComarProductDb.search(strText).stream().forEach((ComarProduct p) -> {
-                    rows.add(toRow(p));
-                });
-            }
-
+            controller.createTransaction();
+            List<ComarProduct> list = controller.loadProducts(strText);
+            list.stream().forEach(p -> rows.add(toRow(p)));
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
-            jtx.rollback();
-            JTransaction.setCurrent(null);
+            controller.rollback();
+            controller.endTransaction();
         }
         return rows;
     }
@@ -243,8 +266,11 @@ public class ComarPanelProductsSearch extends ComarPanel {
             dialog.getContentPane().setLayout(new BorderLayout());
 
             String text = panelEditor.getTextSearch().getText();
+            ComarProductImpl product = new ComarProductImpl();
+            product.setCode(text.trim());
+
             ComarPanelProductEditor panel = new ComarPanelProductEditor();
-            panel.updateForm(new ComarPanelProductRow(text));
+            panel.updateForm(product);
             dialog.getContentPane().add(panel, BorderLayout.CENTER);
 
             ComarButton buttonOk = new ComarButton(new AddOkAction(dialog, panel));
@@ -288,58 +314,47 @@ public class ComarPanelProductsSearch extends ComarPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            WebTextField textCode = panel.getTextCode();
-            WebTextField textName = panel.getTextName();
-            WebComboBox comboMetric = panel.getComboMetric();
-            WebTextField textBuyPrice = panel.getTextBuyPrice();
-            WebTextField textSellPrice = panel.getTextSellPrice();
-            WebTextField textStock = panel.getTextStock();
 
-            String code = validateCode(textCode);
-            String name = validateString(textName, "Nombre");
-            ComarMetric metric = (ComarMetric) comboMetric.getSelectedItem();
-            Double buyPrice = validateDouble(textBuyPrice, "Precio de Compra");
-            Double sellPrice = validateDouble(textSellPrice, "Precio de Venta");
-            Double stock = validateDouble(textStock, "Stock");
+            Object[] values = new Object[]{
+                validateString(panel.getTextCode(), "Codigo"),
+                validateString(panel.getTextDescription(), "Descripcion"),
+                (ComarMetric) panel.getComboMetric().getSelectedItem(),
+                validateNumber(panel.getTextBuyPrice(), "Precio de Compra"),
+                validateNumber(panel.getTextSellPrice(), "Precio de Venta"),
+                validateNumber(panel.getTextStock(), "Stock"),
+                validateNumber(panel.getTextTax(), "Impuestos"),};
 
-            boolean validate = code != null;
-            validate = validate && name != null;
-            validate = validate && metric != null;
-            validate = validate && buyPrice != null;
-            validate = validate && sellPrice != null;
-            validate = validate && stock != null;
+            boolean ok = true;
+            for (Object val : values) {
+                if (val == null) {
+                    ok = false;
+                    break;
+                }
+            }
 
-            if (validate) {
+            if (ok) {
                 ComarService service = ComarSystem.getInstance().getService();
-                Permazen db = service.getDb();
-                JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-                JTransaction.setCurrent(jtx);
+                ComarController controller = service.getController();
                 try {
-                    ComarProduct product = ComarProductDb.create();
-                    product.setCode(code);
-                    product.setDescription(name);
-                    product.setMetric(metric);
-                    product.setBuyPrice(buyPrice);
-                    product.setSellPrice(sellPrice);
-                    product.setStock(stock);
+                    controller.createTransaction();
 
-                    LocalDateTime now = LocalDateTime.now();
-//                    String nowStr = now.formatDbl(df);
-                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.CODE.name(), "", code);
-                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.NAME.name(), "", name);
-                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.METRIC.name(), "", metric.name());
-                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.BUYPRICE.name(), "", ComarUtils.formatDbl(buyPrice));
-                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.SELLPRICE.name(), "", ComarUtils.formatDbl(sellPrice));
-                    ComarProductHistorialDb.create(code, now, "NEW", ComarProductProperties.STOCK.name(), "", ComarUtils.formatDbl(stock));
-                    jtx.commit();
+                    ComarProductImpl temp = new ComarProductImpl();
+                    temp.setCode((String) values[0]);
+                    temp.setDescription((String) values[1]);
+                    temp.setMetric((ComarMetric) values[2]);
+                    temp.setBuyPrice((BigDecimal) values[3]);
+                    temp.setSellPrice((BigDecimal) values[4]);
+                    temp.setStock((BigDecimal) values[5]);
 
-//                    ComarUtils.showInfo("Producto Agregado");
+                    controller.addProduct(temp);
+                    controller.commit();
+
                     search();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     ComarUtils.showWarn(ComarPanelProductsSearch.this, ex.getMessage());
                 } finally {
-                    JTransaction.setCurrent(null);
+                    controller.endTransaction();
                 }
 
                 dialog.dispose();
@@ -355,7 +370,7 @@ public class ComarPanelProductsSearch extends ComarPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            ComarPanelProductRow row = getSelectedProductRow();
+            ComarProduct row = getSelectedProductRow();
             if (row == null) {
                 return;
             }
@@ -406,103 +421,47 @@ public class ComarPanelProductsSearch extends ComarPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            ComarPanelProductRow oldRow = panel.getOldRow();
+            ComarProduct oldRow = panel.getOldRow();
 
-            WebTextField textCode = panel.getTextCode();
-            WebTextField textName = panel.getTextName();
-            WebComboBox comboMetric = panel.getComboMetric();
-            WebTextField textBuyPrice = panel.getTextBuyPrice();
-            WebTextField textSellPrice = panel.getTextSellPrice();
-            WebTextField textStock = panel.getTextStock();
+            Object[] values = new Object[]{
+                validateString(panel.getTextCode(), "Codigo"),
+                validateString(panel.getTextDescription(), "Descripcion"),
+                (ComarMetric) panel.getComboMetric().getSelectedItem(),
+                validateNumber(panel.getTextBuyPrice(), "Precio de Compra"),
+                validateNumber(panel.getTextTax(), "Precio de Compra"),
+                validateNumber(panel.getTextSellPrice(), "Precio de Venta"),
+                validateNumber(panel.getTextStock(), "Stock")
+            };
 
-            ComarService service = ComarSystem.getInstance().getService();
-            Permazen db = service.getDb();
-
-            boolean codeChanged = false;
-            String code = textCode.getText().trim();
-            if (!oldRow.getCode().equals(code)) {
-                code = validateCode(textCode);
-                codeChanged = true;
+            boolean ok = true;
+            for (Object val : values) {
+                if (val == null) {
+                    ok = false;
+                    break;
+                }
             }
 
-            boolean nameChanged = false;
-            String name = textName.getText().trim();
-            if (!oldRow.getName().equals(name)) {
-                name = validateString(textName, "Nombre");
-                nameChanged = true;
-            }
+            if (ok) {
+                ComarService service = ComarSystem.getInstance().getService();
+                ComarController controller = service.getController();
 
-            boolean metricChanged = false;
-            ComarMetric metric = (ComarMetric) comboMetric.getSelectedItem();
-            if (!oldRow.getMetric().equals(metric)) {
-                metricChanged = true;
-            }
+                ComarProductImpl temp = new ComarProductImpl();
+                temp.setCode((String) values[0]);
+                temp.setDescription((String) values[1]);
+                temp.setMetric((ComarMetric) values[2]);
+                temp.setBuyPrice((BigDecimal) values[3]);
+                temp.setTax((BigDecimal) values[4]);
+                temp.setSellPrice((BigDecimal) values[5]);
+                temp.setStock((BigDecimal) values[6]);
 
-            boolean buyPriceChanged = false;
-            Double buyPrice = validateDouble(textBuyPrice, "Precio de Compra");
-            if (oldRow.getBuyPrice() != buyPrice) {
-                buyPriceChanged = true;
-            }
-
-            boolean sellPriceChanged = false;
-            Double sellPrice = validateDouble(textSellPrice, "Precio de Venta");
-            if (oldRow.getSellPrice() != sellPrice) {
-                sellPriceChanged = true;
-            }
-
-            boolean stockChanged = false;
-            Double stock = validateDouble(textStock, "Stock");
-            if (oldRow.getStock() != stock) {
-                stockChanged = true;
-            }
-
-            boolean validate = code != null;
-            validate = validate && name != null;
-            validate = validate && metric != null;
-            validate = validate && buyPrice != null;
-            validate = validate && sellPrice != null;
-            validate = validate && stock != null;
-
-            if (validate) {
-                JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-                JTransaction.setCurrent(jtx);
                 try {
-                    ComarProduct product = ComarProductDb.getByCode(oldRow.getCode());
+                    controller.createTransaction();
+
                     LocalDateTime now = LocalDateTime.now();
                     String action = ComarProductHistorialAction.EDIT.name();
-                    if (codeChanged) {
-                        product.setCode(code);
-                        ComarProductHistorialDb.create(oldRow.getCode(), now, action, ComarProductProperties.CODE.name(), oldRow.getCode(), code);
-                    }
+                    controller.updateProduct(oldRow.getCode(), now, action, temp);
+                    controller.commit();
 
-                    if (nameChanged) {
-                        product.setDescription(name);
-                        ComarProductHistorialDb.create(code, now, action, ComarProductProperties.NAME.name(), oldRow.getName(), name);
-                    }
-
-                    if (metricChanged) {
-                        product.setMetric(metric);
-                        ComarProductHistorialDb.create(code, now, action, ComarProductProperties.METRIC.name(), oldRow.getMetric().name(), metric.name());
-                    }
-
-                    if (buyPriceChanged) {
-                        product.setBuyPrice(buyPrice);
-                        ComarProductHistorialDb.create(code, now, action, ComarProductProperties.BUYPRICE.name(), ComarUtils.formatDbl(oldRow.getBuyPrice()), ComarUtils.formatDbl(buyPrice));
-                    }
-
-                    if (sellPriceChanged) {
-                        product.setSellPrice(sellPrice);
-                        ComarProductHistorialDb.create(code, now, action, ComarProductProperties.SELLPRICE.name(), ComarUtils.formatDbl(oldRow.getSellPrice()), ComarUtils.formatDbl(sellPrice));
-                    }
-
-                    if (stockChanged) {
-                        product.setStock(stock);
-                        ComarProductHistorialDb.create(code, now, action, ComarProductProperties.STOCK.name(), ComarUtils.formatDbl(oldRow.getStock()), ComarUtils.formatDbl(stock));
-                    }
-
-                    jtx.commit();
-
-//                    ComarUtils.showInfo("Producto Editado");
                     search();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -536,11 +495,11 @@ public class ComarPanelProductsSearch extends ComarPanel {
                 return;
             }
 
-            List<ComarPanelProductRow> list = new ArrayList<>();
+            List<ComarProduct> list = new ArrayList<>();
             for (int i = 0; i < vrows.length; i++) {
                 int vrow = vrows[i];
                 int mrow = panelEditor.getTable().convertRowIndexToModel(vrow);
-                ComarPanelProductRow row = tableModel.getProducts().get(mrow);
+                ComarProduct row = tableModel.getProducts().get(mrow);
                 list.add(row);
             }
 
@@ -550,18 +509,20 @@ public class ComarPanelProductsSearch extends ComarPanel {
 
     }
 
-    private ComarPanelProductRow toRow(ComarProduct p) {
-        ComarPanelProductRow row = new ComarPanelProductRow();
+    private ComarProduct toRow(ComarProduct p) {
+        ComarProduct row = new ComarProductImpl();
+        row.setId(p.getId());
         row.setCode(p.getCode());
-        row.setName(p.getDescription());
+        row.setDescription(p.getDescription());
         row.setMetric(p.getMetric());
         row.setBuyPrice(p.getBuyPrice());
+        row.setTax(p.getTax());
         row.setSellPrice(p.getSellPrice());
         row.setStock(p.getStock());
         return row;
     }
 
-    private ComarPanelProductRow getSelectedProductRow() {
+    private ComarProduct getSelectedProductRow() {
         int vrow = panelEditor.getTable().getSelectedRow();
         if (vrow == -1) {
             ComarUtils.showWarn(ComarPanelProductsSearch.this, "Seleccione un producto");
@@ -569,82 +530,102 @@ public class ComarPanelProductsSearch extends ComarPanel {
         }
 
         int mrow = panelEditor.getTable().convertRowIndexToModel(vrow);
-        ComarPanelProductRow selected = tableModel.getProducts().get(mrow);
-        Permazen db = ComarSystem.getInstance().getService().getDb();
-        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
-        ComarPanelProductRow row;
+        ComarProduct selected = tableModel.getProducts().get(mrow);
+
+        ComarService service = ComarSystem.getInstance().getService();
+        ComarController controller = service.getController();
+        ComarProduct row = new ComarProductImpl();
         try {
-            ComarProduct dbproduct = ComarProductDb.getByCode(selected.getCode());
-            row = new ComarPanelProductRow();
+            controller.createTransaction();
+            ComarProduct dbproduct = controller.getProductByCode(selected.getCode());
+            row.setId(dbproduct.getId());
             row.setCode(dbproduct.getCode());
-            row.setName(dbproduct.getDescription());
+            row.setDescription(dbproduct.getDescription());
             row.setMetric(dbproduct.getMetric());
             row.setBuyPrice(dbproduct.getBuyPrice());
+            row.setTax(dbproduct.getTax());
             row.setSellPrice(dbproduct.getSellPrice());
             row.setStock(dbproduct.getStock());
+        } catch (ComarControllerException e) {
+            e.printStackTrace();
         } finally {
-            jtx.rollback();
-            JTransaction.setCurrent(null);
+            controller.rollback();
+            controller.endTransaction();
         }
 
         return row;
     }
 
-    private String validateString(WebTextField text, String property) {
-        String strCode = text.getText().trim();
-        if (strCode == null || strCode.isEmpty()) {
+    private String validateString(JTextField text, String property) {
+        String str = text.getText();
+        if (str == null || str.isEmpty()) {
             TooltipManager.showOneTimeTooltip(text, null, ComarIconLoader.load(ComarIconLoader.ERROR), "'" + property + "' no valido", TooltipWay.down);
             return null;
         }
-        return strCode;
+        return str;
     }
 
-    private String validateCode(WebTextField textCode) {
-        String strCode = validateString(textCode, "Codigo");
-        if (strCode == null) {
+//    private Integer validateInt(WebTextField text, String property) {
+//        String strValue = validateString(text, "'" + property + "' no valido");
+//        if (strValue == null) {
+//            return null;
+//        }
+//
+//        Integer intValue;
+//        try {
+//            intValue = Integer.parseInt(strValue);
+//        } catch (NumberFormatException ex) {
+//            TooltipManager.showOneTimeTooltip(text, null, ComarIconLoader.load(ComarIconLoader.ERROR), "'" + property + "' no valido", TooltipWay.down);
+//            return null;
+//        }
+//
+//        if (intValue < 0) {
+//            TooltipManager.showOneTimeTooltip(text, null, ComarIconLoader.load(ComarIconLoader.ERROR), "'" + property + "' menor que cero", TooltipWay.down);
+//            return null;
+//        }
+//
+//        return intValue;
+//    }
+//
+//    private Integer validateDec(WebTextField text, String property) {
+//        String strValue = validateString(text, "'" + property + "' no valido");
+//        if (strValue == null) {
+//            return null;
+//        }
+//
+//        Integer intValue;
+//        try {
+//            intValue = Integer.parseInt(strValue);
+//        } catch (NumberFormatException ex) {
+//            TooltipManager.showOneTimeTooltip(text, null, ComarIconLoader.load(ComarIconLoader.ERROR), "'" + property + "' no valido", TooltipWay.down);
+//            return null;
+//        }
+//
+//        if (intValue < 0 || intValue >= ComarProduct.DECS_BASE) {
+//            TooltipManager.showOneTimeTooltip(text, null, ComarIconLoader.load(ComarIconLoader.ERROR), "'" + property + "' fuera de rango", TooltipWay.down);
+//            return null;
+//        }
+//
+//        return intValue;
+//    }
+    private BigDecimal validateNumber(WebTextField text, String property) {
+        String str = validateString(text, "'" + property + "' no valido");
+        if (str == null) {
             return null;
         }
 
-        ComarService service = ComarSystem.getInstance().getService();
-        Permazen db = service.getDb();
-        JTransaction jtx = db.createTransaction(true, ValidationMode.AUTOMATIC);
-        JTransaction.setCurrent(jtx);
+        BigDecimal bgValue;
         try {
-            ComarProduct product = ComarProductDb.getByCode(strCode);
-            if (product != null) {
-                TooltipManager.showOneTimeTooltip(textCode, null, ComarIconLoader.load(ComarIconLoader.ERROR), "El codigo ya existe", TooltipWay.down);
-                return null;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            jtx.rollback();
-            JTransaction.setCurrent(null);
-        }
-
-        return strCode;
-    }
-
-    private Double validateDouble(WebTextField text, String property) {
-        String strValue = validateString(text, "'" + property + "' no valido");
-        if (strValue == null) {
-            return null;
-        }
-
-        Double dblValue;
-        try {
-            dblValue = ComarUtils.parseDbl(strValue);
+            bgValue = ComarNumberFormat.parse(str);
         } catch (ParseException ex) {
             TooltipManager.showOneTimeTooltip(text, null, ComarIconLoader.load(ComarIconLoader.ERROR), "'" + property + "' no valido", TooltipWay.down);
             return null;
         }
 
-        if (dblValue < 0) {
-            TooltipManager.showOneTimeTooltip(text, null, ComarIconLoader.load(ComarIconLoader.ERROR), "'" + property + "' menor que cero", TooltipWay.down);
+        if (bgValue.compareTo(BigDecimal.ZERO) < 0) {
+            TooltipManager.showOneTimeTooltip(text, null, ComarIconLoader.load(ComarIconLoader.ERROR), "'" + property + "' fuera de rango", TooltipWay.down);
             return null;
         }
-
-        return dblValue;
+        return bgValue;
     }
 }

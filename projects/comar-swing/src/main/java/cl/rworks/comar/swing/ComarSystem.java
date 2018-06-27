@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing;
 
+import cl.rworks.comar.core.controller.ComarController;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceImpl;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
@@ -23,8 +24,8 @@ public class ComarSystem {
     private static ComarSystem instance;
     //
     private ComarFrame frame;
-    private ComarService service;
-    private ComarProperties properties;
+    private final ComarService service;
+    private final ComarProperties properties;
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
@@ -33,7 +34,7 @@ public class ComarSystem {
 
     private ComarSystem() {
         System.out.println(System.getProperty("user.dir"));
-        this.service = new ComarServiceImpl(ComarService.DISK);
+        this.service = new ComarServiceImpl(ComarService.PERMAZEN);
         this.properties = new ComarPropertiesImpl();
     }
 
@@ -54,8 +55,17 @@ public class ComarSystem {
     }
 
     public void startup() {
-        ComarSystem.getInstance().getProperties().save();
+        startupProperties();
+        startupServices();
         startupKeyboard();
+    }
+
+    private void startupProperties() {
+        properties.save();
+    }
+
+    private void startupServices() {
+        service.getController().startup(ComarController.DISK);
     }
 
     private void startupKeyboard() {
@@ -72,6 +82,10 @@ public class ComarSystem {
             }
 
         });
+    }
+
+    public void exit() {
+        System.exit(0);
     }
 
 }

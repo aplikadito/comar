@@ -14,9 +14,16 @@ import com.alee.laf.text.WebTextField;
  */
 public class ComarTextField extends WebTextField {
 
+    public ComarTextField() {
+        super();
+        setFontSize(ComarSystem.getInstance().getProperties().getFontSize());
+        setFocusable(true);
+    }
+
     public ComarTextField(int columns) {
         super(columns);
         setFontSize(ComarSystem.getInstance().getProperties().getFontSize());
+        setFocusable(true);
     }
 
 }

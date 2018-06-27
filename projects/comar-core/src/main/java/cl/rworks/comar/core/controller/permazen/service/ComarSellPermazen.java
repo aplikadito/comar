@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.data;
+package cl.rworks.comar.core.controller.permazen.service;
 
 import cl.rworks.comar.core.model.ComarSell;
 import io.permazen.JObject;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * @author rgonzalez
  */
 @PermazenType
-public interface ComarSellDb extends JObject, ComarSell {
+public interface ComarSellPermazen extends JObject, ComarSell {
 
     @JField(indexed = true, unique = true)
     @Override
@@ -32,47 +32,47 @@ public interface ComarSellDb extends JObject, ComarSell {
     @Override
     void setCode(String code);
 
-    public static ComarSellDb create() {
+    public static ComarSellPermazen create() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.create(ComarSellDb.class);
+        return jtx.create(ComarSellPermazen.class);
     }
 
-    public static NavigableSet<ComarSellDb> getAll() {
+    public static NavigableSet<ComarSellPermazen> getAll() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.getAll(ComarSellDb.class);
+        return jtx.getAll(ComarSellPermazen.class);
     }
 
-    public static void insert(ComarSellDb p) {
-        ComarSellDb pp = create();
+    public static void insert(ComarSellPermazen p) {
+        ComarSellPermazen pp = create();
         pp.setId(pp.getObjId().asLong());
         pp.setCode(p.getCode());
         p.setId(pp.getId());
     }
 
-    public static ComarSellDb getByCode(String code) {
+    public static ComarSellPermazen getByCode(String code) {
         JTransaction jtx = JTransaction.getCurrent();
         NavigableSet<ComarSell> result = jtx.queryIndex(ComarSell.class, "code", String.class).asMap().get(code);
-        return result != null ? (ComarSellDb) result.first() : null;
+        return result != null ? (ComarSellPermazen) result.first() : null;
     }
 
-    public static void delete(ComarSellDb p) {
+    public static void delete(ComarSellPermazen p) {
         JTransaction jtx = JTransaction.getCurrent();
         ObjId oid = new ObjId(p.getId());
         JObject pp = jtx.get(oid);
         jtx.delete(pp);
     }
 
-    public static NavigableSet<ComarSellDb> search(final String text) {
+    public static NavigableSet<ComarSellPermazen> search(final String text) {
         if (text == null) {
             return new TreeSet<>();
         }
 
         String ttext = text.trim();
-        NavigableSet<ComarSellDb> all = ComarSellDb.getAll();
+        NavigableSet<ComarSellPermazen> all = ComarSellPermazen.getAll();
         if (!ttext.isEmpty()) {
             Pattern pattern = Pattern.compile(".*" + ttext + ".*");
             Predicate<ComarSell> filter = e -> pattern.matcher(e.getCode()).matches();
-            Stream<ComarSellDb> stream = all.stream().filter(filter);
+            Stream<ComarSellPermazen> stream = all.stream().filter(filter);
             return stream.collect(Collectors.toCollection(TreeSet::new));
         } else {
             return all;

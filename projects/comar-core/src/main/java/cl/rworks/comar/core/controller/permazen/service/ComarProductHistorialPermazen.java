@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.core.data;
+package cl.rworks.comar.core.controller.permazen.service;
 
-import cl.rworks.comar.core.model.ComarProduct;
 import cl.rworks.comar.core.model.ComarProductHistorial;
 import io.permazen.JObject;
 import io.permazen.JTransaction;
@@ -19,7 +18,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @PermazenType
-public interface ComarProductHistorialDb extends JObject, ComarProductHistorial {
+public interface ComarProductHistorialPermazen extends JObject, ComarProductHistorial {
 
     @JField(indexed = true)
     public String getCode();
@@ -31,9 +30,9 @@ public interface ComarProductHistorialDb extends JObject, ComarProductHistorial 
 
     public void setDateTime(LocalDateTime now);
 
-    public static ComarProductHistorialDb create(String code, LocalDateTime now, String action, String property, String oldValue, String newValue) {
+    public static ComarProductHistorialPermazen create(String code, LocalDateTime now, String action, String property, String oldValue, String newValue) {
         JTransaction jtx = JTransaction.getCurrent();
-        ComarProductHistorialDb historial = jtx.create(ComarProductHistorialDb.class);
+        ComarProductHistorialPermazen historial = jtx.create(ComarProductHistorialPermazen.class);
         historial.setCode(code);
         historial.setDateTime(now);
         historial.setAction(action);
@@ -43,21 +42,21 @@ public interface ComarProductHistorialDb extends JObject, ComarProductHistorial 
         return historial;
     }
 
-    public static NavigableSet<ComarProductHistorialDb> getAll() {
+    public static NavigableSet<ComarProductHistorialPermazen> getAll() {
         JTransaction jtx = JTransaction.getCurrent();
-        return jtx.getAll(ComarProductHistorialDb.class);
+        return jtx.getAll(ComarProductHistorialPermazen.class);
     }
 
-    public static List<ComarProductHistorialDb> search(String strValue) {
+    public static List<ComarProductHistorialPermazen> search(String strValue) {
         if (strValue == null) {
             return null;
         }
 
         JTransaction jtx = JTransaction.getCurrent();
-        NavigableSet<ComarProductHistorialDb> all = jtx.getAll(ComarProductHistorialDb.class);
+        NavigableSet<ComarProductHistorialPermazen> all = jtx.getAll(ComarProductHistorialPermazen.class);
         if (!strValue.isEmpty()) {
             Pattern pattern = Pattern.compile(".*" + strValue + ".*");
-            Predicate<ComarProductHistorialDb> filterCode = e -> pattern.matcher(e.getCode()).matches();
+            Predicate<ComarProductHistorialPermazen> filterCode = e -> pattern.matcher(e.getCode()).matches();
 //            Predicate<ComarProduct> filterName = e -> pattern.matcher(e.getName()).matches();
 //            Predicate<ComarProduct> filter = e -> filterCode.test(e) || filterName.test(e);
             return all.stream().filter(filterCode).collect(Collectors.toList());

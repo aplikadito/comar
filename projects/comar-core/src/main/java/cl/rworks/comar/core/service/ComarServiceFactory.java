@@ -11,8 +11,8 @@ package cl.rworks.comar.core.service;
  */
 public class ComarServiceFactory {
 
-    public static ComarService get(int option) {
-        return new ComarServiceImpl(option);
-    }
+//    public static ComarService get(int option) {
+//        return new ComarServiceImpl(option);
+//    }
 
 }

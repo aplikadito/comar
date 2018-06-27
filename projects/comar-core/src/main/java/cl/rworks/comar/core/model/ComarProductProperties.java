@@ -10,5 +10,5 @@ package cl.rworks.comar.core.model;
  * @author aplik
  */
 public enum ComarProductProperties {
-    CODE, NAME, METRIC, BUYPRICE, SELLPRICE, STOCK;
+    CODE, DESCRIPTION, METRIC, BUYPRICE, SELLPRICE, STOCK;
 }

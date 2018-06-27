@@ -9,8 +9,6 @@ import cl.rworks.comar.swing.products.ComarPanelProducts;
 import cl.rworks.comar.swing.pointofsell.ComarPanelPointOfSell;
 import cl.rworks.comar.swing.sells.ComarPanelSells;
 import cl.rworks.comar.swing.settings.ComarPanelSettings;
-import cl.rworks.comar.swing.util.ComarButton;
-import cl.rworks.comar.swing.util.ComarLabel;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.IconLoader;
@@ -18,11 +16,11 @@ import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.scroll.WebScrollPane;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 /**
  *
@@ -55,24 +53,38 @@ public class ComarFrame extends WebFrame {
         add(new WebScrollPane(panelContent), BorderLayout.CENTER);
 
         // MENU
-        ComarPanel panelMenu = new ComarPanel(new FlowLayout(FlowLayout.LEFT));
-        panelMenu.setBackground(Color.WHITE);
-        panelMenu.add(new ComarMenuButton(new ShowViewAction("POS", "Punto de Venta")));
-        panelMenu.add(new ComarMenuButton(new ShowViewAction("PROD", "Productos")));
-        panelMenu.add(new ComarMenuButton(new ShowViewAction("SELL", "Ventas")));
-        panelMenu.add(new ComarMenuButton(new ShowViewAction("OPT", "Opciones")));
+//        ComarPanel panelMenu = new ComarPanel(new FlowLayout(FlowLayout.LEFT));
+//        panelMenu.setBackground(Color.WHITE);
+//        panelMenu.add(new ComarMenuButton(new ShowViewAction("POS", "Punto de Venta")));
+//        panelMenu.add(new ComarMenuButton(new ShowViewAction("PROD", "Productos")));
+//        panelMenu.add(new ComarMenuButton(new ShowViewAction("SELL", "Ventas")));
+//        panelMenu.add(new ComarMenuButton(new ShowViewAction("OPT", "Opciones")));
+        JMenuBar menuBar = new JMenuBar();
+        this.setJMenuBar(menuBar);
+        
+        JMenu menuFile = new JMenu("Archivo");
+        menuFile.add(new JMenuItem(new ExitAction()));
+        menuBar.add(menuFile);
+        
+        JMenu menuNavigate = new JMenu("Navegar");
+        menuNavigate.add(new JMenuItem(new ShowViewAction("POS", "Punto de Venta")));
+        menuNavigate.add(new JMenuItem(new ShowViewAction("PROD", "Productos")));
+        menuNavigate.add(new JMenuItem(new ShowViewAction("SELL", "Ventas")));
+        menuNavigate.add(new JMenuItem(new ShowViewAction("OPT", "Opciones")));
+        menuBar.add(menuNavigate);
+        
 
         // BANNER
-        ComarPanel panelComar = new ComarPanel(new FlowLayout(FlowLayout.RIGHT));
-        panelComar.setBackground(Color.WHITE);
-        panelComar.add(new ComarLabel("Comar v1.0", 30));
+//        ComarPanel panelComar = new ComarPanel(new FlowLayout(FlowLayout.RIGHT));
+//        panelComar.setBackground(Color.WHITE);
+//        panelComar.add(new ComarLabel("Comar v1.0", 30));
 
-        ComarPanel panelNorth = new ComarPanel(new BorderLayout());
-        panelNorth.setBorder(new EmptyBorder(20, 50, 20, 50));
-        panelNorth.setBackground(Color.WHITE);
-        panelNorth.add(panelMenu, BorderLayout.WEST);
-        panelNorth.add(panelComar, BorderLayout.EAST);
-        panelContent.add(panelNorth, BorderLayout.NORTH);
+//        ComarPanel panelNorth = new ComarPanel(new BorderLayout());
+//        panelNorth.setBorder(new EmptyBorder(20, 50, 20, 50));
+//        panelNorth.setBackground(Color.WHITE);
+////        panelNorth.add(panelMenu, BorderLayout.WEST);
+//        panelNorth.add(panelComar, BorderLayout.EAST);
+//        panelContent.add(panelNorth, BorderLayout.NORTH);
 
         panelCard = new ComarPanel();
         panelCard.setLayout(new CardLayout());
@@ -128,16 +140,6 @@ public class ComarFrame extends WebFrame {
         return panelOptions;
     }
 
-    private class ComarMenuButton extends ComarButton {
-
-        private ComarMenuButton(ShowViewAction action) {
-            super(action);
-            setMinimumWidth(250);
-            setMinimumHeight(50);
-        }
-
-    }
-
     public class ShowViewAction extends AbstractAction {
 
         private String title;
@@ -159,6 +161,19 @@ public class ComarFrame extends WebFrame {
 //            if (id.equals("POS")) {
 //                panelPointOfSell.loadCard();
 //            }
+        }
+
+    }
+    
+    public class ExitAction extends AbstractAction {
+
+        public ExitAction() {
+            putValue(NAME, "Salir");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ComarSystem.getInstance().exit();
         }
 
     }

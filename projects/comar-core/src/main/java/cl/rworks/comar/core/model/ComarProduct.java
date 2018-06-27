@@ -5,11 +5,17 @@
  */
 package cl.rworks.comar.core.model;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author rgonzalez
  */
 public interface ComarProduct {
+
+    byte[] getId();
+
+    void setId(byte[] id);
 
     String getCode();
 
@@ -19,20 +25,24 @@ public interface ComarProduct {
 
     void setDescription(String description);
 
-    double getBuyPrice();
+    BigDecimal getBuyPrice();
 
-    void setBuyPrice(double buyPrice);
+    void setBuyPrice(BigDecimal buyPrice);
 
-    double getSellPrice();
+    BigDecimal getSellPrice();
 
-    void setSellPrice(double sellPrice);
-    
-    double getStock();
+    void setSellPrice(BigDecimal sellPrice);
 
-    void setStock(double stock);
+    BigDecimal getStock();
+
+    void setStock(BigDecimal stock);
 
     ComarMetric getMetric();
 
     void setMetric(ComarMetric metric);
+
+    BigDecimal getTax();
+
+    void setTax(BigDecimal tax);
 
 }

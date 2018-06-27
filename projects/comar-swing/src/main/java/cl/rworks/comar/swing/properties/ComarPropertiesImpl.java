@@ -5,14 +5,11 @@
  */
 package cl.rworks.comar.swing.properties;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.util.Locale;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +24,6 @@ public class ComarPropertiesImpl implements ComarProperties {
     //
     private Properties properties;
     private File file = new File("comar.properties");
-    private DecimalFormat dfTax = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
     public ComarPropertiesImpl() {
         load();
@@ -39,9 +35,7 @@ public class ComarPropertiesImpl implements ComarProperties {
         try {
             properties.load(new FileReader(file));
         } catch (IOException ex) {
-            setIva(IVA_DEFAULT);
-            setFontSize(LETRA_DEFAULT);
-            setHelpActive(AYUDA_DEFAULT == 1);
+            loadDefaultValues();
             LOG.info("Cargando propiedades por defecto");
         }
     }
@@ -60,24 +54,33 @@ public class ComarPropertiesImpl implements ComarProperties {
         }
     }
 
+    @Override
+    public void loadDefaultValues() {
+        setPercentualIva(PERCENTUAL_IVA_DEFAULT);
+        setFontSize(LETRA_DEFAULT);
+        setBannerColor(parseColor(BANNER_COLOR_DEFAULT));
+        setBackgroundColor(parseColor(BACKGROUND_COLOR_DEFAULT));
+        setHelpActive(AYUDA_DEFAULT == 1);
+    }
+
     public Properties getProperties() {
         return properties;
     }
 
     @Override
-    public double getIva() {
+    public int getPercentualIva() {
         try {
-            String strIva = properties.getProperty(IVA);
-            return dfTax.parse(strIva).doubleValue();
-        } catch (ParseException ex) {
+            String strIva = properties.getProperty(PERCENTUAL_IVA);
+            return Integer.parseInt(strIva);
+        } catch (NumberFormatException ex) {
             LOG.error("Error al parsear IVA", ex);
-            return 0.19;
+            return PERCENTUAL_IVA_DEFAULT;
         }
     }
 
     @Override
-    public void setIva(double iva) {
-        properties.setProperty(IVA, dfTax.format(iva));
+    public void setPercentualIva(int iva) {
+        properties.setProperty(PERCENTUAL_IVA, Integer.toString(iva));
     }
 
     private int getInt(String property, int defaultValue) {
@@ -113,6 +116,60 @@ public class ComarPropertiesImpl implements ComarProperties {
     @Override
     public void setHelpActive(boolean helpActive) {
         setInt(AYUDA, helpActive ? 1 : 0);
+    }
+
+    private Color parseColor(String strColor) {
+        String[] split = strColor.split(",");
+        int r = Integer.parseInt(split[0].trim());
+        int g = Integer.parseInt(split[1].trim());
+        int b = Integer.parseInt(split[2].trim());
+        return new Color(r, g, b);
+    }
+
+    private String formatColor(Color color) {
+        return color.getRed() + "," + color.getGreen() + "," + color.getBlue();
+    }
+
+    @Override
+    public Color getBannerColor() {
+        String strValue = properties.getProperty(BANNER_COLOR);
+        if (strValue != null && !strValue.isEmpty()) {
+            String[] split = strValue.split(",");
+            if (split.length == 3) {
+                return parseColor(strValue);
+            } else {
+                return parseColor(BANNER_COLOR_DEFAULT);
+            }
+        } else {
+            return parseColor(BANNER_COLOR_DEFAULT);
+        }
+    }
+
+    @Override
+    public void setBannerColor(Color bannerColor) {
+        String strColor = formatColor(bannerColor);
+        properties.setProperty(BANNER_COLOR, strColor);
+    }
+
+    @Override
+    public Color getBackgroundColor() {
+        String strValue = properties.getProperty(BACKGROUND_COLOR);
+        if (strValue != null && !strValue.isEmpty()) {
+            String[] split = strValue.split(",");
+            if (split.length == 3) {
+                return parseColor(strValue);
+            } else {
+                return parseColor(BACKGROUND_COLOR_DEFAULT);
+            }
+        } else {
+            return parseColor(BACKGROUND_COLOR_DEFAULT);
+        }
+    }
+
+    @Override
+    public void setBackgroundColor(Color backgroundColor) {
+        String strColor = formatColor(backgroundColor);
+        properties.setProperty(BACKGROUND_COLOR, strColor);
     }
 
 }

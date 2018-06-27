@@ -22,7 +22,7 @@ public class ComarPanelSells extends ComarPanelCard {
 
     public ComarPanelSells() {
         setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(30, 30, 30, 30));
+//        setBorder(new EmptyBorder(30, 30, 30, 30));
 
         add(new ComarPanelTitle("Ventas"), BorderLayout.NORTH);
         

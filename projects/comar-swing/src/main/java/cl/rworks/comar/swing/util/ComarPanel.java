@@ -5,8 +5,8 @@
  */
 package cl.rworks.comar.swing.util;
 
+import cl.rworks.comar.swing.ComarSystem;
 import com.alee.laf.panel.WebPanel;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.LayoutManager;
 
@@ -22,6 +22,6 @@ public class ComarPanel extends WebPanel {
 
     public ComarPanel(LayoutManager layout) {
         super(layout);
-//        setBackground(new Color(50, 100, 50));
+        setBackground(ComarSystem.getInstance().getProperties().getBackgroundColor());
     }
 }
