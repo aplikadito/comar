@@ -13,7 +13,7 @@ import cl.rworks.comar.core.model.ComarMetricObject;
 import cl.rworks.comar.core.model.ComarProduct;
 import java.util.List;
 import cl.rworks.comar.core.service.ComarService;
-import cl.rworks.rservices.UUIDUtils;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
