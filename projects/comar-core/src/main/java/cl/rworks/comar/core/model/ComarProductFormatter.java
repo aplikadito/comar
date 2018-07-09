@@ -5,8 +5,7 @@
  */
 package cl.rworks.comar.core.model;
 
-import cl.rworks.rservices.UUIDUtils;
-import java.math.RoundingMode;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.text.DecimalFormat;
 
 /**

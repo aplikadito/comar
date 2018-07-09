@@ -86,9 +86,7 @@ public class ComarServiceDerby implements ComarService {
 
     @Override
     public List<ComarProduct> searchProductByCodeOrDescription(String str) throws ComarServiceException {
-        SearchProductByCodeOrDescription service = new SearchProductByCodeOrDescription(tx.getConnection());
-        SearchProductByCodeOrDescription.Response response = service.execute(new SearchProductByCodeOrDescription.Request(str));
-        return response.getProducts();
+        return SearchProductByCodeOrDescription.serve(tx.getConnection(), str);
     }
 
     @Override

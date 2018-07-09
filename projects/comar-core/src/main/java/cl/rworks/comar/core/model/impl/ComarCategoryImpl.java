@@ -6,10 +6,9 @@
 package cl.rworks.comar.core.model.impl;
 
 import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.rservices.UUIDUtils;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.json.JSONObject;
 
 /**
  *
@@ -59,12 +58,12 @@ public class ComarCategoryImpl implements ComarCategory {
         return c;
     }
 
-    public static ComarCategory create(JSONObject jrequest) {
-        ComarCategoryImpl c = new ComarCategoryImpl();
-        c.setId(UUIDUtils.toBytes(jrequest.getString("id")));
-        c.setName(jrequest.getString("name"));
-        return c;
-    }
+//    public static ComarCategory create(JSONObject jrequest) {
+//        ComarCategoryImpl c = new ComarCategoryImpl();
+//        c.setId(UUIDUtils.toBytes(jrequest.getString("id")));
+//        c.setName(jrequest.getString("name"));
+//        return c;
+//    }
 
     public static ComarCategory create() {
         return create("");

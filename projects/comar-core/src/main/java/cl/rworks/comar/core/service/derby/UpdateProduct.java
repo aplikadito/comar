@@ -9,13 +9,10 @@ import cl.rworks.comar.core.ComarCoreUtils;
 import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.model.impl.ComarProductImpl;
-import cl.rworks.rservices.JSONObjectResponse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.apache.derby.shared.common.error.DerbySQLIntegrityConstraintViolationException;
-import org.json.JSONObject;
 
 /**
  *
@@ -29,22 +26,6 @@ public class UpdateProduct {
         this.connection = connection;
     }
 
-//    @Override
-//    public JSONObjectResponse execute(JSONObject jresquest) throws RServiceException {
-//        try {
-//            Request request = new Request(jresquest);
-//            Response response = execute(request);
-//            return response.toJson();
-//        } catch (ComarServiceException ex) {
-//            throw new RServiceException("Error", ex);
-//        }
-//    }
-//
-//    public Response execute(Request request) throws ComarServiceException {
-//        ComarProduct product = request.getProduct();
-//        execute(product);
-//        return new Response();
-//    }
     public void execute(ComarProduct product, ComarCategory category) throws ComarServiceException {
         if (category == null) {
             throw new ComarServiceException("Producto sin categoria asignada: " + product.getCode());
@@ -82,32 +63,6 @@ public class UpdateProduct {
         } catch (SQLException ex) {
             throw new ComarServiceException("Error", ex);
         }
-    }
-
-    public static class Request {
-
-        private ComarProduct product;
-
-        public Request(JSONObject jrequest) {
-            this.product = ComarProductImpl.create(jrequest);
-        }
-
-        public Request(ComarProduct product) {
-            this.product = product;
-        }
-
-        public ComarProduct getProduct() {
-            return product;
-        }
-
-    }
-
-    public static class Response {
-
-        private JSONObjectResponse toJson() {
-            return new JSONObjectResponse();
-        }
-
     }
 
     public static void serve(Connection connection, ComarProduct product, ComarCategory category) throws ComarServiceException {

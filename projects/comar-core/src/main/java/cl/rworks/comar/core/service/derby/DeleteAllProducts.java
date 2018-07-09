@@ -6,19 +6,15 @@
 package cl.rworks.comar.core.service.derby;
 
 import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.rservices.JSONObjectResponse;
-import cl.rworks.rservices.RService;
-import cl.rworks.rservices.RServiceException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import org.json.JSONObject;
 
 /**
  *
  * @author aplik
  */
-public class DeleteAllProducts implements RService {
+public class DeleteAllProducts {
 
     private Connection connection;
 
@@ -26,15 +22,15 @@ public class DeleteAllProducts implements RService {
         this.connection = connection;
     }
 
-    @Override
-    public JSONObjectResponse execute(JSONObject data) throws RServiceException {
-        try {
-            execute();
-            return new JSONObjectResponse();
-        } catch (ComarServiceException ex) {
-            throw new RServiceException("Error", ex);
-        }
-    }
+//    @Override
+//    public JSONObjectResponse execute(JSONObject data) throws RServiceException {
+//        try {
+//            execute();
+//            return new JSONObjectResponse();
+//        } catch (ComarServiceException ex) {
+//            throw new RServiceException("Error", ex);
+//        }
+//    }
 
     public void execute() throws ComarServiceException {
         String sql = "DELETE FROM COMAR_PRODUCT";

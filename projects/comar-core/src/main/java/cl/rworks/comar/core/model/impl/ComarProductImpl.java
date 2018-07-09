@@ -9,12 +9,10 @@ import cl.rworks.comar.core.ComarCoreUtils;
 import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.model.ComarMetric;
 import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.rservices.JSONUtils;
-import cl.rworks.rservices.UUIDUtils;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.json.JSONObject;
 
 /**
  *
@@ -164,42 +162,42 @@ public class ComarProductImpl implements ComarProduct {
         return product;
     }
 
-    public static ComarProduct create(JSONObject jrequest) {
-        String id = JSONUtils.getString(jrequest, "id", "");
-        String code = JSONUtils.getString(jrequest, "code", "");
-        String description = JSONUtils.getString(jrequest, "description", "");
-        double buyprice = JSONUtils.getDouble(jrequest, "buyprice", 0);
-        double tax = JSONUtils.getDouble(jrequest, "tax", 0.19);
-        double sellprice = JSONUtils.getDouble(jrequest, "sellprice", 0);
-        double stock = JSONUtils.getDouble(jrequest, "stock", 0);
-        int metricId = JSONUtils.getInt(jrequest, "metric", 0);
-        String idCategory = JSONUtils.getString(jrequest, "idCategory", null);
+//    public static ComarProduct create(JSONObject jrequest) {
+//        String id = JSONUtils.getString(jrequest, "id", "");
+//        String code = JSONUtils.getString(jrequest, "code", "");
+//        String description = JSONUtils.getString(jrequest, "description", "");
+//        double buyprice = JSONUtils.getDouble(jrequest, "buyprice", 0);
+//        double tax = JSONUtils.getDouble(jrequest, "tax", 0.19);
+//        double sellprice = JSONUtils.getDouble(jrequest, "sellprice", 0);
+//        double stock = JSONUtils.getDouble(jrequest, "stock", 0);
+//        int metricId = JSONUtils.getInt(jrequest, "metric", 0);
+//        String idCategory = JSONUtils.getString(jrequest, "idCategory", null);
+//
+//        ComarProduct product = new ComarProductImpl();
+//        product.setId(UUIDUtils.toBytes(id));
+//        product.setCode(code);
+//        product.setDescription(description);
+//        product.setBuyPrice(ComarCoreUtils.create(buyprice));
+//        product.setTax(ComarCoreUtils.create(tax));
+//        product.setSellPrice(ComarCoreUtils.create(sellprice));
+//        product.setStock(ComarCoreUtils.create(stock));
+//        product.setMetric(ComarMetric.get(metricId));
+//        product.setCategoryId(UUIDUtils.toBytes(idCategory));
+//        return product;
+//    }
 
-        ComarProduct product = new ComarProductImpl();
-        product.setId(UUIDUtils.toBytes(id));
-        product.setCode(code);
-        product.setDescription(description);
-        product.setBuyPrice(ComarCoreUtils.create(buyprice));
-        product.setTax(ComarCoreUtils.create(tax));
-        product.setSellPrice(ComarCoreUtils.create(sellprice));
-        product.setStock(ComarCoreUtils.create(stock));
-        product.setMetric(ComarMetric.get(metricId));
-        product.setCategoryId(UUIDUtils.toBytes(idCategory));
-        return product;
-    }
-
-    public static JSONObject toJson(ComarProduct product) {
-        JSONObject jproduct = new JSONObject();
-        jproduct.put("id", UUIDUtils.toString((byte[]) product.getId()));
-        jproduct.put("code", product.getCode());
-        jproduct.put("description", product.getDescription());
-        jproduct.put("buyprice", product.getBuyPrice());
-        jproduct.put("sellprice", product.getSellPrice());
-        jproduct.put("stock", product.getStock());
-        jproduct.put("metricIndex", product.getMetric().ordinal());
-        jproduct.put("categoryId", UUIDUtils.toString(product.getCategoryId()));
-        return jproduct;
-    }
+//    public static JSONObject toJson(ComarProduct product) {
+//        JSONObject jproduct = new JSONObject();
+//        jproduct.put("id", UUIDUtils.toString((byte[]) product.getId()));
+//        jproduct.put("code", product.getCode());
+//        jproduct.put("description", product.getDescription());
+//        jproduct.put("buyprice", product.getBuyPrice());
+//        jproduct.put("sellprice", product.getSellPrice());
+//        jproduct.put("stock", product.getStock());
+//        jproduct.put("metricIndex", product.getMetric().ordinal());
+//        jproduct.put("categoryId", UUIDUtils.toString(product.getCategoryId()));
+//        return jproduct;
+//    }
 
     public static ComarProduct create(byte[] idProduct, String code, String description, int idMetric) {
         ComarProductImpl p = new ComarProductImpl();

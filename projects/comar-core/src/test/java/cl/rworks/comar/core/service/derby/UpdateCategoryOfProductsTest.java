@@ -8,7 +8,7 @@ package cl.rworks.comar.core.service.derby;
 import cl.rworks.comar.core.TestUtils;
 import cl.rworks.comar.core.model.ComarCategory;
 import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.rservices.UUIDUtils;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
