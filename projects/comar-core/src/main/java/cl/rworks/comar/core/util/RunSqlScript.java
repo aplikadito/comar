@@ -12,10 +12,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 /**
  *
@@ -26,17 +28,16 @@ public class RunSqlScript {
     public RunSqlScript() {
     }
 
-    public void run(File file) throws RunSqlScriptException {
+    public void run(DataSource ds, File file) throws RunSqlScriptException {
         try {
-            run(new FileInputStream(file));
+            run(ds, new FileInputStream(file));
         } catch (FileNotFoundException ex) {
             throw new RunSqlScriptException("Archivo no encontrado: " + file);
         }
     }
 
-    public void run(InputStream is) throws RunSqlScriptException {
+    public void run(DataSource ds, InputStream is) throws RunSqlScriptException {
         try {
-            Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
             String source = readInputStream(is);
             String[] split = source.split("/\\*sql-break\\*/");
             System.out.println("RUTINAS SQL DETECTADAS: " + split.length);
@@ -44,21 +45,15 @@ public class RunSqlScript {
             for (String sql : split) {
                 String sqlTrim = sql.trim();
                 System.out.println("  SQL   : \"" + sqlTrim + "\"");
-                createTable(sqlTrim);
+                executeSql(ds, sqlTrim);
             }
-        } catch (ClassNotFoundException ex) {
-            throw new RunSqlScriptException("Error: " + ex.getMessage(), ex);
-        } catch (InstantiationException ex) {
-            throw new RunSqlScriptException("Error: " + ex.getMessage(), ex);
-        } catch (IllegalAccessException ex) {
-            throw new RunSqlScriptException("Error: " + ex.getMessage(), ex);
         } catch (IOException ex) {
             throw new RunSqlScriptException("Error: " + ex.getMessage(), ex);
         }
     }
 
     private String readInputStream(InputStream is) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
         String line = "";
         StringBuilder sb = new StringBuilder();
         while ((line = br.readLine()) != null) {
@@ -67,8 +62,8 @@ public class RunSqlScript {
         return sb.toString();
     }
 
-    private void createTable(String sql) {
-        try (Connection conn = DriverManager.getConnection("jdbc:derby:D:\\storage;create=true")) {
+    private void executeSql(DataSource ds, String sql) {
+        try (Connection conn = ds.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.executeUpdate();
             System.out.println("  ESTADO: OK");

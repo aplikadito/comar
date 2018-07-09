@@ -15,7 +15,7 @@ public enum ComarMetric {
     KILOS(1, "Kilos", "[Kg]"),
     GRAMOS(2, "Gramos", "[gr]"),
     LITROS(3, "Litros", "[lt]"),
-    CENTIMETROS_CUBICOS(4, "Centimetros Cubicos", "[cc]");
+    CENTIMETROS_CUBICOS(4, "Centímetros Cúbicos", "[cc]");
 
     private final int id;
     private final String name;

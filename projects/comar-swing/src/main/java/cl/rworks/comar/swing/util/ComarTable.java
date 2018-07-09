@@ -7,6 +7,7 @@ package cl.rworks.comar.swing.util;
 
 import cl.rworks.comar.swing.ComarSystem;
 import com.alee.laf.table.WebTable;
+import java.math.BigDecimal;
 import javax.swing.table.TableModel;
 
 /**
@@ -27,6 +28,7 @@ public class ComarTable extends WebTable {
         setRowHeight(normalFontSize + 4);
 
         setDefaultRenderer(Double.class, new DoubleTableRenderer());
+        setDefaultRenderer(BigDecimal.class, new BigDecimalTableRenderer());
     }
 
 }

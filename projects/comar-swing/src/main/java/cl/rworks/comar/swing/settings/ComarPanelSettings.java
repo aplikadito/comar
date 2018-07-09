@@ -11,7 +11,6 @@ import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.util.ComarButton;
 import cl.rworks.comar.swing.util.ComarLabel;
 import cl.rworks.comar.swing.util.ComarPanel;
-import cl.rworks.comar.swing.util.ComarPanelCard;
 import cl.rworks.comar.swing.util.ComarTextField;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
@@ -24,7 +23,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -39,7 +37,7 @@ import javax.swing.border.LineBorder;
  *
  * @author rgonzalez
  */
-public class ComarPanelSettings extends ComarPanelCard {
+public class ComarPanelSettings extends ComarPanel {
 
     private ComarProperties properties = ComarSystem.getInstance().getProperties();
     private ComarTextField textIva;

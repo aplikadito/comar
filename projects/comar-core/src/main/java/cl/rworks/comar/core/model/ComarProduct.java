@@ -37,12 +37,16 @@ public interface ComarProduct {
 
     void setStock(BigDecimal stock);
 
+    BigDecimal getTax();
+
+    void setTax(BigDecimal tax);
+
     ComarMetric getMetric();
 
     void setMetric(ComarMetric metric);
 
-    BigDecimal getTax();
+    byte[] getCategoryId();
 
-    void setTax(BigDecimal tax);
+    void setCategoryId(byte[] categoryId);
 
 }

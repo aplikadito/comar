@@ -27,14 +27,14 @@ public class ComarCore {
 
                 LOG.info("Iniciando la aplicacion");
                 
+                ComarSystem.getInstance().startup();
+                
                 ComarFrame frame = new ComarFrame();
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 frame.addWindowListener(new ComarFrameListener());
-
                 ComarSystem.getInstance().setFrame(frame);
-                ComarSystem.getInstance().startup();
-
-                frame.setExtendedState(WebFrame.MAXIMIZED_BOTH);
+                
+//                frame.setExtendedState(WebFrame.MAXIMIZED_BOTH);
                 frame.showMe();
             }
         });

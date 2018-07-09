@@ -5,14 +5,26 @@
  */
 package cl.rworks.comar.core.service;
 
+import cl.rworks.comar.core.service.derby.ComarServiceDerby;
+import cl.rworks.comar.core.service.permazen.ComarServicePermazen;
+
 /**
  *
- * @author rgonzalez
+ * @author aplik
  */
-public class ComarServiceFactory {
+public final class ComarServiceFactory {
 
-//    public static ComarService get(int option) {
-//        return new ComarServiceImpl(option);
-//    }
+    private ComarServiceFactory() {
+    }
 
+    public static ComarService create(int option) {
+        switch (option) {
+            case ComarService.DERBY:
+                return new ComarServiceDerby();
+            case ComarService.PERMAZEN:
+                return new ComarServicePermazen();
+            default:
+                throw new RuntimeException("Opcion no soportada: " + option);
+        }
+    }
 }

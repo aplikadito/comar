@@ -7,6 +7,7 @@ package cl.rworks.comar.core;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  *
@@ -14,20 +15,27 @@ import java.sql.DriverManager;
  */
 public final class TestUtils {
 
-    public static void close(Connection connection) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private TestUtils() {
     }
 
-    private TestUtils(){
-    }
-    
     public static Connection createConnection() {
         try {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-            return DriverManager.getConnection("jdbc:derby:D:\\storage;create=true");
+            Connection conn = DriverManager.getConnection("jdbc:derby:D:\\storage;create=true");
+            conn.setAutoCommit(false);
+            return conn;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static void close(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+            }
         }
     }
 }

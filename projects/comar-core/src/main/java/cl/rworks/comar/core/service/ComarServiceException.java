@@ -5,11 +5,13 @@
  */
 package cl.rworks.comar.core.service;
 
+import java.io.IOException;
+
 /**
  *
- * @author rgonzalez
+ * @author aplik
  */
-public class ComarServiceException extends Exception{ 
+public class ComarServiceException extends IOException {
 
     public ComarServiceException(String message) {
         super(message);
@@ -18,5 +20,5 @@ public class ComarServiceException extends Exception{
     public ComarServiceException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }
