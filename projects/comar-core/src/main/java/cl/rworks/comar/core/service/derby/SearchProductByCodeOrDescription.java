@@ -6,8 +6,7 @@
 package cl.rworks.comar.core.service.derby;
 
 import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.comar.core.model.ComarProduct;
-import cl.rworks.comar.core.model.impl.ComarProductImpl;
+import cl.rworks.comar.core.model.impl.ProductoEntityImpl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import cl.rworks.comar.core.model.ProductoEntity;
 
 /**
  *
@@ -28,7 +28,7 @@ public class SearchProductByCodeOrDescription {
         this.connection = connection;
     }
 
-    public List<ComarProduct> execute(String str) throws ComarServiceException {
+    public List<ProductoEntity> execute(String str) throws ComarServiceException {
         if (str == null) {
             return Collections.EMPTY_LIST;
         }
@@ -41,13 +41,13 @@ public class SearchProductByCodeOrDescription {
         }
     }
 
-    private List<ComarProduct> executeGetAll() throws ComarServiceException {
+    private List<ProductoEntity> executeGetAll() throws ComarServiceException {
         String sql = "SELECT * FROM COMAR_PRODUCT";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            List<ComarProduct> list = new ArrayList<>();
+            List<ProductoEntity> list = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(ComarProductImpl.create(rs));
+                list.add(ProductoEntityImpl.create(rs));
             }
             return list;
         } catch (SQLException ex) {
@@ -55,16 +55,16 @@ public class SearchProductByCodeOrDescription {
         }
     }
 
-    private List<ComarProduct> executeSearch(String str) throws ComarServiceException {
-        String sql = "SELECT * FROM COMAR_PRODUCT WHERE CODE LIKE ? OR DESCRIPTION LIKE ?";
+    private List<ProductoEntity> executeSearch(String str) throws ComarServiceException {
+        String sql = "SELECT * FROM COMAR_PRODUCT WHERE PRODUCT_CODE LIKE ? OR RODUCT_DESCRIPTION LIKE ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, "%" + str + "%");
             ps.setString(2, "%" + str + "%");
 
-            List<ComarProduct> list = new ArrayList<>();
+            List<ProductoEntity> list = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(ComarProductImpl.create(rs));
+                list.add(ProductoEntityImpl.create(rs));
             }
             return list;
         } catch (SQLException ex) {
@@ -73,7 +73,7 @@ public class SearchProductByCodeOrDescription {
     }
 
 
-    public static List<ComarProduct> serve(Connection connection, String str) throws ComarServiceException {
+    public static List<ProductoEntity> serve(Connection connection, String str) throws ComarServiceException {
         return new SearchProductByCodeOrDescription(connection).execute(str);
     }
 

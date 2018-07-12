@@ -5,9 +5,9 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.swing.model.ComarWorkspace;
-import cl.rworks.comar.swing.model.ComarWorkspaceCreator;
-import cl.rworks.comar.swing.views.pointofsell.ComarPanelPointOfSellArea;
+import cl.rworks.comar.swing.model.Workspace;
+import cl.rworks.comar.swing.model.WorkspaceCreator;
+import cl.rworks.comar.swing.views.puntodeventa.ComarPanelPuntoDeVentaArea;
 import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.properties.ComarPropertiesImpl;
 import java.awt.KeyEventDispatcher;
@@ -27,7 +27,7 @@ public class ComarSystem {
     private ComarFrame frame;
     private final ComarService service;
     private final ComarProperties properties;
-    private ComarWorkspace workspace;
+    private Workspace workspace;
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
@@ -68,7 +68,7 @@ public class ComarSystem {
 
     private void startupServices() {
         service.startup(ComarService.DISK);
-        workspace = new ComarWorkspaceCreator().create(service);
+        workspace = new WorkspaceCreator().create(service);
     }
 
     private void startupKeyboard() {
@@ -78,7 +78,7 @@ public class ComarSystem {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
                 if (frame.getActualCardName().equals("POS")) {
-                    ComarPanelPointOfSellArea panelPos = (ComarPanelPointOfSellArea) frame.getPanel("POS");
+                    ComarPanelPuntoDeVentaArea panelPos = (ComarPanelPuntoDeVentaArea) frame.getPanel("POS");
                     return panelPos.dispatchKeyEventPos(e);
                 }
                 return false;
@@ -91,7 +91,7 @@ public class ComarSystem {
         System.exit(0);
     }
 
-    public ComarWorkspace getWorkspace() {
+    public Workspace getWorkspace() {
         return workspace;
     }
 

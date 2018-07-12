@@ -6,7 +6,7 @@
 package cl.rworks.comar.core;
 
 import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.comar.core.service.derby.GetAllMetrics;
+import cl.rworks.comar.core.service.derby.GetAllMetricas;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;

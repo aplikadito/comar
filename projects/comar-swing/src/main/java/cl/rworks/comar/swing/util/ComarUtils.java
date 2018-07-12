@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.swing.util;
 
-import cl.rworks.comar.core.ComarNumberFormat;
+import cl.rworks.comar.core.util.ComarNumberFormat;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.managers.notification.NotificationIcon;
 import com.alee.managers.notification.NotificationManager;

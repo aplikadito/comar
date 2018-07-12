@@ -5,11 +5,11 @@
  */
 package cl.rworks.comar.core.service;
 
-import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.model.ComarMetric;
-import cl.rworks.comar.core.model.ComarMetricObject;
-import cl.rworks.comar.core.model.ComarProduct;
+import cl.rworks.comar.core.model.Metrica;
 import java.util.List;
+import cl.rworks.comar.core.model.CategoriaEntity;
+import cl.rworks.comar.core.model.MetricaEntity;
+import cl.rworks.comar.core.model.ProductoEntity;
 
 /**
  *
@@ -28,33 +28,31 @@ public interface ComarService {
 
     public ComarTransaction createTransaction() throws ComarServiceException;
 
-    public List<ComarProduct> getAllProducts() throws ComarServiceException;
+    public List<ProductoEntity> getAllProductos() throws ComarServiceException;
 
-    public List<ComarProduct> searchProductByCodeOrDescription(String str) throws ComarServiceException;
+    public List<ProductoEntity> searchProductByCodeOrDescription(String str) throws ComarServiceException;
 
-    public ComarProduct getProductByCode(String code) throws ComarServiceException;
+    public ProductoEntity getProductoPorCodigo(String codigo) throws ComarServiceException;
 
-    public void insertProduct(ComarProduct product, ComarCategory category) throws ComarServiceException;
+    public ProductoEntity insertProductoPorCodigo(String codigo, CategoriaEntity categoria) throws ComarServiceException;
 
-    public void updateProduct(ComarProduct product, ComarCategory category) throws ComarServiceException;
+    public List<CategoriaEntity> getAllCategorias() throws ComarServiceException;
 
-    public List<ComarCategory> getAllCategories() throws ComarServiceException;
+    public void insertCategoria(CategoriaEntity category) throws ComarServiceException;
 
-    public void insertCategory(ComarCategory category) throws ComarServiceException;
+    public void deleteCategoria(CategoriaEntity category) throws ComarServiceException;
 
-    public List<ComarProduct> getProductForCategory(ComarCategory category) throws ComarServiceException;
+    public void deleteProducts(List<ProductoEntity> products) throws ComarServiceException;
 
-    public void deleteCategory(ComarCategory category) throws ComarServiceException;
+    public void updateProductoCodigo(ProductoEntity producto, String codigo) throws ComarServiceException;
 
-    public void deleteProducts(List<ComarProduct> products) throws ComarServiceException;
+    public void updateProductoDescripcion(ProductoEntity model, String descripcion) throws ComarServiceException;
 
-    public void editProductCode(ComarProduct model, String code) throws ComarServiceException;
+    public void updateProductoMetrica(ProductoEntity product, Metrica metric) throws ComarServiceException;
 
-    public void editProductDescription(ComarProduct model, String description) throws ComarServiceException;
+    public void updateCategoriaDeProductos(List<ProductoEntity> products, CategoriaEntity category) throws ComarServiceException;
 
-    public void editProductMetric(ComarProduct product, ComarMetric metric) throws ComarServiceException;
+    public List<MetricaEntity> getAllMetrics() throws ComarServiceException;
 
-    public void updateCategoryOfProducts(List<ComarProduct> products, ComarCategory category) throws ComarServiceException;
-
-    public List<ComarMetricObject> getAllMetrics() throws ComarServiceException;
+    public CategoriaEntity insertCategoriaPorNombre(String name) throws ComarServiceException;
 }

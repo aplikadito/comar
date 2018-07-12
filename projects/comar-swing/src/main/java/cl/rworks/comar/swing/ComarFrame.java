@@ -5,13 +5,13 @@
  */
 package cl.rworks.comar.swing;
 
-import cl.rworks.comar.swing.views.pointofsell.ComarPanelPointOfSellArea;
+import cl.rworks.comar.swing.views.puntodeventa.ComarPanelPuntoDeVentaArea;
 import cl.rworks.comar.swing.views.sells.ComarPanelSells;
 import cl.rworks.comar.swing.settings.ComarPanelSettings;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.IconLoader;
-import cl.rworks.comar.swing.views.batches.ComarPanelBatches;
-import cl.rworks.comar.swing.views.inventory.ComarPanelInventoryArea;
+import cl.rworks.comar.swing.views.facturas.ComarPanelFacturasArea;
+import cl.rworks.comar.swing.views.productos.ComarPanelProductosArea;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.scroll.WebScrollPane;
 import java.awt.BorderLayout;
@@ -76,12 +76,12 @@ public class ComarFrame extends WebFrame {
     }
 
     private void initValues() {
-        addCard("POS", "Punto de Venta", new ComarPanelPointOfSellArea(), menuNavigate);
+        addCard("POS", "Punto de Venta", new ComarPanelPuntoDeVentaArea(), menuNavigate);
         addCard("SELL", "Ventas", new ComarPanelSells(), menuNavigate);
         addCard("OPT", "Opciones", new ComarPanelSettings(), menuNavigate);
 
-        addCard("INV", "Inventario", new ComarPanelInventoryArea(), menuInventory);
-        addCard("BATCHES", "Lotes", new ComarPanelBatches(), menuInventory);
+        addCard("PRODUCTOS", "Productos", new ComarPanelProductosArea(), menuInventory);
+        addCard("FACTURAS", "Facturas", new ComarPanelFacturasArea(), menuInventory);
 
         actualCardName = "POS";
     }

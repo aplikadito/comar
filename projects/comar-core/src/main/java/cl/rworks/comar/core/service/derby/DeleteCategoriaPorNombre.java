@@ -14,16 +14,16 @@ import java.sql.SQLException;
  *
  * @author aplik
  */
-public class RemoveCategoryByName {
+public class DeleteCategoriaPorNombre {
 
     private Connection connection;
 
-    public RemoveCategoryByName(Connection connection) {
+    public DeleteCategoriaPorNombre(Connection connection) {
         this.connection = connection;
     }
 
     public void execute(String name) throws ComarServiceException {
-        String sql = "DELETE FROM COMAR_CATEGORY WHERE CATEGORY_NAME = ?";
+        String sql = "DELETE FROM CATEGORIA WHERE CATEGORIA_NOMBRE = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, name);
             ps.executeUpdate();
@@ -31,9 +31,8 @@ public class RemoveCategoryByName {
             throw new ComarServiceException("Error", e);
         }
     }
-
+    
     public static void serve(Connection connection, String name) throws ComarServiceException {
-        new RemoveCategoryByName(connection).execute(name);
+        new DeleteCategoriaPorNombre(connection).execute(name);
     }
-
 }

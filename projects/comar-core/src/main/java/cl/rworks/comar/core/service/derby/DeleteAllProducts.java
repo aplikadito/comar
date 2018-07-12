@@ -33,7 +33,7 @@ public class DeleteAllProducts {
 //    }
 
     public void execute() throws ComarServiceException {
-        String sql = "DELETE FROM COMAR_PRODUCT";
+        String sql = "DELETE FROM PRODUCTO";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.executeUpdate();
         } catch (SQLException ex) {

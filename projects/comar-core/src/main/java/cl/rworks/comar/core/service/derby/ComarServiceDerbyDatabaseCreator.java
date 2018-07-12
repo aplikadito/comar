@@ -5,8 +5,9 @@
  */
 package cl.rworks.comar.core.service.derby;
 
+import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.comar.core.model.impl.ComarCategoryImpl;
+import cl.rworks.comar.core.model.impl.CategoriaEntityImpl;
 import cl.rworks.comar.core.util.RunSqlScript;
 import cl.rworks.comar.core.util.RunSqlScriptException;
 import java.io.InputStream;
@@ -30,13 +31,18 @@ public class ComarServiceDerbyDatabaseCreator {
         }
 
         try (Connection conn = datasource.getConnection()) {
-            InsertCategory.serve(conn, new ComarCategoryImpl("Abarrotes"));
-            InsertCategory.serve(conn, new ComarCategoryImpl("Bebidas"));
-            InsertCategory.serve(conn, new ComarCategoryImpl("Alcoholes"));
-            InsertCategory.serve(conn, new ComarCategoryImpl("Despensa"));
-            InsertCategory.serve(conn, new ComarCategoryImpl("Varios"));
-            InsertCategory.serve(conn, new ComarCategoryImpl("Electronica"));
-            InsertCategory.serve(conn, new ComarCategoryImpl("Plásticos"));
+            Metrica[] values = Metrica.values();
+            for(Metrica metric: values){
+                InsertMetrica.serve(conn, metric);
+            }
+            
+            InsertCategoria.serve(conn, new CategoriaEntityImpl("Abarrotes"));
+            InsertCategoria.serve(conn, new CategoriaEntityImpl("Bebidas"));
+            InsertCategoria.serve(conn, new CategoriaEntityImpl("Alcoholes"));
+            InsertCategoria.serve(conn, new CategoriaEntityImpl("Despensa"));
+            InsertCategoria.serve(conn, new CategoriaEntityImpl("Varios"));
+            InsertCategoria.serve(conn, new CategoriaEntityImpl("Electronica"));
+            InsertCategoria.serve(conn, new CategoriaEntityImpl("Plásticos"));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } catch (ComarServiceException ex) {

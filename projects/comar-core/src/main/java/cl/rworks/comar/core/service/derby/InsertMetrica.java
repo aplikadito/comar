@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.core.service.derby;
 
+import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.service.ComarServiceException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,26 +15,28 @@ import java.sql.SQLException;
  *
  * @author aplik
  */
-public class RemoveCategoryByName {
+public class InsertMetrica {
 
     private Connection connection;
 
-    public RemoveCategoryByName(Connection connection) {
+    public InsertMetrica(Connection connection) {
         this.connection = connection;
     }
 
-    public void execute(String name) throws ComarServiceException {
-        String sql = "DELETE FROM COMAR_CATEGORY WHERE CATEGORY_NAME = ?";
+    private void execute(Metrica metric) throws ComarServiceException {
+        String sql = "INSERT INTO METRICA VALUES (?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, name);
+            ps.setInt(1, metric.getId());
+            ps.setString(2, metric.getName());
+            ps.setString(3, metric.getSymbol());
             ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new ComarServiceException("Error", e);
+        } catch (SQLException ex) {
+            throw new ComarServiceException("Error", ex);
         }
     }
 
-    public static void serve(Connection connection, String name) throws ComarServiceException {
-        new RemoveCategoryByName(connection).execute(name);
+    public static void serve(Connection conn, Metrica metric) throws ComarServiceException {
+        new InsertMetrica(conn).execute(metric);
     }
 
 }

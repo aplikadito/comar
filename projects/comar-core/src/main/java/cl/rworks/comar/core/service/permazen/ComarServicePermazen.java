@@ -5,17 +5,17 @@
  */
 package cl.rworks.comar.core.service.permazen;
 
-import cl.rworks.comar.core.model.ComarProduct;
 import java.util.List;
 import io.permazen.JTransaction;
 import io.permazen.Permazen;
 import io.permazen.ValidationMode;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.service.ComarTransaction;
-import cl.rworks.comar.core.model.ComarCategory;
-import cl.rworks.comar.core.model.ComarMetric;
-import cl.rworks.comar.core.model.ComarMetricObject;
+import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.service.ComarService;
+import cl.rworks.comar.core.model.CategoriaEntity;
+import cl.rworks.comar.core.model.MetricaEntity;
+import cl.rworks.comar.core.model.ProductoEntity;
 
 /**
  *
@@ -58,22 +58,12 @@ public class ComarServicePermazen implements ComarService {
     }
 
     @Override
-    public List<ComarProduct> searchProductByCodeOrDescription(String str) {
+    public List<ProductoEntity> searchProductByCodeOrDescription(String str) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ComarProduct getProductByCode(String code) throws ComarServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void insertProduct(ComarProduct product, ComarCategory category) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void updateProduct(ComarProduct product, ComarCategory category) throws ComarServiceException {
+    public ProductoEntity getProductoPorCodigo(String code) throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -82,55 +72,60 @@ public class ComarServicePermazen implements ComarService {
     }
 
     @Override
-    public List<ComarCategory> getAllCategories() throws ComarServiceException {
+    public List<CategoriaEntity> getAllCategorias() throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void insertCategory(ComarCategory category) throws ComarServiceException {
+    public void insertCategoria(CategoriaEntity category) throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<ComarProduct> getProductForCategory(ComarCategory category) throws ComarServiceException {
+    public List<ProductoEntity> getAllProductos() throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<ComarProduct> getAllProducts() throws ComarServiceException {
+    public void deleteCategoria(CategoriaEntity category) throws ComarServiceException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void deleteProducts(List<ProductoEntity> products) throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void deleteCategory(ComarCategory category) throws ComarServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void deleteProducts(List<ComarProduct> products) throws ComarServiceException {
+    public void updateProductoCodigo(ProductoEntity model, String code) throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void editProductCode(ComarProduct model, String code) throws ComarServiceException {
+    public void updateProductoDescripcion(ProductoEntity model, String description) throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void editProductDescription(ComarProduct model, String description) throws ComarServiceException {
+    public void updateProductoMetrica(ProductoEntity model, Metrica metric) throws ComarServiceException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void updateCategoriaDeProductos(List<ProductoEntity> products, CategoriaEntity model) throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void editProductMetric(ComarProduct model, ComarMetric metric) throws ComarServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void updateCategoryOfProducts(List<ComarProduct> products, ComarCategory model) throws ComarServiceException {
+    public List<MetricaEntity> getAllMetrics() throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<ComarMetricObject> getAllMetrics() throws ComarServiceException {
+    public CategoriaEntity insertCategoriaPorNombre(String name) throws ComarServiceException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ProductoEntity insertProductoPorCodigo(String codigo, CategoriaEntity categoria) throws ComarServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
