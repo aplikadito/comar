@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.views.productos;
+package cl.rworks.comar.swing.views.products;
 
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.service.ComarTransaction;
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.model.CategoryModel;
 import cl.rworks.comar.swing.model.ModelException;
 import cl.rworks.comar.swing.model.ProductModel;
@@ -27,14 +27,14 @@ import java.util.ArrayList;
  *
  * @author aplik
  */
-public class ComarPanelProductosAreaController {
+public class ComarPanelProductsAreaController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ComarPanelProductosAreaController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ComarPanelProductsAreaController.class);
     //
     private Workspace ws;
     private DefaultMutableTreeNode rootNode;
 
-    public ComarPanelProductosAreaController() {
+    public ComarPanelProductsAreaController() {
         ws = ComarSystem.getInstance().getWorkspace();
         initRootNode();
     }

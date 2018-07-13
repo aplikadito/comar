@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.views.facturas;
+package cl.rworks.comar.swing.views.bills;
 
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.model.BillUnitModel;
 import cl.rworks.comar.swing.model.Workspace;
 import cl.rworks.comar.swing.util.ComarActionSimple;
@@ -32,10 +32,10 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author aplik
  */
-public class ComarPanelFacturasArea extends ComarPanelView {
+public class ComarPanelBillsArea extends ComarPanelView {
 
     private ComarPanel panelContent;
-    private ComarPanelFacturasAreaController controller;
+    private ComarPanelBillsAreaController controller;
     //
     private ComarPanelTitle panelBatchTitle;
     private WebTextField textProductCode;
@@ -44,14 +44,14 @@ public class ComarPanelFacturasArea extends ComarPanelView {
     private WebTable tableProducts;
     private TableModelBillUnits tableModelProducts;
 
-    public ComarPanelFacturasArea() {
+    public ComarPanelBillsArea() {
         super("Facturas");
         initComponents();
     }
 
     private void initComponents() {
         Workspace ws = ComarSystem.getInstance().getWorkspace();
-        controller = new ComarPanelFacturasAreaController();
+        controller = new ComarPanelBillsAreaController();
 
         panelContent = new ComarPanel();
 

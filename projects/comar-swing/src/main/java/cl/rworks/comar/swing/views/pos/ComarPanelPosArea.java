@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.views.puntodeventa;
+package cl.rworks.comar.swing.views.pos;
 
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.service.ComarTransaction;
 import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.util.ComarButton;
 import cl.rworks.comar.swing.util.ComarCount;
 import cl.rworks.comar.swing.util.ComarLabel;
@@ -52,7 +52,7 @@ import cl.rworks.comar.core.model.ProductoEntity;
  *
  * @author rgonzalez
  */
-public class ComarPanelPuntoDeVentaArea extends ComarPanel {
+public class ComarPanelPosArea extends ComarPanel {
 
     private static final String TOOLTIP_CODE = "Ingrese el codigo del producto y presione ENTER\nPuede presionar F1 para obtener el foco del texto";
     private static final String TOOLTIP_ADD = "Agregar el producto a la venta";
@@ -66,7 +66,7 @@ public class ComarPanelPuntoDeVentaArea extends ComarPanel {
     private ComarButton buttonAdd;
     private ComarButton buttonEdit;
 
-    public ComarPanelPuntoDeVentaArea() {
+    public ComarPanelPosArea() {
         setLayout(new BorderLayout());
 //        setBorder(new EmptyBorder(30, 30, 30, 30));
 
@@ -245,7 +245,7 @@ public class ComarPanelPuntoDeVentaArea extends ComarPanel {
 
         BigDecimal count = editList.get(0).getCount();
         String msg = editList.size() == 1 ? editList.get(0).getDescription() : " ... varios";
-        String str = (String) WebOptionPane.showInputDialog(ComarPanelPuntoDeVentaArea.this, "Producto: " + msg, "Cantidad", JOptionPane.PLAIN_MESSAGE, null, null, count.toString());
+        String str = (String) WebOptionPane.showInputDialog(ComarPanelPosArea.this, "Producto: " + msg, "Cantidad", JOptionPane.PLAIN_MESSAGE, null, null, count.toString());
         if (str == null) {
             return;
         }

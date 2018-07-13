@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.views.productos;
+package cl.rworks.comar.swing.views.products;
 
 import cl.rworks.comar.swing.model.CategoryModel;
 import cl.rworks.comar.swing.model.ProductModel;
 import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.model.impl.CategoriaEntityImpl;
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelButtonsArea;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
@@ -52,9 +52,9 @@ import cl.rworks.comar.core.model.CategoriaEntity;
  *
  * @author aplik
  */
-public class ComarPanelProductosArea extends ComarPanelView {
+public class ComarPanelProductsArea extends ComarPanelView {
 
-    private ComarPanelProductosAreaController controller;
+    private ComarPanelProductsAreaController controller;
     private ComarPanel panelContent;
     private WebSplitPane split;
     private ComarPanel panelSplitLeft;
@@ -69,9 +69,9 @@ public class ComarPanelProductosArea extends ComarPanelView {
     //
     private DefaultMutableTreeNode selectedCategoryNode = null;
 
-    public ComarPanelProductosArea() {
+    public ComarPanelProductsArea() {
         super("Inventario");
-        this.controller = new ComarPanelProductosAreaController();
+        this.controller = new ComarPanelProductsAreaController();
 
         initComponents();
     }
@@ -269,7 +269,7 @@ public class ComarPanelProductosArea extends ComarPanelView {
                         break;
                 }
             } catch (ModelException ex) {
-                ComarUtils.showWarn(ComarPanelProductosArea.this, ex.getMessage());
+                ComarUtils.showWarn(ComarPanelProductsArea.this, ex.getMessage());
             }
 
         }
@@ -419,7 +419,7 @@ public class ComarPanelProductosArea extends ComarPanelView {
             return;
         }
 
-        int response = ComarUtils.showYesNo(ComarPanelProductosArea.this, "Desea eliminar la categoria seleccionada?", "Eliminar");
+        int response = ComarUtils.showYesNo(ComarPanelProductsArea.this, "Desea eliminar la categoria seleccionada?", "Eliminar");
         if (response != JOptionPane.YES_OPTION) {
             return;
         }

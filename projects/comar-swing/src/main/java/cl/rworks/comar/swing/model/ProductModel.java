@@ -9,7 +9,7 @@ import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.service.ComarTransaction;
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import java.util.Enumeration;
 import javax.swing.tree.TreeNode;
 import cl.rworks.comar.swing.model.ModelException;

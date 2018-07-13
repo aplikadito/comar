@@ -5,8 +5,10 @@
  */
 package cl.rworks.comar.swing;
 
+import cl.rworks.comar.swing.main.ComarFrame;
+import cl.rworks.comar.swing.main.ComarFrameListener;
+import cl.rworks.comar.swing.main.ComarSystem;
 import com.alee.laf.WebLookAndFeel;
-import com.alee.laf.rootpane.WebFrame;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.slf4j.Logger;

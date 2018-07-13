@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.swing.util;
 
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import com.alee.laf.button.WebButton;
 import javax.swing.Action;
 

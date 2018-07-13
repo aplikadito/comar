@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing;
+package cl.rworks.comar.swing.main;
 
-import cl.rworks.comar.swing.views.puntodeventa.ComarPanelPuntoDeVentaArea;
-import cl.rworks.comar.swing.views.sells.ComarPanelSells;
-import cl.rworks.comar.swing.settings.ComarPanelSettings;
+import cl.rworks.comar.swing.views.pos.ComarPanelPosArea;
+import cl.rworks.comar.swing.views.sells.ComarPanelSellsArea;
+import cl.rworks.comar.swing.views.settings.ComarPanelSettings;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.IconLoader;
-import cl.rworks.comar.swing.views.facturas.ComarPanelFacturasArea;
-import cl.rworks.comar.swing.views.productos.ComarPanelProductosArea;
+import cl.rworks.comar.swing.views.bills.ComarPanelBillsArea;
+import cl.rworks.comar.swing.views.products.ComarPanelProductsArea;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.scroll.WebScrollPane;
 import java.awt.BorderLayout;
@@ -36,7 +36,7 @@ public class ComarFrame extends WebFrame {
     private ComarStatusBar statusBar;
     private JMenu menuFile;
     private JMenu menuNavigate;
-    private JMenu menuInventory;
+//    private JMenu menuInventory;
     //
     private String actualCardName;
     private Map<String, ComarPanel> panelMap = new HashMap<>();
@@ -64,8 +64,8 @@ public class ComarFrame extends WebFrame {
         menuNavigate = new JMenu("Navegar");
         menuBar.add(menuNavigate);
 
-        menuInventory = new JMenu("Inventario");
-        menuBar.add(menuInventory);
+//        menuInventory = new JMenu("Inventario");
+//        menuBar.add(menuInventory);
 
         panelCard = new ComarPanel();
         panelCard.setLayout(new CardLayout());
@@ -76,12 +76,11 @@ public class ComarFrame extends WebFrame {
     }
 
     private void initValues() {
-        addCard("POS", "Punto de Venta", new ComarPanelPuntoDeVentaArea(), menuNavigate);
-        addCard("SELL", "Ventas", new ComarPanelSells(), menuNavigate);
+        addCard("POS", "Punto de Venta", new ComarPanelPosArea(), menuNavigate);
+        addCard("PRODUCTOS", "Productos", new ComarPanelProductsArea(), menuNavigate);
+        addCard("FACTURAS", "Facturas", new ComarPanelBillsArea(), menuNavigate);
+        addCard("SELL", "Ventas", new ComarPanelSellsArea(), menuNavigate);
         addCard("OPT", "Opciones", new ComarPanelSettings(), menuNavigate);
-
-        addCard("PRODUCTOS", "Productos", new ComarPanelProductosArea(), menuInventory);
-        addCard("FACTURAS", "Facturas", new ComarPanelFacturasArea(), menuInventory);
 
         actualCardName = "POS";
     }

@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.views.sells;
-
-import cl.rworks.comar.swing.util.ComarPanel;
+package cl.rworks.comar.swing.views.bills;
 
 /**
  *
  * @author aplik
  */
-public class ComarPanelSellsSearch extends ComarPanel {
-
+public class ComarPanelBillsAreaController {
+    
 }

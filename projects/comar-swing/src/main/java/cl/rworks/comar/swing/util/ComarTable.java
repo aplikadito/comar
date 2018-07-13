@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.swing.util;
 
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import com.alee.laf.table.WebTable;
 import java.math.BigDecimal;
 import javax.swing.table.TableModel;

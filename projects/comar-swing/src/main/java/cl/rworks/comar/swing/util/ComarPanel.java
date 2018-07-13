@@ -5,7 +5,7 @@
  */
 package cl.rworks.comar.swing.util;
 
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import com.alee.laf.panel.WebPanel;
 import java.awt.FlowLayout;
 import java.awt.LayoutManager;

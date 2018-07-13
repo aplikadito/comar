@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing;
+package cl.rworks.comar.swing.main;
 
 import cl.rworks.comar.swing.model.Workspace;
 import cl.rworks.comar.swing.model.WorkspaceCreator;
-import cl.rworks.comar.swing.views.puntodeventa.ComarPanelPuntoDeVentaArea;
+import cl.rworks.comar.swing.views.pos.ComarPanelPosArea;
 import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.properties.ComarPropertiesImpl;
 import java.awt.KeyEventDispatcher;
@@ -78,7 +78,7 @@ public class ComarSystem {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
                 if (frame.getActualCardName().equals("POS")) {
-                    ComarPanelPuntoDeVentaArea panelPos = (ComarPanelPuntoDeVentaArea) frame.getPanel("POS");
+                    ComarPanelPosArea panelPos = (ComarPanelPosArea) frame.getPanel("POS");
                     return panelPos.dispatchKeyEventPos(e);
                 }
                 return false;

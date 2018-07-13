@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.settings;
+package cl.rworks.comar.swing.views.settings;
 
 import cl.rworks.comar.swing.util.ComarPanelTitle;
-import cl.rworks.comar.swing.ComarSystem;
+import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.util.ComarButton;
 import cl.rworks.comar.swing.util.ComarLabel;
