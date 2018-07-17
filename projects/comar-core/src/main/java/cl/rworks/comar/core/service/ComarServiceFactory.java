@@ -6,7 +6,6 @@
 package cl.rworks.comar.core.service;
 
 import cl.rworks.comar.core.service.derby.ComarServiceDerby;
-import cl.rworks.comar.core.service.permazen.ComarServicePermazen;
 
 /**
  *
@@ -21,8 +20,8 @@ public final class ComarServiceFactory {
         switch (option) {
             case ComarService.DERBY:
                 return new ComarServiceDerby();
-            case ComarService.PERMAZEN:
-                return new ComarServicePermazen();
+//            case ComarService.PERMAZEN:
+//                return new ComarServicePermazen();
             default:
                 throw new RuntimeException("Opcion no soportada: " + option);
         }
