@@ -16,6 +16,8 @@ import java.sql.SQLException;
 import org.apache.derby.jdbc.EmbeddedDataSource;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.model.CategoriaEntity;
+import cl.rworks.comar.core.model.FacturaEntity;
+import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.model.MetricaEntity;
 import cl.rworks.comar.core.model.ProductoEntity;
 
@@ -139,5 +141,32 @@ public class ComarServiceDerby implements ComarService {
     public CategoriaEntity insertCategoriaPorNombre(String name) throws ComarServiceException {
         return InsertCategoriaPorNombre.serve(tx.getConnection(), name);
     }
+
+    public List<FacturaEntity> getAllFactura() throws ComarServiceException {
+        return GetAllFactura.serve(tx.getConnection());
+    }
+
+    public List<FacturaUnidadEntity> getAllFacturaUnidad() throws ComarServiceException {
+        return GetAllFacturaUnidad.serve(tx.getConnection());
+    }
+    
+    public void insertFactura(FacturaEntity factura) throws ComarServiceException{
+        InsertFactura.serve(tx.getConnection(), factura);
+    }
+    
+    @Override
+    public void updateFactura(FacturaEntity factura) throws ComarServiceException {
+        UpdateFactura.serve(tx.getConnection(), factura);
+    }
+    
+    public void deleteFacturas(List<FacturaEntity> facturas) throws ComarServiceException{
+        DeleteFacturas.serve(tx.getConnection(), facturas);
+    }
+
+    public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura) throws ComarServiceException{
+        InsertFacturaUnidad.serve(tx.getConnection(), facturaUnidad, factura);
+    }
+
+    
 
 }

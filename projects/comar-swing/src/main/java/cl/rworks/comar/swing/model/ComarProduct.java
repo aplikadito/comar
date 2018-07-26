@@ -5,14 +5,6 @@
  */
 package cl.rworks.comar.swing.model;
 
-import cl.rworks.comar.core.model.Metrica;
-import cl.rworks.comar.core.service.ComarService;
-import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.comar.core.service.ComarTransaction;
-import cl.rworks.comar.swing.main.ComarSystem;
-import java.util.Enumeration;
-import javax.swing.tree.TreeNode;
-import cl.rworks.comar.swing.model.ModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import cl.rworks.comar.core.model.ProductoEntity;
@@ -21,13 +13,13 @@ import cl.rworks.comar.core.model.ProductoEntity;
  *
  * @author aplik
  */
-public class ProductModel {
+public class ComarProduct {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductModel.class);
-    private CategoryModel category;
+    private static final Logger LOG = LoggerFactory.getLogger(ComarProduct.class);
+    private ComarCategory category;
     private ProductoEntity entity;
 
-    public ProductModel(ProductoEntity entity) {
+    public ComarProduct(ProductoEntity entity) {
         this.entity = entity;
     }
 
@@ -35,11 +27,11 @@ public class ProductModel {
         return entity;
     }
 
-    public void setCategory(CategoryModel category) {
+    public void setCategory(ComarCategory category) {
         this.category = category;
     }
     
-    public CategoryModel getCategory() {
+    public ComarCategory getCategory() {
         return category;
     }
 

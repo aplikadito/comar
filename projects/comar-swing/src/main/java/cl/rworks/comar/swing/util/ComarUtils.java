@@ -35,14 +35,6 @@ public class ComarUtils {
     public static final Dimension BUTTON_PREF_DIM = new Dimension(195, 35);
     public static final DecimalFormat dfDecs = new DecimalFormat("000");
 
-    public static void showInfo(String msg) {
-        WebInnerNotification not = new WebInnerNotification();
-        not.setContent(msg);
-        not.setDisplayTime(2000);
-        not.setIcon(NotificationIcon.information.getIcon());
-        NotificationManager.showInnerNotification(not);
-    }
-
     public static void showInfo(Component parent, String msg) {
         WebOptionPane.showMessageDialog(parent, msg, "Informacion", JOptionPane.INFORMATION_MESSAGE);
     }

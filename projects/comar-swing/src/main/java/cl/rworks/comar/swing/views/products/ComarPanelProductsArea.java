@@ -5,8 +5,8 @@
  */
 package cl.rworks.comar.swing.views.products;
 
-import cl.rworks.comar.swing.model.CategoryModel;
-import cl.rworks.comar.swing.model.ProductModel;
+import cl.rworks.comar.swing.model.ComarCategory;
+import cl.rworks.comar.swing.model.ComarProduct;
 import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.model.impl.CategoriaEntityImpl;
 import cl.rworks.comar.swing.main.ComarSystem;
@@ -36,7 +36,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import cl.rworks.comar.swing.model.ModelException;
+import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.util.ComarActionSimple;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.combobox.WebComboBox;
@@ -54,7 +54,7 @@ import cl.rworks.comar.core.model.CategoriaEntity;
  */
 public class ComarPanelProductsArea extends ComarPanelView {
 
-    private ComarPanelProductsAreaController controller;
+    private ComarPanelProductsController controller;
     private ComarPanel panelContent;
     private WebSplitPane split;
     private ComarPanel panelSplitLeft;
@@ -71,7 +71,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
 
     public ComarPanelProductsArea() {
         super("Inventario");
-        this.controller = new ComarPanelProductsAreaController();
+        this.controller = new ComarPanelProductsController();
 
         initComponents();
     }
@@ -171,13 +171,13 @@ public class ComarPanelProductsArea extends ComarPanelView {
     private class TableModelProducts extends AbstractTableModel {
 
         private String[] colNames = new String[]{"Codigo", "Descripcion", "Unidad", "Categoria"};
-        private List<ProductModel> products = null;
+        private List<ComarProduct> products = null;
 
-        public List<ProductModel> getProducts() {
+        public List<ComarProduct> getProducts() {
             return products;
         }
 
-        public void setProducts(List<ProductModel> products) {
+        public void setProducts(List<ComarProduct> products) {
             this.products = products;
         }
 
@@ -214,7 +214,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            ProductModel pmodel = products.get(rowIndex);
+            ComarProduct pmodel = products.get(rowIndex);
             switch (columnIndex) {
                 case 0:
                     return pmodel.getEntity().getCodigo();
@@ -247,7 +247,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
 
         @Override
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
-            ProductModel pmodel = products.get(rowIndex);
+            ComarProduct pmodel = products.get(rowIndex);
             try {
                 switch (columnIndex) {
                     case 0:
@@ -268,7 +268,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
                     default:
                         break;
                 }
-            } catch (ModelException ex) {
+            } catch (ComarControllerException ex) {
                 ComarUtils.showWarn(ComarPanelProductsArea.this, ex.getMessage());
             }
 
@@ -280,12 +280,12 @@ public class ComarPanelProductsArea extends ComarPanelView {
 
         String str = "";
         if (selectedCategoryNode != null) {
-            CategoryModel cmodel = (CategoryModel) selectedCategoryNode.getUserObject();
+            ComarCategory cmodel = (ComarCategory) selectedCategoryNode.getUserObject();
             str = cmodel.getEntity().getNombre();
         }
         panelProductTitle.setTitle(str);
 
-        List<ProductModel> products = controller.getProducts(selectedCategoryNode);
+        List<ComarProduct> products = controller.getProducts(selectedCategoryNode);
         this.tableModelProducts.setProducts(products);
         this.tableModelProducts.fireTableDataChanged();
 
@@ -312,7 +312,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
         DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) selectedObject;
         Object userObject = dmtn.getUserObject();
 
-        if (!(userObject instanceof CategoryModel)) {
+        if (!(userObject instanceof ComarCategory)) {
             return null;
         }
 
@@ -394,7 +394,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
                 controller.insertCategory(name);
                 ok = true;
                 dispose();
-            } catch (ModelException ex) {
+            } catch (ComarControllerException ex) {
                 ComarUtils.showWarn(panelEditor, ex.getMessage());
             }
         }
@@ -413,7 +413,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
             return;
         }
 
-        CategoryModel cmodel = (CategoryModel) cview.getUserObject();
+        ComarCategory cmodel = (ComarCategory) cview.getUserObject();
         if (!cmodel.getProducts().isEmpty()) {
             ComarUtils.showWarn(null, "La categoria no debe poseer productos");
             return;
@@ -432,7 +432,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
             this.tableModelProducts.setProducts(null);
             this.tableModelProducts.fireTableDataChanged();
             this.tree.updateUI();
-        } catch (ModelException ex) {
+        } catch (ComarControllerException ex) {
             ex.printStackTrace();
             ComarUtils.showWarn(null, ex.getMessage());
         }
@@ -452,31 +452,31 @@ public class ComarPanelProductsArea extends ComarPanelView {
         }
 
         try {
-            ProductModel pmodel = controller.insertProduct(code, selectedCategoryNode);
+            ComarProduct pmodel = controller.insertProduct(code, selectedCategoryNode);
             tableModelProducts.getProducts().add(pmodel);
             tableModelProducts.fireTableDataChanged();
             tree.updateUI();
             textProductCode.clear();
-        } catch (ModelException ex) {
+        } catch (ComarControllerException ex) {
             ex.printStackTrace();
             ComarUtils.showWarn(this, ex.getMessage());
         }
     }
 
-    public List<ProductModel> getSelectedProductsFromTable() {
-        List<ProductModel> list = new ArrayList<>();
+    public List<ComarProduct> getSelectedProductsFromTable() {
+        List<ComarProduct> list = new ArrayList<>();
         int[] vrows = tableProducts.getSelectedRows();
         for (int i = 0; i < vrows.length; i++) {
             int vrow = vrows[i];
             int mrow = tableProducts.convertRowIndexToModel(vrow);
-            ProductModel pnode = tableModelProducts.getProducts().get(mrow);
+            ComarProduct pnode = tableModelProducts.getProducts().get(mrow);
             list.add(pnode);
         }
         return list;
     }
 
     public void deleteProductsAction() {
-        List<ProductModel> selectedProducts = getSelectedProductsFromTable();
+        List<ComarProduct> selectedProducts = getSelectedProductsFromTable();
         if (selectedProducts.isEmpty()) {
             ComarUtils.showWarn(null, "Seleccione al menos un producto");
             return;
@@ -493,14 +493,14 @@ public class ComarPanelProductsArea extends ComarPanelView {
             tableModelProducts.fireTableDataChanged();
 
             tree.updateUI();
-        } catch (ModelException ex) {
+        } catch (ComarControllerException ex) {
             ex.printStackTrace();
             ComarUtils.showWarn(null, ex.getMessage());
         }
     }
 
     private void moveProducts() {
-        List<ProductModel> selectedProducts = getSelectedProductsFromTable();
+        List<ComarProduct> selectedProducts = getSelectedProductsFromTable();
         if (selectedProducts.isEmpty()) {
             ComarUtils.showWarn(null, "Seleccione al menos un producto");
             return;
@@ -510,13 +510,13 @@ public class ComarPanelProductsArea extends ComarPanelView {
         Object response = WebOptionPane.showInputDialog(this, "Categoria", "Mover a", WebOptionPane.PLAIN_MESSAGE, null, values, values[0]);
         if (response != null) {
             try {
-                CategoryModel category = (CategoryModel) response;
+                ComarCategory category = (ComarCategory) response;
                 controller.moveProducts(selectedProducts, category);
                 tableModelProducts.getProducts().removeAll(selectedProducts);
 
                 tableModelProducts.setProducts(controller.getProducts(selectedCategoryNode));
                 tableModelProducts.fireTableDataChanged();
-            } catch (ModelException ex) {
+            } catch (ComarControllerException ex) {
                 ex.printStackTrace();
                 ComarUtils.showWarn(null, ex.getMessage());
             }

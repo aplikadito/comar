@@ -8,17 +8,20 @@ package cl.rworks.comar.swing.model;
 import java.util.ArrayList;
 import java.util.List;
 import cl.rworks.comar.core.model.CategoriaEntity;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author aplik
  */
-public class CategoryModel {
+public class ComarCategory {
 
     private CategoriaEntity entity;
-    private List<ProductModel> products = new ArrayList<>();
+    private List<ComarProduct> products = new ArrayList<>();
+    private Map<String, ComarProduct> index = new HashMap<>();
 
-    public CategoryModel(CategoriaEntity entity) {
+    public ComarCategory(CategoriaEntity entity) {
         this.entity = entity;
     }
 
@@ -26,21 +29,27 @@ public class CategoryModel {
         return entity;
     }
 
-    public List<ProductModel> getProducts() {
+    public List<ComarProduct> getProducts() {
         return products;
     }
 
-    public void removeProduct(ProductModel pnode) {
+    public void removeProduct(ComarProduct pnode) {
         this.products.remove(pnode);
+        this.index.remove(pnode.getEntity().getCodigo());
     }
 
-    public void addProduct(ProductModel pnode) {
+    public void addProduct(ComarProduct pnode) {
         products.add(pnode);
+        index.put(pnode.getEntity().getCodigo(), pnode);
         pnode.setCategory(this);
     }
 
-    void removeProducts(List<ProductModel> list) {
+    void removeProducts(List<ComarProduct> list) {
         products.removeAll(list);
+    }
+
+    public ComarProduct getProduct(String code) {
+        return this.index.get(code);
     }
 
     @Override

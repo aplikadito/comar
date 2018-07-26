@@ -9,16 +9,16 @@ package cl.rworks.comar.swing.model;
  *
  * @author aplik
  */
-public class ModelException extends Exception{
+public class ComarControllerException extends Exception{
 
-    public ModelException() {
+    public ComarControllerException() {
     }
 
-    public ModelException(String message) {
+    public ComarControllerException(String message) {
         super(message);
     }
 
-    public ModelException(String message, Throwable cause) {
+    public ComarControllerException(String message, Throwable cause) {
         super(message, cause);
     }
     

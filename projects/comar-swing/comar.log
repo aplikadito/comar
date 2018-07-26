@@ -1,0 +1,108 @@
+2018-07-21 16:12:51 ERROR ComarPanelDateFilter:273 - com.alee.managers.style.StyleException: StyleManager must be initialized
+com.alee.managers.style.StyleException: StyleManager must be initialized
+	at com.alee.managers.style.StyleManager.checkInitialization(StyleManager.java:166)
+	at com.alee.managers.style.StyleManager.getData(StyleManager.java:627)
+	at com.alee.managers.style.StyleManager.installSkin(StyleManager.java:369)
+	at com.alee.laf.panel.WebPanelUI.installUI(WebPanelUI.java:80)
+	at javax.swing.JComponent.setUI(JComponent.java:666)
+	at javax.swing.JPanel.setUI(JPanel.java:153)
+	at com.alee.laf.panel.WebPanel.updateUI(WebPanel.java:566)
+	at javax.swing.JPanel.<init>(JPanel.java:86)
+	at javax.swing.JPanel.<init>(JPanel.java:95)
+	at com.alee.laf.panel.WebPanel.<init>(WebPanel.java:91)
+	at cl.rworks.comar.swing.util.ComarPanel.<init>(ComarPanel.java:24)
+	at cl.rworks.comar.swing.util.ComarPanel.<init>(ComarPanel.java:20)
+	at cl.rworks.comar.swing.util.ComarPanelDateFilter.<init>(ComarPanelDateFilter.java:28)
+	at cl.rworks.comar.swing.util.ComarPanelDateFilter$1.run(ComarPanelDateFilter.java:86)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+2018-07-21 16:13:19 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:15:53 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:16:43 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:22:11 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:23:50 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:24:46 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:24:55 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:27:04 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:29:28 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:30:08 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 16:30:50 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:35:17 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:35:47 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:36:21 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:38:59 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:39:32 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:40:01 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:41:50 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:42:26 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:42:47 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-21 18:43:33 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:23:53 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:24:29 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:40:16 ERROR WebRootPane:273 - com.alee.managers.style.StyleException: StyleManager must be initialized
+com.alee.managers.style.StyleException: StyleManager must be initialized
+	at com.alee.managers.style.StyleManager.checkInitialization(StyleManager.java:166)
+	at com.alee.managers.style.StyleManager.getData(StyleManager.java:627)
+	at com.alee.managers.style.StyleManager.installSkin(StyleManager.java:369)
+	at com.alee.laf.rootpane.WebRootPaneUI.installUI(WebRootPaneUI.java:135)
+	at javax.swing.JComponent.setUI(JComponent.java:666)
+	at javax.swing.JRootPane.setUI(JRootPane.java:474)
+	at com.alee.laf.rootpane.WebRootPane.updateUI(WebRootPane.java:241)
+	at javax.swing.JRootPane.<init>(JRootPane.java:371)
+	at com.alee.laf.rootpane.WebRootPane.<init>(WebRootPane.java:47)
+	at com.alee.laf.rootpane.WebFrame.createRootPane(WebFrame.java:217)
+	at javax.swing.JFrame.frameInit(JFrame.java:267)
+	at javax.swing.JFrame.<init>(JFrame.java:190)
+	at com.alee.laf.rootpane.WebFrame.<init>(WebFrame.java:125)
+	at com.alee.laf.rootpane.WebFrame.<init>(WebFrame.java:78)
+	at cl.rworks.comar.swing.views.bills.ComarPanelBillInsert$1.run(ComarPanelBillInsert.java:209)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+2018-07-22 15:40:35 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:40:55 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:41:53 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:42:34 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:42:57 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:43:46 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:44:18 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 15:44:48 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:02:53 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:03:51 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:06:20 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:11:48 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:12:24 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:12:37 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:13:10 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:13:27 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:14:35 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:17:16 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:21:26 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:22:01 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:39:02 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-22 18:39:53 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-23 15:52:14 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-07-23 15:52:33 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto

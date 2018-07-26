@@ -14,7 +14,10 @@ import java.util.Collection;
  */
 public class ComarComboBox extends WebComboBox {
 
-          public ComarComboBox(Collection<?> items) {
-                    super(items);
-          }
+    public ComarComboBox() {
+    }
+    
+    public ComarComboBox(Collection<?> items) {
+        super(items);
+    }
 }

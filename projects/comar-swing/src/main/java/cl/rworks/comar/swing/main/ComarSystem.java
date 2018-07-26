@@ -5,8 +5,8 @@
  */
 package cl.rworks.comar.swing.main;
 
-import cl.rworks.comar.swing.model.Workspace;
-import cl.rworks.comar.swing.model.WorkspaceCreator;
+import cl.rworks.comar.swing.model.ComarWorkspace;
+import cl.rworks.comar.swing.model.ComarWorkspaceCreator;
 import cl.rworks.comar.swing.views.pos.ComarPanelPosArea;
 import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.properties.ComarPropertiesImpl;
@@ -27,7 +27,7 @@ public class ComarSystem {
     private ComarFrame frame;
     private final ComarService service;
     private final ComarProperties properties;
-    private Workspace workspace;
+    private ComarWorkspace workspace;
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
@@ -68,7 +68,7 @@ public class ComarSystem {
 
     private void startupServices() {
         service.startup(ComarService.DISK);
-        workspace = new WorkspaceCreator().create(service);
+        workspace = new ComarWorkspaceCreator().create(service);
     }
 
     private void startupKeyboard() {
@@ -91,7 +91,7 @@ public class ComarSystem {
         System.exit(0);
     }
 
-    public Workspace getWorkspace() {
+    public ComarWorkspace getWorkspace() {
         return workspace;
     }
 

@@ -6,25 +6,34 @@
 package cl.rworks.comar.swing.views.bills;
 
 import cl.rworks.comar.swing.main.ComarSystem;
-import cl.rworks.comar.swing.model.BillUnitModel;
-import cl.rworks.comar.swing.model.Workspace;
+import cl.rworks.comar.swing.model.ComarBill;
+import cl.rworks.comar.swing.model.ComarBillUnit;
+import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.util.ComarActionSimple;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelButtonsArea;
+import cl.rworks.comar.swing.util.ComarPanelDate;
+import cl.rworks.comar.swing.util.ComarPanelFactory;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.util.ComarPanelView;
+import cl.rworks.comar.swing.util.ComarUtils;
+import cl.rworks.comar.swing.util.WebTextFieldFactory;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebPopupMenu;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.splitpane.WebSplitPane;
 import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 import java.awt.BorderLayout;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.BoxLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 
@@ -35,14 +44,26 @@ import javax.swing.table.AbstractTableModel;
 public class ComarPanelBillsArea extends ComarPanelView {
 
     private ComarPanel panelContent;
-    private ComarPanelBillsAreaController controller;
+    private ComarPanelBillsController controller;
     //
+    private ComarPanel panelLeft;
+    private ComarPanel panelRight;
+    //
+    private ComarPanelDate panelDateFilter;
+    private WebTable tableBills;
+    private TableModelBills tableModelBills;
+    private ComarPanelButtonsArea panelBillOptionsUp;
+    private ComarPanelButtonsArea panelBillOptionsDown;
+    //
+    private ComarPanel panelRightTableArea;
+    private ComarPanelButtonsArea panelRightTableButtonsArea;
     private ComarPanelTitle panelBatchTitle;
+    private WebPopupMenu popupTable;
     private WebTextField textProductCode;
     private WebButton buttonAddProduct;
     private WebButton buttonDeleteProducts;
-    private WebTable tableProducts;
-    private TableModelBillUnits tableModelProducts;
+    private WebTable tableBillUnits;
+    private TableModelBillUnits tableModelBillUnits;
 
     public ComarPanelBillsArea() {
         super("Facturas");
@@ -50,71 +71,158 @@ public class ComarPanelBillsArea extends ComarPanelView {
     }
 
     private void initComponents() {
-        Workspace ws = ComarSystem.getInstance().getWorkspace();
-        controller = new ComarPanelBillsAreaController();
+        controller = new ComarPanelBillsController();
 
-        panelContent = new ComarPanel();
-
-        panelContent.setLayout(new BoxLayout(panelContent, BoxLayout.PAGE_AXIS));
+        panelContent = new ComarPanelFactory().boxLayoutPage().create();
         getPanelContent().add(panelContent, BorderLayout.CENTER);
 
-        ComarPanel panelSplitLeft = new ComarPanel(new BorderLayout());
-        ComarPanel panelSplitRight = new ComarPanel(new BorderLayout());
-
-        WebSplitPane split = new WebSplitPane(WebSplitPane.HORIZONTAL_SPLIT, panelSplitLeft, panelSplitRight);
+        WebSplitPane split = new WebSplitPane(WebSplitPane.HORIZONTAL_SPLIT, initLeft(), initRight());
         split.setDividerLocation(350);
         panelContent.add(split);
+    }
 
-        // LEFT
-        // RIGHT
-        WebPanel panelRightContent = new WebPanel();
-        panelSplitRight.add(panelRightContent, BorderLayout.NORTH);
+    private ComarPanel initLeft() {
+        panelLeft = new ComarPanelFactory().borderLayout().create();
 
-        panelBatchTitle = new ComarPanelTitle("");
-        panelRightContent.add(panelBatchTitle, BorderLayout.NORTH);
+        panelLeft.add(panelBillOptionsUp = new ComarPanelButtonsArea(), BorderLayout.NORTH);
+        panelLeft.add(new WebScrollPane(tableBills = new WebTable()), BorderLayout.CENTER);
+        panelLeft.add(panelBillOptionsDown = new ComarPanelButtonsArea(), BorderLayout.SOUTH);
 
-        WebPanel panelTableContent = new WebPanel(new BorderLayout());
-        panelTableContent.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelRightContent.add(panelTableContent, BorderLayout.CENTER);
+        tableModelBills = new TableModelBills();
+        tableBills.setModel(tableModelBills);
+        tableBills.setCellSelectionEnabled(true);
+//        tableBills.setComponentPopupMenu(popupTable = new WebPopupMenu());
+//        popupTable.add(new ComarActionSimple("Eliminar", e -> deleteProductsAction()));
 
-        // BOTONERA PRODUCTOS
-        ComarPanelButtonsArea panelProductButtons = new ComarPanelButtonsArea();
-        textProductCode = new WebTextField(30);
-        textProductCode.addActionListener(e -> addProductAction());
+        panelBillOptionsUp.addCenter(panelDateFilter = new ComarPanelDate());
+        panelBillOptionsUp.addCenter(new WebButton("Buscar", e -> searchBillsAction()));
 
-        buttonAddProduct = new WebButton("Agregar", e -> addProductAction());
-        buttonDeleteProducts = new WebButton("Eliminar", e -> deleteProductsAction());
+        panelBillOptionsDown.addRight(new WebButton("Agregar", e -> addBillAction()));
+        panelBillOptionsDown.addRight(new WebButton("Eliminar", e -> deleteBillAction()));
+//        panelDateFilter.getButtonSearch().addActionListener(e -> searchBillsAction());
 
-        panelProductButtons.addLeft(new WebLabel("Codigo"));
-        panelProductButtons.addLeft(textProductCode);
-        panelProductButtons.addLeft(buttonAddProduct);
-        panelProductButtons.addRight(buttonDeleteProducts);
-        panelTableContent.add(panelProductButtons, BorderLayout.NORTH);
+        return panelLeft;
+    }
 
-        // TABLA
-        tableModelProducts = new TableModelBillUnits();
-        tableProducts = new WebTable(tableModelProducts);
-        tableProducts.setCellSelectionEnabled(true);
+    private ComarPanel initRight() {
+        panelRight = new ComarPanelFactory().borderLayout().create();
 
-        WebPopupMenu popupTable = new WebPopupMenu();
-//        popup.add(new WebButton("Eliminar", e -> deleteProductsAction()));
+        panelRight.add(panelBatchTitle = new ComarPanelTitle(""), BorderLayout.NORTH);
+        panelRight.add(panelRightTableArea = new ComarPanelFactory().borderLayout().border(new EmptyBorder(10, 10, 10, 10)).create(), BorderLayout.CENTER);
+
+        panelRightTableArea.add(panelRightTableButtonsArea = new ComarPanelButtonsArea(), BorderLayout.NORTH);
+        panelRightTableArea.add(new WebScrollPane(tableBillUnits = new WebTable()), BorderLayout.CENTER);
+
+        panelRightTableButtonsArea.addLeft(new WebLabel("Codigo"));
+        panelRightTableButtonsArea.addLeft(textProductCode = new WebTextFieldFactory().cols(20).actionListener(e -> addProductAction()).create());
+        panelRightTableButtonsArea.addLeft(buttonAddProduct = new WebButton("Agregar", e -> addProductAction()));
+        panelRightTableButtonsArea.addRight(buttonDeleteProducts = new WebButton("Eliminar", e -> deleteProductsAction()));
+
+        tableModelBillUnits = new TableModelBillUnits();
+        tableBillUnits.setModel(tableModelBillUnits);
+        tableBillUnits.setCellSelectionEnabled(true);
+        tableBillUnits.setComponentPopupMenu(popupTable = new WebPopupMenu());
         popupTable.add(new ComarActionSimple("Eliminar", e -> deleteProductsAction()));
-        tableProducts.setComponentPopupMenu(popupTable);
 
-        panelTableContent.add(new WebScrollPane(tableProducts), BorderLayout.CENTER);
+        return panelRight;
+    }
 
+    private class TableModelBills extends AbstractTableModel {
+
+        private String[] colNames = new String[]{"Identificador", "Fecha"};
+        private List<ComarBill> bills = null;
+
+        public List<ComarBill> getBills() {
+            return bills;
+        }
+
+        public void setBills(List<ComarBill> bills) {
+            this.bills = bills;
+        }
+
+        @Override
+        public int getRowCount() {
+            return bills != null ? bills.size() : 0;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return colNames.length;
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return LocalDate.class;
+                case 1:
+                    return String.class;
+                default:
+                    return String.class;
+            }
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return colNames[column];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            ComarBill bill = bills.get(rowIndex);
+            switch (columnIndex) {
+                case 0:
+                    return bill.getEntity().getCodigo();
+                case 1:
+                    return bill.getEntity().getFecha();
+                default:
+                    return "";
+            }
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return true;
+                case 1:
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void setValueAt(Object value, int rowIndex, int columnIndex) {
+            ComarBill bill = bills.get(rowIndex);
+//            try {
+            switch (columnIndex) {
+                case 0:
+                    String code = (String) value;
+//                        billUnit.updateCode(code);
+                    fireTableCellUpdated(rowIndex, columnIndex);
+                    break;
+                case 1:
+                    LocalTime date = (LocalTime) value;
+//                        billUnit.updateBuyPrice(buyPrice);
+                    fireTableCellUpdated(rowIndex, columnIndex);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private class TableModelBillUnits extends AbstractTableModel {
 
         private String[] colNames = new String[]{"Codigo", "Descripcion", "Precio", "Cantidad", "Subtotal"};
-        private List<BillUnitModel> billUnits = null;
+        private List<ComarBillUnit> billUnits = null;
 
-        public List<BillUnitModel> getBillUnits() {
+        public List<ComarBillUnit> getBillUnits() {
             return billUnits;
         }
 
-        public void setProducts(List<BillUnitModel> products) {
+        public void setProducts(List<ComarBillUnit> products) {
             this.billUnits = products;
         }
 
@@ -153,12 +261,12 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            BillUnitModel billUnit = billUnits.get(rowIndex);
+            ComarBillUnit billUnit = billUnits.get(rowIndex);
             switch (columnIndex) {
                 case 0:
-                    return billUnit.getEntity().getCodigo();
+                    return billUnit.getEntity().getCodigoProducto();
                 case 1:
-                    return billUnit.getEntity().getDescripcion();
+                    return billUnit.getEntity().getDescripcionProducto();
                 case 2:
                     return billUnit.getEntity().getPrecioCompra();
                 case 3:
@@ -173,50 +281,83 @@ public class ComarPanelBillsArea extends ComarPanelView {
             }
         }
 
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return true;
-                case 1:
-                    return false;
-                case 2:
-                    return true;
-                case 3:
-                    return true;
-                case 4:
-                    return false;
-                default:
-                    return false;
+    }
+
+    private void searchBillsAction() {
+        int[] value = panelDateFilter.getValue();
+        List<ComarBill> bills = controller.searchBills(value);
+        tableModelBills.setBills(bills);
+        tableModelBills.fireTableDataChanged();
+    }
+
+    private void addBillAction() {
+        ComarDialogBillInsert dialog = new ComarDialogBillInsert(ComarSystem.getInstance().getFrame());
+        dialog.getPanel().updateForm(LocalDate.now(), "");
+        dialog.showMe();
+
+        if (dialog.isOk()) {
+            try {
+                ComarBill bill = dialog.getBill();
+                controller.addBill(bill);
+                searchBillsAction();
+            } catch (ComarControllerException ex) {
+                ex.printStackTrace();
+                ComarUtils.showWarn(this, ex.getMessage());
             }
         }
+    }
 
-        @Override
-        public void setValueAt(Object value, int rowIndex, int columnIndex) {
-            BillUnitModel billUnit = billUnits.get(rowIndex);
+    private List<ComarBill> getSelectedBills() {
+        int[] vrows = this.tableBills.getSelectedRows();
+        if (vrows.length == 0) {
+            return null;
+        }
+
+        List<ComarBill> list = new ArrayList<>();
+        for (int i = 0; i < vrows.length; i++) {
+            int vrow = vrows[i];
+            int mrow = this.tableBills.convertRowIndexToModel(vrow);
+            ComarBill bill = this.tableModelBills.getBills().get(mrow);
+            list.add(bill);
+        }
+
+        return list;
+    }
+
+//    private void editBillAction() {
+//        ComarBill bill = getSelectedBill();
+//        if (bill == null) {
+//            ComarUtils.showInfo(this, "Seleccione una factura");
+//            return;
+//        }
+//
+//        ComarDialogBillInsert dialog = new ComarDialogBillInsert(ComarSystem.getInstance().getFrame(), bill);
+//        dialog.showMe();
+//
+//        if (dialog.isOk()) {
 //            try {
-                switch (columnIndex) {
-                    case 0:
-                        String code = (String) value;
-//                        billUnit.updateCode(code);
-                        fireTableCellUpdated(rowIndex, columnIndex);
-                        break;
-                    case 2:
-                        BigDecimal buyPrice = (BigDecimal) value;
-//                        billUnit.updateBuyPrice(buyPrice);
-                        fireTableCellUpdated(rowIndex, columnIndex);
-                        break;
-                    case 3:
-                        BigDecimal quantity = (BigDecimal) value;
-//                        billUnit.updateQuantity(quantity);
-                        fireTableCellUpdated(rowIndex, columnIndex);
-                        break;
-                    default:
-                        break;
-                }
-//            } catch (ModelException ex) {
-//                ComarUtils.showWarn(ComarPanelFacturasArea.this, ex.getMessage());
+//                controller.updateBill(bill);
+//            } catch (ComarControllerException ex) {
+//                ex.printStackTrace();
+//                ComarUtils.showWarn(this, ex.getMessage());
 //            }
+//        }
+//    }
+    private void deleteBillAction() {
+        List<ComarBill> bills = getSelectedBills();
+        if (bills == null) {
+            ComarUtils.showInfo(this, "Seleccione al menos una factura");
+            return;
+        }
+
+        int r = ComarUtils.showYesNo(this, "Desea eliminar las facturas seleccionadas?", "Eliminar Facturas");
+        if (r == JOptionPane.YES_OPTION) {
+            try {
+                controller.deleteBills(bills);
+                searchBillsAction();
+            } catch (ComarControllerException ex) {
+                ComarUtils.showWarn(this, ex.getMessage());
+            }
         }
     }
 

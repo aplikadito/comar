@@ -19,9 +19,9 @@ public class BigDecimalUtils {
     public static BigDecimal MIL = new BigDecimal(1000);
     public static MathContext MC = new MathContext(3, RoundingMode.HALF_UP);
 
-    public static BigDecimal create(double value) {
-        return new BigDecimal(value, MC);
-    }
+//    public static BigDecimal create(double value) {
+//        return new BigDecimal(value, MC);
+//    }
 
     public static long toLong(BigDecimal bd) {
         return bd.multiply(MIL).longValue();

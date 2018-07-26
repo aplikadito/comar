@@ -18,14 +18,15 @@ import javax.swing.JComponent;
 public class ComarPanelButtonsArea extends ComarPanel {
 
     private ComarPanel panelLeft;
+    private ComarPanel panelCenter;
     private ComarPanel panelRight;
 
     public ComarPanelButtonsArea() {
         setLayout(new BorderLayout());
-        panelLeft = new ComarPanel(new FlowLayout(FlowLayout.LEFT));
-        panelRight = new ComarPanel(new FlowLayout(FlowLayout.RIGHT));
-        add(panelLeft, BorderLayout.WEST);
-        add(panelRight, BorderLayout.EAST);
+
+        add(panelLeft = new ComarPanel(new FlowLayout(FlowLayout.LEFT)), BorderLayout.WEST);
+        add(panelCenter = new ComarPanel(new FlowLayout(FlowLayout.CENTER)), BorderLayout.CENTER);
+        add(panelRight = new ComarPanel(new FlowLayout(FlowLayout.RIGHT)), BorderLayout.EAST);
     }
 
     public ComarPanel getPanelLeft() {
@@ -38,6 +39,11 @@ public class ComarPanelButtonsArea extends ComarPanel {
 
     public WebPanel addLeft(Component... components) {
         this.panelLeft.add(components);
+        return this;
+    }
+
+    public WebPanel addCenter(Component... components) {
+        this.panelCenter.add(components);
         return this;
     }
 

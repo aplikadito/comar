@@ -8,6 +8,8 @@ package cl.rworks.comar.core.service;
 import cl.rworks.comar.core.model.Metrica;
 import java.util.List;
 import cl.rworks.comar.core.model.CategoriaEntity;
+import cl.rworks.comar.core.model.FacturaEntity;
+import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.model.MetricaEntity;
 import cl.rworks.comar.core.model.ProductoEntity;
 
@@ -55,4 +57,16 @@ public interface ComarService {
     public List<MetricaEntity> getAllMetrics() throws ComarServiceException;
 
     public CategoriaEntity insertCategoriaPorNombre(String name) throws ComarServiceException;
+
+    public List<FacturaEntity> getAllFactura() throws ComarServiceException;
+
+    public List<FacturaUnidadEntity> getAllFacturaUnidad() throws ComarServiceException;
+
+    public void insertFactura(FacturaEntity factura) throws ComarServiceException;
+
+    public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura) throws ComarServiceException;
+
+    public void updateFactura(FacturaEntity entity) throws ComarServiceException;
+
+    public void deleteFacturas(List<FacturaEntity> collect) throws ComarServiceException;
 }

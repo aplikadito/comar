@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import cl.rworks.comar.core.model.CategoriaEntity;
+import cl.rworks.comar.core.model.FacturaEntity;
+import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.model.MetricaEntity;
 import cl.rworks.comar.core.model.ProductoEntity;
 
@@ -22,14 +24,14 @@ import cl.rworks.comar.core.model.ProductoEntity;
  *
  * @author aplik
  */
-public class WorkspaceCreator {
+public class ComarWorkspaceCreator {
 
-    public Workspace create(ComarService service) {
-        Workspace ws = new Workspace();
+    public ComarWorkspace create(ComarService service) {
+        ComarWorkspace ws = new ComarWorkspace();
         checkMetrics(service);
 
-        List<CategoryModel> categoryNodes = loadCategoryNodes(service);
-        ws.setCategoryNodes(categoryNodes);
+        ws.setCategories(loadCategories(service));
+        ws.setBills(loadBills(service));
 
         return ws;
     }
@@ -52,7 +54,7 @@ public class WorkspaceCreator {
         }
     }
 
-    private List<CategoryModel> loadCategoryNodes(ComarService service) {
+    private List<ComarCategory> loadCategories(ComarService service) {
         List<CategoriaEntity> centities = new ArrayList<>();
         List<ProductoEntity> pentities = new ArrayList<>();
         try (ComarTransaction tx = service.createTransaction()) {
@@ -68,10 +70,10 @@ public class WorkspaceCreator {
             e.printStackTrace();
         }
 
-        List<CategoryModel> categoryNodes = new ArrayList<>();
-        Map<String, CategoryModel> index = new HashMap<>();
+        List<ComarCategory> categoryNodes = new ArrayList<>();
+        Map<String, ComarCategory> index = new HashMap<>();
         for (CategoriaEntity centity : centities) {
-            CategoryModel cnode = new CategoryModel(centity);
+            ComarCategory cnode = new ComarCategory(centity);
             categoryNodes.add(cnode);
             index.put(UUIDUtils.toString(centity.getId()), cnode);
         }
@@ -80,12 +82,49 @@ public class WorkspaceCreator {
             if (pentity.getCategoriaId() == null) {
                 throw new RuntimeException("Producto sin categoria: " + pentity);
             }
-            
-            CategoryModel cnode = index.get(UUIDUtils.toString(pentity.getCategoriaId()));
-            ProductModel pmodel = new ProductModel(pentity);
+
+            ComarCategory cnode = index.get(UUIDUtils.toString(pentity.getCategoriaId()));
+            ComarProduct pmodel = new ComarProduct(pentity);
             cnode.addProduct(pmodel);
         }
-        
+
         return categoryNodes;
+    }
+
+    private List<ComarBill> loadBills(ComarService service) {
+        List<FacturaEntity> ebills = new ArrayList<>();
+        List<FacturaUnidadEntity> ebillUnits = new ArrayList<>();
+        try (ComarTransaction tx = service.createTransaction()) {
+            try {
+                ebills = service.getAllFactura();
+                ebillUnits = service.getAllFacturaUnidad();
+            } catch (ComarServiceException e) {
+                e.printStackTrace();
+            } finally {
+                tx.rollback();
+            }
+        } catch (ComarServiceException e) {
+            e.printStackTrace();
+        }
+
+        List<ComarBill> bills = new ArrayList<>();
+        Map<String, ComarBill> index = new HashMap<>();
+        for (FacturaEntity e : ebills) {
+            ComarBill bill = new ComarBill(e);
+            bills.add(bill);
+            index.put(UUIDUtils.toString(e.getId()), bill);
+        }
+
+        for (FacturaUnidadEntity e : ebillUnits) {
+            if (e.getIdFactura() == null) {
+                throw new RuntimeException("Elemento de factura sin factura asignada: " + e);
+            }
+
+            ComarBill bill = index.get(UUIDUtils.toString(e.getIdFactura()));
+            ComarBillUnit unit = new ComarBillUnit(e);
+            bill.addUnit(unit);
+        }
+
+        return bills;
     }
 }

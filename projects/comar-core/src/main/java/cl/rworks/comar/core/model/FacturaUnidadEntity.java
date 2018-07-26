@@ -17,17 +17,17 @@ public interface FacturaUnidadEntity {
 
     public void setId(byte[] id);
 
-    public byte[] getFacturaId();
+    public byte[] getIdProducto();
 
-    public void setFacturaId(byte[] facturaId);
+    public void setIdProducto(byte[] idProducto);
 
-    public String getCodigo();
+    public String getCodigoProducto();
 
-    public void setCodigo(String code);
+    public void setCodigoProducto(String code);
 
-    public String getDescripcion();
+    public String getDescripcionProducto();
 
-    public void setDescripcion(String descripcion);
+    public void setDescripcionProducto(String descripcion);
 
     public BigDecimal getPrecioCompra();
 
@@ -36,4 +36,8 @@ public interface FacturaUnidadEntity {
     public BigDecimal getCantidad();
 
     public void setCantidad(BigDecimal cantidad);
+
+    public byte[] getIdFactura();
+
+    public void setIdFactura(byte[] idFactura);
 }

@@ -130,7 +130,7 @@ public class ComarPanelSettings extends ComarPanel {
         panelButtons.add(buttonFactoryValues);
         panelMain.add(Box.createVerticalStrut(20));
         panelMain.add(panelButtons);
-        
+
         panelMain.add(Box.createVerticalGlue());
 
         ComarPanel panelAux = new ComarPanel();
@@ -172,7 +172,7 @@ public class ComarPanelSettings extends ComarPanel {
             properties.setBackgroundColor(backgroundColor);
             properties.setHelpActive(helpActive);
             properties.save();
-            ComarUtils.showInfo("Los cambios se haran efectivos al reiniciar la aplicacion");
+            ComarUtils.showInfo(null, "Los cambios se haran efectivos al reiniciar la aplicacion");
         }
     }
 
@@ -184,7 +184,7 @@ public class ComarPanelSettings extends ComarPanel {
             if (response == JOptionPane.YES_OPTION) {
                 properties.loadDefaultValues();
                 properties.save();
-                ComarUtils.showInfo("Los cambios se haran efectivos al reiniciar la aplicacion");
+                ComarUtils.showInfo(null, "Los cambios se haran efectivos al reiniciar la aplicacion");
             }
 
         }
