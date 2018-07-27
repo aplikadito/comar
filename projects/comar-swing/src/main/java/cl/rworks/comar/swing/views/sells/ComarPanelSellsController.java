@@ -5,9 +5,11 @@
  */
 package cl.rworks.comar.swing.views.sells;
 
-import cl.rworks.comar.swing.model.ComarBill;
-import java.util.ArrayList;
+import cl.rworks.comar.swing.main.ComarSystem;
+import cl.rworks.comar.swing.model.ComarSell;
+import cl.rworks.comar.swing.model.ComarWorkspace;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +21,20 @@ public class ComarPanelSellsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComarPanelSellsController.class);
 
-    public List<ComarBill> findBills(String dayFilter, String monthFilter, String yearFilter) {
-        List<ComarBill> list = new ArrayList<>();
-//        list.add("Elemento 1");
-//        list.add("Elemento 2");
-//        list.add("Elemento 3");
+    public List<ComarSell> searchSells(int[] value) {
+        int year = value[0];
+        int month = value[1];
+        int day = value[2];
+
+        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+        List<ComarSell> sells = ws.getSells();
+
+        List<ComarSell> list = sells.stream()
+                .filter(e -> year != -1 ? e.getEntity().getFecha().getYear() == year : true)
+                .filter(e -> month != -1 ? e.getEntity().getFecha().getMonthValue() == month : true)
+                .filter(e -> day != -1 ? e.getEntity().getFecha().getDayOfMonth() == day : true)
+                .collect(Collectors.toList());
+
         return list;
     }
 

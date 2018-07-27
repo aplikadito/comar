@@ -20,6 +20,8 @@ import cl.rworks.comar.core.model.FacturaEntity;
 import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.model.MetricaEntity;
 import cl.rworks.comar.core.model.ProductoEntity;
+import cl.rworks.comar.core.model.VentaEntity;
+import cl.rworks.comar.core.model.VentaUnidadEntity;
 
 /**
  *
@@ -149,24 +151,30 @@ public class ComarServiceDerby implements ComarService {
     public List<FacturaUnidadEntity> getAllFacturaUnidad() throws ComarServiceException {
         return GetAllFacturaUnidad.serve(tx.getConnection());
     }
-    
-    public void insertFactura(FacturaEntity factura) throws ComarServiceException{
+
+    public void insertFactura(FacturaEntity factura) throws ComarServiceException {
         InsertFactura.serve(tx.getConnection(), factura);
     }
-    
+
     @Override
     public void updateFactura(FacturaEntity factura) throws ComarServiceException {
         UpdateFactura.serve(tx.getConnection(), factura);
     }
-    
-    public void deleteFacturas(List<FacturaEntity> facturas) throws ComarServiceException{
+
+    public void deleteFacturas(List<FacturaEntity> facturas) throws ComarServiceException {
         DeleteFacturas.serve(tx.getConnection(), facturas);
     }
 
-    public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura) throws ComarServiceException{
+    public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura) throws ComarServiceException {
         InsertFacturaUnidad.serve(tx.getConnection(), facturaUnidad, factura);
     }
 
-    
+    public List<VentaEntity> getAllVenta() throws ComarServiceException {
+        return GetAllVenta.serve(tx.getConnection());
+    }
+
+    public List<VentaUnidadEntity> getAllVentaUnidad() throws ComarServiceException {
+        return GetAllVentaUnidad.serve(tx.getConnection());
+    }
 
 }

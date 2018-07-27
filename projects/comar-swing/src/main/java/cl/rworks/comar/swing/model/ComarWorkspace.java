@@ -15,6 +15,7 @@ public class ComarWorkspace {
 
     private List<ComarCategory> categories;
     private List<ComarBill> bills;
+    private List<ComarSell> sells;
 
     public ComarWorkspace() {
     }
@@ -77,6 +78,14 @@ public class ComarWorkspace {
     }
 
     public void deleteBills(List<ComarBill> bills) {
+    }
+
+    public List<ComarSell> getSells() {
+        return sells;
+    }
+
+    public void setSells(List<ComarSell> sells) {
+        this.sells = sells;
     }
 
 }

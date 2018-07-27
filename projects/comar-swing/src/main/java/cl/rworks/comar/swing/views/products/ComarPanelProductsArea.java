@@ -47,6 +47,9 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import cl.rworks.comar.core.model.CategoriaEntity;
+import cl.rworks.comar.swing.util.ComarTextField;
+import cl.rworks.comar.swing.util.WebTextFieldFactory;
+import java.util.EventObject;
 
 /**
  *
@@ -55,10 +58,8 @@ import cl.rworks.comar.core.model.CategoriaEntity;
 public class ComarPanelProductsArea extends ComarPanelView {
 
     private ComarPanelProductsController controller;
-    private ComarPanel panelContent;
+    //
     private WebSplitPane split;
-    private ComarPanel panelSplitLeft;
-    private ComarPanel panelSplitRight;
     private JTree tree;
     private WebTable tableProducts;
     private TableModelProducts tableModelProducts;
@@ -77,33 +78,26 @@ public class ComarPanelProductsArea extends ComarPanelView {
     }
 
     private void initComponents() {
-        panelContent = new ComarPanel();
-
+        ComarPanel panelContent = new ComarPanel();
         panelContent.setLayout(new BoxLayout(panelContent, BoxLayout.PAGE_AXIS));
         getPanelContent().add(panelContent, BorderLayout.CENTER);
 
-        panelSplitLeft = new ComarPanel(new BorderLayout());
-        panelSplitRight = new ComarPanel(new BorderLayout());
-
-        split = new WebSplitPane(WebSplitPane.HORIZONTAL_SPLIT, panelSplitLeft, panelSplitRight);
+        split = new WebSplitPane(WebSplitPane.HORIZONTAL_SPLIT, initLeft(), initRight());
         split.setDividerLocation(350);
         panelContent.add(split);
+    }
+
+    private ComarPanel initLeft() {
+        ComarPanel panelLeft = new ComarPanel(new BorderLayout());
 
         // LEFT
         tree = new JTree(new DefaultTreeModel(controller.getRootNode()));
-//        tree.setCellRenderer(new DefaultTreeCellRenderer() {
-//            @Override
-//            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-//                JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-//                return label;
-//            }
-//        });
-        panelSplitLeft.add(new WebScrollPane(tree), BorderLayout.CENTER);
+        panelLeft.add(new WebScrollPane(tree), BorderLayout.CENTER);
 
         ComarPanelButtonsArea panelCategoryButtons = new ComarPanelButtonsArea();
         panelCategoryButtons.addRight(new WebButton("Agregar", e -> AddCategoryAction()));
         panelCategoryButtons.addRight(new WebButton("Eliminar", e -> deleteCategoryAction()));
-        panelSplitLeft.add(panelCategoryButtons, BorderLayout.SOUTH);
+        panelLeft.add(panelCategoryButtons, BorderLayout.SOUTH);
 
         // TREE
         tree.addMouseListener(new MouseAdapter() {
@@ -111,37 +105,32 @@ public class ComarPanelProductsArea extends ComarPanelView {
             public void mouseClicked(MouseEvent e) {
                 loadProductsForSelectedCategory();
             }
-
         });
 
         JPopupMenu popupTree = new JPopupMenu();
         popupTree.add(new ComarActionSimple("Eliminar", e -> deleteCategoryAction()));
         tree.setComponentPopupMenu(popupTree);
 
-        // RIGHT
-        WebPanel panelRightContent = new WebPanel();
-        panelSplitRight.add(panelRightContent, BorderLayout.NORTH);
+        return panelLeft;
+    }
+
+    private ComarPanel initRight() {
+        ComarPanel panelRight = new ComarPanel(new BorderLayout());
 
         panelProductTitle = new ComarPanelTitle("");
-        panelRightContent.add(panelProductTitle, BorderLayout.NORTH);
+        panelRight.add(panelProductTitle, BorderLayout.NORTH);
 
         WebPanel panelTableContent = new WebPanel(new BorderLayout());
         panelTableContent.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelRightContent.add(panelTableContent, BorderLayout.CENTER);
+        panelRight.add(panelTableContent, BorderLayout.CENTER);
 
         // BOTONERA PRODUCTOS
-        ComarPanelButtonsArea panelProductButtons = new ComarPanelButtonsArea();
-        textProductCode = new WebTextField(30);
-        textProductCode.addActionListener(e -> addProductAction());
-
-        buttonAddProduct = new WebButton("Agregar", e -> addProductAction());
-        buttonDeleteProducts = new WebButton("Eliminar", e -> deleteProductsAction());
-
-        panelProductButtons.addLeft(new WebLabel("Codigo"));
-        panelProductButtons.addLeft(textProductCode);
-        panelProductButtons.addLeft(buttonAddProduct);
-        panelProductButtons.addRight(buttonDeleteProducts);
-        panelTableContent.add(panelProductButtons, BorderLayout.NORTH);
+        ComarPanelButtonsArea panelButtons = new ComarPanelButtonsArea();
+        panelButtons.addLeft(new WebLabel("Codigo"));
+        panelButtons.addLeft(textProductCode = new WebTextFieldFactory().cols(30).actionListener(e -> addProductAction()).create());
+        panelButtons.addLeft(buttonAddProduct = new WebButton("Agregar", e -> addProductAction()));
+        panelButtons.addRight(buttonDeleteProducts = new WebButton("Eliminar", e -> deleteProductsAction()));
+        panelTableContent.add(panelButtons, BorderLayout.NORTH);
 
         // TABLA
         tableModelProducts = new TableModelProducts();
@@ -157,6 +146,8 @@ public class ComarPanelProductsArea extends ComarPanelView {
         tableProducts.setComponentPopupMenu(popupTable);
 
         panelTableContent.add(new WebScrollPane(tableProducts), BorderLayout.CENTER);
+        
+        return panelRight;
     }
 
     private WebComboBox createComarMetricComboBox() {

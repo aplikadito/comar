@@ -33,9 +33,19 @@ public class ComarPanelFactory {
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         return this;
     }
+    
+    public ComarPanelFactory flowLayoutLeft() {
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        return this;
+    }
 
     public ComarPanelFactory flowLayoutCenter() {
         panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        return this;
+    }
+    
+    public ComarPanelFactory flowLayoutRight() {
+        panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         return this;
     }
 
@@ -44,8 +54,8 @@ public class ComarPanelFactory {
         return this;
     }
 
-    public ComarPanelFactory add(Component c) {
-        panel.add(c);
+    public ComarPanelFactory add(Component... components) {
+        panel.add(components);
         return this;
     }
 

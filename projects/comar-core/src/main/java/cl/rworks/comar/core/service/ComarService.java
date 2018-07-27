@@ -12,6 +12,8 @@ import cl.rworks.comar.core.model.FacturaEntity;
 import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.model.MetricaEntity;
 import cl.rworks.comar.core.model.ProductoEntity;
+import cl.rworks.comar.core.model.VentaEntity;
+import cl.rworks.comar.core.model.VentaUnidadEntity;
 
 /**
  *
@@ -69,4 +71,8 @@ public interface ComarService {
     public void updateFactura(FacturaEntity entity) throws ComarServiceException;
 
     public void deleteFacturas(List<FacturaEntity> collect) throws ComarServiceException;
+
+    public List<VentaEntity> getAllVenta() throws ComarServiceException;
+
+    public List<VentaUnidadEntity> getAllVentaUnidad() throws ComarServiceException;
 }

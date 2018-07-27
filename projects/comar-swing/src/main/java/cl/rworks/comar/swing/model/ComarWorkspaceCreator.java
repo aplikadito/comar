@@ -19,6 +19,8 @@ import cl.rworks.comar.core.model.FacturaEntity;
 import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.model.MetricaEntity;
 import cl.rworks.comar.core.model.ProductoEntity;
+import cl.rworks.comar.core.model.VentaEntity;
+import cl.rworks.comar.core.model.VentaUnidadEntity;
 
 /**
  *
@@ -32,6 +34,7 @@ public class ComarWorkspaceCreator {
 
         ws.setCategories(loadCategories(service));
         ws.setBills(loadBills(service));
+        ws.setSells(loadSells(service));
 
         return ws;
     }
@@ -126,5 +129,42 @@ public class ComarWorkspaceCreator {
         }
 
         return bills;
+    }
+    
+     private List<ComarSell> loadSells(ComarService service) {
+        List<VentaEntity> eventas = new ArrayList<>();
+        List<VentaUnidadEntity> eventaUnidades = new ArrayList<>();
+        try (ComarTransaction tx = service.createTransaction()) {
+            try {
+                eventas = service.getAllVenta();
+                eventaUnidades = service.getAllVentaUnidad();
+            } catch (ComarServiceException e) {
+                e.printStackTrace();
+            } finally {
+                tx.rollback();
+            }
+        } catch (ComarServiceException e) {
+            e.printStackTrace();
+        }
+
+        List<ComarSell> sells = new ArrayList<>();
+        Map<String, ComarSell> index = new HashMap<>();
+        for (VentaEntity e : eventas) {
+            ComarSell sell = new ComarSell(e);
+            sells.add(sell);
+            index.put(UUIDUtils.toString(e.getId()), sell);
+        }
+
+        for (VentaUnidadEntity e : eventaUnidades) {
+            if (e.getIdVenta() == null) {
+                throw new RuntimeException("Elemento de factura sin factura asignada: " + e);
+            }
+
+            ComarSell sell = index.get(UUIDUtils.toString(e.getIdVenta()));
+            ComarSellUnit unit = new ComarSellUnit(e);
+            sell.addUnit(unit);
+        }
+
+        return sells;
     }
 }

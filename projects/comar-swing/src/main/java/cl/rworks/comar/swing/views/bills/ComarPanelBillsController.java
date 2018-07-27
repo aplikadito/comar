@@ -32,61 +32,14 @@ public class ComarPanelBillsController {
         int month = value[1];
         int day = value[2];
 
-        if (year == -1) {
-            ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
-            return ws.getBills();
-        } else {
-            if (month == -1) {
-                return getBillsForYear(year);
-            } else {
-                if (day == -1) {
-                    return getBillsForMonth(year, month);
-                } else {
-                    return getBillsForDay(year, month, day);
-                }
-            }
-        }
-    }
-
-    private List<ComarBill> getBillsForYear(int year) {
         ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
         List<ComarBill> bills = ws.getBills();
 
-        List<ComarBill> list = new ArrayList<>();
-        for (ComarBill bill : bills) {
-            if (bill.getEntity().getFecha().getYear() == year) {
-                list.add(bill);
-            }
-        }
-
-        return list;
-    }
-
-    private List<ComarBill> getBillsForMonth(int year, int month) {
-        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
-        List<ComarBill> bills = ws.getBills();
-
-        List<ComarBill> list = new ArrayList<>();
-        for (ComarBill bill : bills) {
-            if (bill.getEntity().getFecha().getYear() == year && bill.getEntity().getFecha().getMonthValue() == month) {
-                list.add(bill);
-            }
-        }
-
-        return list;
-    }
-
-    private List<ComarBill> getBillsForDay(int year, int month, int day) {
-        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
-        List<ComarBill> bills = ws.getBills();
-
-        List<ComarBill> list = new ArrayList<>();
-        for (ComarBill bill : bills) {
-            LocalDate fecha = bill.getEntity().getFecha();
-            if (fecha.getYear() == year && fecha.getMonthValue() == month && fecha.getDayOfMonth() == day) {
-                list.add(bill);
-            }
-        }
+        List<ComarBill> list = bills.stream()
+                .filter(e -> year != -1 ? e.getEntity().getFecha().getYear() == year : true)
+                .filter(e -> month != -1 ? e.getEntity().getFecha().getMonthValue() == month : true)
+                .filter(e -> day != -1 ? e.getEntity().getFecha().getDayOfMonth() == day : true)
+                .collect(Collectors.toList());
 
         return list;
     }
@@ -121,7 +74,7 @@ public class ComarPanelBillsController {
         try (ComarTransaction tx = service.createTransaction()) {
             service.deleteFacturas(bills.stream().map(e -> e.getEntity()).collect(Collectors.toList()));
             tx.commit();
-            
+
             ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
             ws.deleteBills(bills);
         } catch (ComarServiceException ex) {

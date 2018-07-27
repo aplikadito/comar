@@ -31,8 +31,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
@@ -95,7 +93,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
 //        popupTable.add(new ComarActionSimple("Eliminar", e -> deleteProductsAction()));
 
         panelBillOptionsUp.addCenter(panelDateFilter = new ComarPanelDate());
-        panelBillOptionsUp.addCenter(new WebButton("Buscar", e -> searchBillsAction()));
+        panelBillOptionsUp.addCenter(new WebButton("Buscar", e -> searchAction()));
 
         panelBillOptionsDown.addRight(new WebButton("Agregar", e -> addBillAction()));
         panelBillOptionsDown.addRight(new WebButton("Eliminar", e -> deleteBillAction()));
@@ -283,7 +281,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
     }
 
-    private void searchBillsAction() {
+    private void searchAction() {
         int[] value = panelDateFilter.getValue();
         List<ComarBill> bills = controller.searchBills(value);
         tableModelBills.setBills(bills);
@@ -299,7 +297,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
             try {
                 ComarBill bill = dialog.getBill();
                 controller.addBill(bill);
-                searchBillsAction();
+                searchAction();
             } catch (ComarControllerException ex) {
                 ex.printStackTrace();
                 ComarUtils.showWarn(this, ex.getMessage());
@@ -354,7 +352,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
         if (r == JOptionPane.YES_OPTION) {
             try {
                 controller.deleteBills(bills);
-                searchBillsAction();
+                searchAction();
             } catch (ComarControllerException ex) {
                 ComarUtils.showWarn(this, ex.getMessage());
             }
