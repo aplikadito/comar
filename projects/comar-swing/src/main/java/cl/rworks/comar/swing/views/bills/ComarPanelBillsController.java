@@ -5,12 +5,15 @@
  */
 package cl.rworks.comar.swing.views.bills;
 
+import cl.rworks.comar.core.model.ProductoEntity;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.service.ComarTransaction;
 import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.model.ComarBill;
+import cl.rworks.comar.swing.model.ComarBillUnit;
 import cl.rworks.comar.swing.model.ComarControllerException;
+import cl.rworks.comar.swing.model.ComarProduct;
 import cl.rworks.comar.swing.model.ComarWorkspace;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -77,6 +80,38 @@ public class ComarPanelBillsController {
 
             ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
             ws.deleteBills(bills);
+        } catch (ComarServiceException ex) {
+            LOG.error("Error", ex);
+            throw new ComarControllerException("Error", ex);
+        }
+    }
+
+    public ComarProduct getProduct(String code) {
+        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+        return ws.getProductByCode(code);
+    }
+
+    public void addBillUnit(ComarBillUnit unit, ComarBill selectedBill) throws ComarControllerException {
+        ComarService service = ComarSystem.getInstance().getService();
+        try (ComarTransaction tx = service.createTransaction()) {
+            service.insertFacturaUnidad(unit.getEntity(), selectedBill.getEntity());
+            tx.commit();
+
+            selectedBill.addUnit(unit);
+        } catch (ComarServiceException ex) {
+            LOG.error("Error", ex);
+            throw new ComarControllerException("Error", ex);
+        }
+
+    }
+
+    public void deleteBillUnits(List<ComarBillUnit> units, ComarBill selectedBill) throws ComarControllerException {
+        ComarService service = ComarSystem.getInstance().getService();
+        try (ComarTransaction tx = service.createTransaction()) {
+            service.deleteFacturaUnidades(units.stream().map(e ->e.getEntity()).collect(Collectors.toList()));
+            tx.commit();
+
+            selectedBill.deleteUnits(units);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
             throw new ComarControllerException("Error", ex);

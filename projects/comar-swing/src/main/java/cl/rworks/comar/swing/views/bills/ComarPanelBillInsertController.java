@@ -17,16 +17,16 @@ import cl.rworks.comar.swing.model.ComarWorkspace;
  */
 public class ComarPanelBillInsertController {
 
-    public ComarBillUnit createBillUnit(String code) throws ComarControllerException {
-        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
-        ComarProduct p = ws.getProductByCode(code);
-        if (p != null) {
-            ComarBillUnit unit = new ComarBillUnit();
-            unit.setProduct(p);
-            return unit;
-        } else {
-            throw new ComarControllerException("Producto no encontrado: " + p);
-        }
-    }
+//    public ComarBillUnit createBillUnit(String code) throws ComarControllerException {
+//        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+//        ComarProduct p = ws.getProductByCode(code);
+//        if (p != null) {
+//            ComarBillUnit unit = new ComarBillUnit();
+//            unit.setProduct(p);
+//            return unit;
+//        } else {
+//            throw new ComarControllerException("Producto no encontrado: " + p);
+//        }
+//    }
 
 }

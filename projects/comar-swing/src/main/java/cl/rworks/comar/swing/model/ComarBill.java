@@ -42,4 +42,8 @@ public class ComarBill {
         return units;
     }
 
+    public void deleteUnits(List<ComarBillUnit> dunits) {
+        this.units.removeAll(dunits);
+    }
+
 }

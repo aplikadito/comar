@@ -71,8 +71,13 @@ public interface ComarService {
     public void updateFactura(FacturaEntity entity) throws ComarServiceException;
 
     public void deleteFacturas(List<FacturaEntity> collect) throws ComarServiceException;
+    
+    public void deleteFacturaUnidades(List<FacturaUnidadEntity> collect) throws ComarServiceException;
 
     public List<VentaEntity> getAllVenta() throws ComarServiceException;
 
     public List<VentaUnidadEntity> getAllVentaUnidad() throws ComarServiceException;
+
+    
+
 }

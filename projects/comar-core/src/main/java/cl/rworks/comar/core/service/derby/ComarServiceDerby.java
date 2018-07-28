@@ -164,6 +164,10 @@ public class ComarServiceDerby implements ComarService {
     public void deleteFacturas(List<FacturaEntity> facturas) throws ComarServiceException {
         DeleteFacturas.serve(tx.getConnection(), facturas);
     }
+    
+    public void deleteFacturaUnidades(List<FacturaUnidadEntity> unidades) throws ComarServiceException {
+        DeleteFacturaUnidades.serve(tx.getConnection(), unidades);
+    }
 
     public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura) throws ComarServiceException {
         InsertFacturaUnidad.serve(tx.getConnection(), facturaUnidad, factura);

@@ -25,6 +25,15 @@ public class ComarBillUnit {
         this.entity = entity;
     }
 
+    public ComarBillUnit(ComarProduct product) {
+        this.entity = new FacturaUnidadEntityImpl();
+        this.entity.setIdProducto(product.getEntity().getId());
+        this.entity.setCodigoProducto(product.getEntity().getCodigo());
+        this.entity.setDescripcionProducto(product.getEntity().getDescripcion());
+        this.entity.setPrecioCompra(BigDecimal.ZERO);
+        this.entity.setCantidad(BigDecimal.ZERO);
+    }
+
     public FacturaUnidadEntity getEntity() {
         return entity;
     }
@@ -35,12 +44,6 @@ public class ComarBillUnit {
 
     public void updateQuantity(BigDecimal quantity) {
         this.entity.setCantidad(quantity);
-    }
-
-    public void setProduct(ComarProduct product) {
-        this.entity.setIdProducto(product.getEntity().getId());
-        this.entity.setCodigoProducto(product.getEntity().getCodigo());
-        this.entity.setDescripcionProducto(product.getEntity().getDescripcion());
     }
 
 }
