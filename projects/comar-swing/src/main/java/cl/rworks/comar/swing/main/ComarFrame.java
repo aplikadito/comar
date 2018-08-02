@@ -12,7 +12,7 @@ import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarIconLoader;
 import cl.rworks.comar.swing.views.bills.ComarPanelBillsArea;
 import cl.rworks.comar.swing.views.products.ComarPanelProdsCsvInsertArea;
-import cl.rworks.comar.swing.views.products.ComarPanelProdsByCategoryArea;
+import cl.rworks.comar.swing.views.products.ComarPanelProdsAdministrationArea;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.scroll.WebScrollPane;
 import java.awt.BorderLayout;
@@ -56,7 +56,7 @@ public class ComarFrame extends WebFrame {
         setLayout(new BorderLayout());
 
         ComarPanel panelContent = new ComarPanel(new BorderLayout());
-        add(new WebScrollPane(panelContent), BorderLayout.CENTER);
+        add(panelContent, BorderLayout.CENTER);
 
         JMenuBar menuBar = new JMenuBar();
         this.setJMenuBar(menuBar);
@@ -82,12 +82,12 @@ public class ComarFrame extends WebFrame {
         addCard("POS_POS", "Punto de Venta", new ComarPanelPosArea(), menuPointOfSell);
         addCard("POS_OPT", "Opciones", new ComarPanelPosSettingsArea(), menuPointOfSell);
 
-        addCard("PRODS_CATEGORIES", "Por Categoria", new ComarPanelProdsByCategoryArea(), menuProducts);
+        addCard("PRODS_ADM", "Administrar", new ComarPanelProdsAdministrationArea(), menuProducts);
         addCard("PRODS_CSV", "Agregar via CSV", new ComarPanelProdsCsvInsertArea(), menuProducts);
 
-        addCard("BILLS_", "Por Fecha", new ComarPanelBillsArea(), menuBills);
+        addCard("BILLS_ADM", "Administrar", new ComarPanelBillsArea(), menuBills);
 
-        addCard("SELLS", "Por Fecha", new ComarPanelSellsArea(), menuSells);
+        addCard("SELLS_ADM", "Administrar", new ComarPanelSellsArea(), menuSells);
 
         actualCardName = "POS_POS";
     }

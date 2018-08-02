@@ -106,3 +106,19 @@ com.alee.managers.style.StyleException: StyleManager must be initialized
 2018-07-22 18:39:53 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
 2018-07-23 15:52:14 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
 2018-07-23 15:52:33 INFO  ComarPropertiesImpl:39 - Cargando propiedades por defecto
+2018-08-02 15:41:03 ERROR ComarPanelProdsCsvInsertController:55 - Error 'loadFile'
+java.nio.file.NoSuchFileException: D:\gtin.txt
+	at sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:79)
+	at sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:97)
+	at sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:102)
+	at sun.nio.fs.WindowsFileSystemProvider.newByteChannel(WindowsFileSystemProvider.java:230)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at java.nio.file.Files.newByteChannel(Files.java:407)
+	at java.nio.file.spi.FileSystemProvider.newInputStream(FileSystemProvider.java:384)
+	at java.nio.file.Files.newInputStream(Files.java:152)
+	at java.nio.file.Files.newBufferedReader(Files.java:2784)
+	at java.nio.file.Files.lines(Files.java:3744)
+	at java.nio.file.Files.lines(Files.java:3785)
+	at cl.rworks.comar.swing.views.products.ComarPanelProdsCsvInsertController.readCsvFile(ComarPanelProdsCsvInsertController.java:39)
+	at cl.rworks.comar.swing.views.products.ComarPanelProdsCsvInsertControllerTest.testReadCsvFile(ComarPanelProdsCsvInsertControllerTest.java:23)
+	at cl.rworks.comar.swing.views.products.ComarPanelProdsCsvInsertControllerTest.main(ComarPanelProdsCsvInsertControllerTest.java:33)

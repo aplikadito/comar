@@ -64,7 +64,6 @@ public class ComarDialogBillInsert extends WebDialog {
     private void okAction() {
         try {
             bill = panel.getBill();
-
             ok = true;
             this.dispose();
         } catch (ComarException ex) {

@@ -43,27 +43,33 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import cl.rworks.comar.swing.util.WebTextFieldFactory;
+import java.awt.Cursor;
+import javax.swing.RowFilter;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author aplik
  */
-public class ComarPanelProdsByCategoryArea extends ComarPanelView {
+public class ComarPanelProdsAdministrationArea extends ComarPanelView {
 
-    private ComarPanelProdsByCategoryController controller = new ComarPanelProdsByCategoryController();;
+    private ComarPanelProdsAdministrationController controller = new ComarPanelProdsAdministrationController();
     //
     private WebSplitPane split;
     private JTree tree;
+    //
     private WebTable tableProducts;
     private TableModelProducts tableModelProducts;
     private ComarPanelTitle panelProductTitle;
     private WebTextField textProductCode;
     private WebButton buttonAddProduct;
+    private WebTextField textSearch;
+    private TableRowSorter sorter;
     //
     private ComarCategory selectedCategory = null;
 
-    public ComarPanelProdsByCategoryArea() {
-        super("Productos Por Categoria");
+    public ComarPanelProdsAdministrationArea() {
+        super("Administrar");
         initComponents();
     }
 
@@ -117,7 +123,6 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
         panelTableContent.setBorder(new EmptyBorder(10, 10, 10, 10));
         panelRight.add(panelTableContent, BorderLayout.CENTER);
 
-        // BOTONERA PRODUCTOS
         ComarPanelOptionsArea panelButtons = new ComarPanelOptionsArea();
         panelButtons.addLeft(new WebLabel("Codigo"));
         panelButtons.addLeft(textProductCode = new WebTextFieldFactory().cols(30).actionListener(e -> addProductAction()).create());
@@ -131,6 +136,7 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
         tableProducts.setCellSelectionEnabled(true);
         tableProducts.setDefaultEditor(Metrica.class, new DefaultCellEditor(createComarMetricComboBox()));
         ComarUtils.initTable(tableProducts);
+        panelTableContent.add(new WebScrollPane(tableProducts), BorderLayout.CENTER);
 
         WebPopupMenu popupTable = new WebPopupMenu();
 //        popup.add(new WebButton("Eliminar", e -> deleteProductsAction()));
@@ -139,7 +145,14 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
         popupTable.add(new ComarActionSimple("Eliminar", e -> deleteProductsAction()));
         tableProducts.setComponentPopupMenu(popupTable);
 
-        panelTableContent.add(new WebScrollPane(tableProducts), BorderLayout.CENTER);
+        sorter = new TableRowSorter(tableModelProducts);
+        tableProducts.setRowSorter(sorter);
+
+        ComarPanelOptionsArea panelSearch = new ComarPanelOptionsArea();
+        panelSearch.addLeft(new WebLabel("Buscar"));
+        panelSearch.addLeft(textSearch = new WebTextFieldFactory().cols(30).actionListener(e -> searchAction()).create());
+        panelSearch.addLeft(new WebButton("Buscar", e -> searchAction()));
+        panelTableContent.add(panelSearch, BorderLayout.SOUTH);
 
         return panelRight;
     }
@@ -254,7 +267,7 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
                         break;
                 }
             } catch (ComarControllerException ex) {
-                ComarUtils.showWarn(ComarPanelProdsByCategoryArea.this, ex.getMessage());
+                ComarUtils.showWarn(ComarPanelProdsAdministrationArea.this, ex.getMessage());
             }
 
         }
@@ -306,12 +319,16 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
     }
 
     public void addCategoryAction() {
-//        AddCategoryDialog dialog = new AddCategoryDialog(ComarSystem.getInstance().getFrame());
-//        dialog.showMe();
+
         String name = (String) WebOptionPane.showInputDialog(this, "Nombre", "Agregar Categoria", WebOptionPane.PLAIN_MESSAGE, null, null, "");
         if (name != null) {
             if (name.isEmpty()) {
                 ComarUtils.showWarn(this, "Ingrese un nombre para la categoria");
+                return;
+            }
+
+            if (name.equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+                ComarUtils.showWarn(this, "Este nombre se encuentra reservado por el sistema. Ingrese un nombre diferente para la categoria");
                 return;
             }
 
@@ -326,6 +343,11 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
 
     public void editCategoryAction() {
         if (selectedCategory == null) {
+            return;
+        }
+
+        if (selectedCategory.getEntity().getNombre().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+            ComarUtils.showWarn(this, "Esta categoria se encuentra reservada por el sistema y no puede ser editada");
             return;
         }
 
@@ -353,17 +375,17 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
             return;
         }
 
+        if (selectedCategory.getEntity().getNombre().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+            ComarUtils.showWarn(this, "Esta categoria se encuentra reservada por el sistema y no puede ser eliminada");
+            return;
+        }
+
         if (!selectedCategory.getProducts().isEmpty()) {
             ComarUtils.showInfo(null, "Antes de eliminar una categoria, elimine o mueva los productos asociados a ella");
             return;
         }
 
-        if (selectedCategory.getEntity().getNombre().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
-            ComarUtils.showWarn(null, "Esta categoria esta reservada por el sistema y no puede ser eliminada");
-            return;
-        }
-
-        int response = ComarUtils.showYesNo(ComarPanelProdsByCategoryArea.this, "Desea eliminar la categoria seleccionada?", "Eliminar");
+        int response = ComarUtils.showYesNo(ComarPanelProdsAdministrationArea.this, "Desea eliminar la categoria seleccionada?", "Eliminar");
         if (response != JOptionPane.YES_OPTION) {
             return;
         }
@@ -430,6 +452,7 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
         }
 
         try {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             controller.deleteProducts(selectedProducts);
             tableModelProducts.setProducts(controller.getProducts(selectedCategory));
             tableModelProducts.fireTableDataChanged();
@@ -437,6 +460,8 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
         } catch (ComarControllerException ex) {
             ex.printStackTrace();
             ComarUtils.showWarn(null, ex.getMessage());
+        } finally {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 
@@ -460,5 +485,11 @@ public class ComarPanelProdsByCategoryArea extends ComarPanelView {
                 ComarUtils.showWarn(null, ex.getMessage());
             }
         }
+    }
+
+    public void searchAction() {
+        String text = textSearch.getText();
+        sorter.setRowFilter(RowFilter.regexFilter("(?i).*" + text + ".*", 0, 1));
+        sorter.sort();
     }
 }

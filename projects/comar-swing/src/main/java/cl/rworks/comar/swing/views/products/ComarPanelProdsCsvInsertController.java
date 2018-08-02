@@ -9,6 +9,7 @@ import cl.rworks.comar.core.model.impl.ProductoEntityImpl;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.service.ComarTransaction;
+import cl.rworks.comar.core.util.ComarCharset;
 import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.model.ComarCategory;
 import cl.rworks.comar.swing.model.ComarControllerException;
@@ -16,6 +17,8 @@ import cl.rworks.comar.swing.model.ComarProduct;
 import cl.rworks.comar.swing.model.ComarWorkspace;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -35,11 +38,10 @@ public class ComarPanelProdsCsvInsertController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComarPanelProdsCsvInsertController.class);
 
-    public List<ComarProduct> readCsvFile(File selectedFile) throws ComarControllerException {
-        try (Stream<String> lines = Files.readAllLines(Paths.get(selectedFile.toURI())).stream()) {
+    public List<ComarProduct> readCsvFile(File selectedFile, ComarCharset charset) throws ComarControllerException {
+        try (Stream<String> lines = Files.lines(Paths.get(selectedFile.getAbsolutePath()), Charset.forName(charset.getName()));) {
             List<ComarProduct> list = new ArrayList<>();
-
-            lines.forEach((String e) -> {
+            lines.skip(1).forEach((String e) -> {
                 String[] split = e.split(";");
                 if (split.length >= 2) {
                     String code = split[0].trim();
@@ -48,12 +50,14 @@ public class ComarPanelProdsCsvInsertController {
                     ComarProduct p = new ComarProduct(ProductoEntityImpl.create(code, description));
                     list.add(p);
                 }
-
             });
             return list;
+        } catch (java.io.UncheckedIOException ex) {
+            LOG.error("Error java.io.UncheckedIOException 'loadFile'. Posible error de codificacion.");
+            throw new ComarControllerException("Error al leer el archivo CSV. Verifique la codificacion seleccionada.");
         } catch (IOException ex) {
-            LOG.error("Error 'loadFile'", ex);
-            throw new ComarControllerException("Error al leer el archivo CSV");
+            LOG.error("Error IOException 'loadFile'", ex);
+            throw new ComarControllerException("Error al leer el archivo CSV. Verifique el tipo de archivo y su formato");
         }
     }
 
@@ -81,6 +85,8 @@ public class ComarPanelProdsCsvInsertController {
         try (ComarTransaction tx = service.createTransaction()) {
             service.insertProductosPorCsv(existsNo.stream().map(e -> e.getEntity()).collect(Collectors.toList()), category.getEntity());
             tx.commit();
+
+            existsNo.stream().forEach(e -> category.addProduct(e));
         } catch (ComarServiceException ex) {
             LOG.error("Error 'insertProducts'", ex);
             throw new ComarControllerException(ex.getMessage());

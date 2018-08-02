@@ -9,13 +9,19 @@ import cl.rworks.comar.swing.model.ComarBill;
 import cl.rworks.comar.swing.util.ComarException;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelDate;
+import com.alee.extended.date.WebCalendar;
+import com.alee.extended.date.WebDateField;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.text.WebTextField;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.Calendar;
+import java.util.Date;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
 
@@ -28,8 +34,9 @@ public class ComarPanelBillInsert extends ComarPanel {
     private ComarPanelBillInsertController controller = new ComarPanelBillInsertController();
     //
     private ComarPanel panelBillArea;
-    private ComarPanelDate panelDate;
+//    private ComarPanelDate panelDate;
     private WebTextField textCode;
+    private WebDateField calendar;
 
     public ComarPanelBillInsert() {
 
@@ -46,7 +53,8 @@ public class ComarPanelBillInsert extends ComarPanel {
 
         ComarPanel form = new ComarPanel(new FormLayout(10, 10));
         form.add(new WebLabel("Fecha"));
-        form.add(panelDate = new ComarPanelDate("", new FlowLayout(FlowLayout.LEFT)));
+//        form.add(panelDate = new ComarPanelDate("", new FlowLayout(FlowLayout.LEFT)));
+        form.add(calendar = new WebDateField());
         form.add(new WebLabel("Identificador"));
         form.add(textCode = new WebTextField(30));
 
@@ -99,13 +107,21 @@ public class ComarPanelBillInsert extends ComarPanel {
     }
 
     public void updateForm(LocalDate date, String code) {
-        this.panelDate.setDate(date);
+//        this.panelDate.setDate(date);
+        Calendar c = Calendar.getInstance();
+        c.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
+        this.calendar.setDate(c.getTime());
         this.textCode.setText(code);
     }
 
     public ComarBill getBill() throws ComarException {
+        Calendar c = Calendar.getInstance();
+        c.setTime(calendar.getDate());
+
+        LocalDate date = LocalDate.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
         ComarBill bill = new ComarBill();
-        bill.getEntity().setFecha(panelDate.getDate());
+//        bill.getEntity().setFecha(panelDate.getDate());
+        bill.getEntity().setFecha(date);
         bill.getEntity().setCodigo(textCode.getText());
         return bill;
     }
@@ -217,5 +233,4 @@ public class ComarPanelBillInsert extends ComarPanel {
 //            }
 //        }
 //    }
-
 }

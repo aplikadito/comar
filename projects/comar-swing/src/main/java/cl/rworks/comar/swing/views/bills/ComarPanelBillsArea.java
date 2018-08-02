@@ -26,18 +26,25 @@ import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.splitpane.WebSplitPane;
+import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.table.WebTable;
+import com.alee.laf.table.renderers.WebTableCellRenderer;
 import com.alee.laf.text.WebTextField;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -51,10 +58,10 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private ComarPanel panelLeft;
     private ComarPanel panelRight;
     //
-    private ComarPanelDate panelDateFilter;
+    private ComarPanelDate panelBillDateSearch;
+    private WebTextField textBillCodeSearch;
     private WebTable tableBills;
     private TableModelBills tableModelBills;
-    private ComarPanelOptionsArea panelBillOptionsUp;
     private ComarPanelOptionsArea panelBillOptionsDown;
     //
     private ComarPanel panelRightTableArea;
@@ -64,11 +71,13 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private WebTextField textProductCode;
     private WebTable tableBillUnits;
     private TableModelBillUnits tableModelBillUnits;
+    private WebTextField textSearch;
+    private TableRowSorter sorter;
     //
     private ComarBill selectedBill;
 
     public ComarPanelBillsArea() {
-        super("Facturas Por Fechas");
+        super("Administrar");
         initComponents();
     }
 
@@ -86,15 +95,32 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private ComarPanel initLeft() {
         panelLeft = new ComarPanelFactory().borderLayout().create();
 
-        panelLeft.add(panelBillOptionsUp = new ComarPanelOptionsArea(), BorderLayout.NORTH);
+        WebTabbedPane tabbed = new WebTabbedPane();
+        ComarPanelOptionsArea panelSearchBillByDate = new ComarPanelOptionsArea();
+        panelSearchBillByDate.addCenter(panelBillDateSearch = new ComarPanelDate());
+        panelSearchBillByDate.addCenter(new WebButton("Buscar", e -> searchBillByDateAction()));
+        tabbed.addTab("Por Fecha", panelSearchBillByDate);
+
+        ComarPanelOptionsArea panelSearchBillByCode = new ComarPanelOptionsArea();
+        panelSearchBillByCode.addCenter(textBillCodeSearch = new WebTextField(20));
+        panelSearchBillByCode.addCenter(new WebButton("Buscar", e -> searchBillByCodeAction()));
+        tabbed.addTab("Por Codigo", panelSearchBillByCode);
+
+        panelLeft.add(tabbed, BorderLayout.NORTH);
         panelLeft.add(new WebScrollPane(tableBills = new WebTable()), BorderLayout.CENTER);
         panelLeft.add(panelBillOptionsDown = new ComarPanelOptionsArea(), BorderLayout.SOUTH);
 
-        panelBillOptionsUp.addCenter(panelDateFilter = new ComarPanelDate());
-        panelBillOptionsUp.addCenter(new WebButton("Buscar", e -> searchAction()));
-
         tableModelBills = new TableModelBills();
         tableBills.setModel(tableModelBills);
+        tableBills.setDefaultRenderer(LocalDate.class, new WebTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                WebLabel label = (WebLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column); //To change body of generated methods, choose Tools | Templates.
+                label.setText(((LocalDate) value).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                return label;
+            }
+
+        });
         tableBills.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -136,6 +162,15 @@ public class ComarPanelBillsArea extends ComarPanelView {
         tableBillUnits.setDefaultRenderer(BigDecimal.class, new BigDecimalTableRenderer());
         popupTableBills.add(new ComarActionSimple("Eliminar", e -> deleteBillAction()));
 
+        sorter = new TableRowSorter(tableModelBillUnits);
+        tableBillUnits.setRowSorter(sorter);
+
+        ComarPanelOptionsArea panelSearch = new ComarPanelOptionsArea();
+        panelSearch.addLeft(new WebLabel("Buscar"));
+        panelSearch.addLeft(textSearch = new WebTextFieldFactory().cols(30).actionListener(e -> searchBillUnitAction()).create());
+        panelSearch.addLeft(new WebButton("Buscar", e -> searchBillUnitAction()));
+        panelRightTableArea.add(panelSearch, BorderLayout.SOUTH);
+
         return panelRight;
     }
 
@@ -166,9 +201,9 @@ public class ComarPanelBillsArea extends ComarPanelView {
         public Class<?> getColumnClass(int columnIndex) {
             switch (columnIndex) {
                 case 0:
-                    return LocalDate.class;
-                case 1:
                     return String.class;
+                case 1:
+                    return LocalDate.class;
                 default:
                     return String.class;
             }
@@ -323,9 +358,27 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
     }
 
-    private void searchAction() {
-        int[] value = panelDateFilter.getValue();
-        List<ComarBill> bills = controller.searchBills(value);
+    private void searchBillByDateAction() {
+        int[] value = panelBillDateSearch.getValue();
+        List<ComarBill> bills = controller.searchBillsByDate(value);
+        tableModelBills.setBills(bills);
+        tableModelBills.fireTableDataChanged();
+
+        setSelectedBill(null);
+    }
+
+    private void searchBillByCodeAction() {
+        String text = textBillCodeSearch.getText();
+        if (text == null) {
+            return;
+        }
+
+        text = text.trim();
+        if (text.isEmpty()) {
+            return;
+        }
+
+        List<ComarBill> bills = controller.searchBillsByCode(text);
         tableModelBills.setBills(bills);
         tableModelBills.fireTableDataChanged();
 
@@ -341,7 +394,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
             try {
                 ComarBill bill = dialog.getBill();
                 controller.addBill(bill);
-                searchAction();
+                searchBillByDateAction();
             } catch (ComarControllerException ex) {
                 ex.printStackTrace();
                 ComarUtils.showWarn(this, ex.getMessage());
@@ -366,7 +419,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
                 updateBill.getEntity().setFecha(bill.getEntity().getFecha());
                 updateBill.getEntity().setCodigo(bill.getEntity().getCodigo());
                 controller.updateBill(updateBill);
-                searchAction();
+                searchBillByDateAction();
             } catch (ComarControllerException ex) {
                 ex.printStackTrace();
                 ComarUtils.showWarn(this, ex.getMessage());
@@ -412,7 +465,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
         if (r == JOptionPane.YES_OPTION) {
             try {
                 controller.deleteBills(bills);
-                searchAction();
+                searchBillByDateAction();
             } catch (ComarControllerException ex) {
                 ComarUtils.showWarn(this, ex.getMessage());
             }
@@ -480,7 +533,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
             LocalDate date = selectedBill.getEntity().getFecha();
             String code = selectedBill.getEntity().getCodigo();
             panelSelectedBillTitle.setTitle(String.format("%s: %s", "Factura", code));
-            panelSelectedBillTitle.setTitleEast(String.format("%s", date));
+            panelSelectedBillTitle.setTitleEast(String.format("%s", date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
             tableModelBillUnits.fireTableDataChanged();
         } else {
             panelSelectedBillTitle.setTitle("");
@@ -509,5 +562,11 @@ public class ComarPanelBillsArea extends ComarPanelView {
         }
 
         return units;
+    }
+
+    public void searchBillUnitAction() {
+        String text = textSearch.getText();
+        sorter.setRowFilter(RowFilter.regexFilter("(?i).*" + text + ".*", 0, 1));
+        sorter.sort();
     }
 }

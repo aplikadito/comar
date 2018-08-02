@@ -14,6 +14,7 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.LayoutManager;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -106,9 +107,9 @@ public class ComarPanelDate extends ComarPanel {
         this.comboDay.setSelectedItem(day);
 
         add(new ComarPosLabel(title));
-        add(comboYear);
-        add(comboMonth);
         add(comboDay);
+        add(comboMonth);
+        add(comboYear);
     }
 
     public int[] getValue() {
@@ -123,7 +124,11 @@ public class ComarPanelDate extends ComarPanel {
 
         boolean anyMatch = Arrays.stream(value).anyMatch(e -> e == -1);
         if (!anyMatch) {
-            return LocalDate.of(value[0], value[1], value[2]);
+            try {
+                return LocalDate.of(value[0], value[1], value[2]);
+            } catch (DateTimeException e) {
+                throw new ComarException("Fecha incorrecta");
+            }
         } else {
             throw new ComarException("Fecha incorrecta");
         }

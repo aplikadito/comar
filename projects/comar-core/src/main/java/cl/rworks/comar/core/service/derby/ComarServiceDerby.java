@@ -118,7 +118,7 @@ public class ComarServiceDerby implements ComarService {
     }
 
     public void deleteProducts(List<ProductoEntity> products) throws ComarServiceException {
-        DeleteProductosPorCodigo.serve(tx.getConnection(), products);
+        DeleteProductos.serve(tx.getConnection(), products);
     }
 
     public void updateProductoCodigo(ProductoEntity product, String code) throws ComarServiceException {

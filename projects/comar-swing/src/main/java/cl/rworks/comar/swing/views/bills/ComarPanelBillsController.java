@@ -16,6 +16,7 @@ import cl.rworks.comar.swing.model.ComarProduct;
 import cl.rworks.comar.swing.model.ComarWorkspace;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class ComarPanelBillsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComarPanelBillsController.class);
 
-    public List<ComarBill> searchBills(int[] value) {
+    public List<ComarBill> searchBillsByDate(int[] value) {
         int year = value[0];
         int month = value[1];
         int day = value[2];
@@ -40,6 +41,18 @@ public class ComarPanelBillsController {
                 .filter(e -> year != -1 ? e.getEntity().getFecha().getYear() == year : true)
                 .filter(e -> month != -1 ? e.getEntity().getFecha().getMonthValue() == month : true)
                 .filter(e -> day != -1 ? e.getEntity().getFecha().getDayOfMonth() == day : true)
+                .collect(Collectors.toList());
+
+        return list;
+    }
+
+    public List<ComarBill> searchBillsByCode(String text) {
+        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+        List<ComarBill> bills = ws.getBills();
+
+        Pattern pattern = Pattern.compile(".*" + text + ".*");
+        List<ComarBill> list = bills.stream()
+                .filter(e -> pattern.matcher(e.getEntity().getCodigo()).matches())
                 .collect(Collectors.toList());
 
         return list;

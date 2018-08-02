@@ -9,7 +9,6 @@ import com.alee.laf.panel.WebPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import javax.swing.JComponent;
 
 /**
  *
