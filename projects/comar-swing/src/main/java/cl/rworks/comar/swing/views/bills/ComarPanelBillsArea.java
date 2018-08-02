@@ -5,15 +5,15 @@
  */
 package cl.rworks.comar.swing.views.bills;
 
-import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.model.ComarBill;
 import cl.rworks.comar.swing.model.ComarBillUnit;
 import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.model.ComarProduct;
+import cl.rworks.comar.swing.util.BigDecimalTableRenderer;
 import cl.rworks.comar.swing.util.ComarActionSimple;
 import cl.rworks.comar.swing.util.ComarPanel;
-import cl.rworks.comar.swing.util.ComarPanelButtonsArea;
+import cl.rworks.comar.swing.util.ComarPanelOptionsArea;
 import cl.rworks.comar.swing.util.ComarPanelDate;
 import cl.rworks.comar.swing.util.ComarPanelFactory;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
@@ -35,8 +35,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
@@ -56,23 +54,21 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private ComarPanelDate panelDateFilter;
     private WebTable tableBills;
     private TableModelBills tableModelBills;
-    private ComarPanelButtonsArea panelBillOptionsUp;
-    private ComarPanelButtonsArea panelBillOptionsDown;
+    private ComarPanelOptionsArea panelBillOptionsUp;
+    private ComarPanelOptionsArea panelBillOptionsDown;
     //
     private ComarPanel panelRightTableArea;
-    private ComarPanelButtonsArea panelRightTableButtonsArea;
+    private ComarPanelOptionsArea panelRightTableButtonsArea;
     private ComarPanelTitle panelSelectedBillTitle;
     private WebPopupMenu popupTableBills;
     private WebTextField textProductCode;
-    private WebButton buttonAddProduct;
-    private WebButton buttonDeleteProducts;
     private WebTable tableBillUnits;
     private TableModelBillUnits tableModelBillUnits;
     //
     private ComarBill selectedBill;
 
     public ComarPanelBillsArea() {
-        super("Facturas");
+        super("Facturas Por Fechas");
         initComponents();
     }
 
@@ -90,9 +86,9 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private ComarPanel initLeft() {
         panelLeft = new ComarPanelFactory().borderLayout().create();
 
-        panelLeft.add(panelBillOptionsUp = new ComarPanelButtonsArea(), BorderLayout.NORTH);
+        panelLeft.add(panelBillOptionsUp = new ComarPanelOptionsArea(), BorderLayout.NORTH);
         panelLeft.add(new WebScrollPane(tableBills = new WebTable()), BorderLayout.CENTER);
-        panelLeft.add(panelBillOptionsDown = new ComarPanelButtonsArea(), BorderLayout.SOUTH);
+        panelLeft.add(panelBillOptionsDown = new ComarPanelOptionsArea(), BorderLayout.SOUTH);
 
         panelBillOptionsUp.addCenter(panelDateFilter = new ComarPanelDate());
         panelBillOptionsUp.addCenter(new WebButton("Buscar", e -> searchAction()));
@@ -112,6 +108,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
         popupTableBills.add(new ComarActionSimple("Eliminar", e -> deleteBillAction()));
 
         panelBillOptionsDown.addRight(new WebButton("Agregar", e -> addBillAction()));
+        panelBillOptionsDown.addRight(new WebButton("Editar", e -> editBillAction()));
         panelBillOptionsDown.addRight(new WebButton("Eliminar", e -> deleteBillAction()));
 //        panelDateFilter.getButtonSearch().addActionListener(e -> searchBillsAction());
 
@@ -124,18 +121,19 @@ public class ComarPanelBillsArea extends ComarPanelView {
         panelRight.add(panelSelectedBillTitle = new ComarPanelTitle(""), BorderLayout.NORTH);
         panelRight.add(panelRightTableArea = new ComarPanelFactory().borderLayout().border(new EmptyBorder(10, 10, 10, 10)).create(), BorderLayout.CENTER);
 
-        panelRightTableArea.add(panelRightTableButtonsArea = new ComarPanelButtonsArea(), BorderLayout.NORTH);
+        panelRightTableArea.add(panelRightTableButtonsArea = new ComarPanelOptionsArea(), BorderLayout.NORTH);
         panelRightTableArea.add(new WebScrollPane(tableBillUnits = new WebTable()), BorderLayout.CENTER);
 
         panelRightTableButtonsArea.addLeft(new WebLabel("Codigo"));
         panelRightTableButtonsArea.addLeft(textProductCode = new WebTextFieldFactory().cols(20).actionListener(e -> addBillUnitAction()).create());
-        panelRightTableButtonsArea.addLeft(buttonAddProduct = new WebButton("Agregar", e -> addBillUnitAction()));
-        panelRightTableButtonsArea.addRight(buttonDeleteProducts = new WebButton("Eliminar", e -> deleteBillUnitsAction()));
+        panelRightTableButtonsArea.addLeft(new WebButton("Agregar", e -> addBillUnitAction()));
+        panelRightTableButtonsArea.addRight(new WebButton("Eliminar", e -> deleteBillUnitsAction()));
 
         tableModelBillUnits = new TableModelBillUnits();
         tableBillUnits.setModel(tableModelBillUnits);
         tableBillUnits.setCellSelectionEnabled(true);
         tableBillUnits.setComponentPopupMenu(popupTableBills = new WebPopupMenu());
+        tableBillUnits.setDefaultRenderer(BigDecimal.class, new BigDecimalTableRenderer());
         popupTableBills.add(new ComarActionSimple("Eliminar", e -> deleteBillAction()));
 
         return panelRight;
@@ -143,7 +141,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
     private class TableModelBills extends AbstractTableModel {
 
-        private String[] colNames = new String[]{"Identificador", "Fecha"};
+        private String[] colNames = new String[]{"Factura", "Fecha"};
         private List<ComarBill> bills = null;
 
         public List<ComarBill> getBills() {
@@ -267,6 +265,62 @@ public class ComarPanelBillsArea extends ComarPanelView {
             }
         }
 
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return false;
+                case 1:
+                    return false;
+                case 2:
+                    return true;
+                case 3:
+                    return true;
+                case 4:
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            List<ComarBillUnit> units = selectedBill.getUnits();
+            ComarBillUnit billUnit = units.get(rowIndex);
+            switch (columnIndex) {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2: {
+                    try {
+                        BigDecimal precio = (BigDecimal) aValue;
+                        controller.updateBillUnitPrice(billUnit, precio);
+                        fireTableCellUpdated(rowIndex, columnIndex);
+                        fireTableCellUpdated(rowIndex, 4);
+                    } catch (ComarControllerException ex) {
+                        ComarUtils.showWarn(null, ex.getMessage());
+                    }
+                    break;
+                }
+                case 3: {
+                    try {
+                        BigDecimal cantidad = (BigDecimal) aValue;
+                        controller.updateBillUnitQuatity(billUnit, cantidad);
+                        fireTableCellUpdated(rowIndex, columnIndex);
+                        fireTableCellUpdated(rowIndex, 4);
+                    } catch (ComarControllerException ex) {
+                        ComarUtils.showWarn(null, ex.getMessage());
+                    }
+                    break;
+                }
+                case 4:
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 
     private void searchAction() {
@@ -279,7 +333,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
     }
 
     private void addBillAction() {
-        ComarDialogBillInsert dialog = new ComarDialogBillInsert(ComarSystem.getInstance().getFrame());
+        ComarDialogBillInsert dialog = new ComarDialogBillInsert(ComarSystem.getInstance().getFrame(), "Agregar Factura");
         dialog.getPanel().updateForm(LocalDate.now(), "");
         dialog.showMe();
 
@@ -298,10 +352,11 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private void editBillAction() {
         ComarBill updateBill = getSelectedBill();
         if (updateBill == null) {
+            ComarUtils.showInfo(this, "Seleccione al menos una factura");
             return;
         }
 
-        ComarDialogBillInsert dialog = new ComarDialogBillInsert(ComarSystem.getInstance().getFrame());
+        ComarDialogBillInsert dialog = new ComarDialogBillInsert(ComarSystem.getInstance().getFrame(), "Editar Factura");
         dialog.getPanel().updateForm(updateBill.getEntity().getFecha(), updateBill.getEntity().getCodigo());
         dialog.showMe();
 
@@ -376,13 +431,13 @@ public class ComarPanelBillsArea extends ComarPanelView {
             return;
         }
 
-        if (tableModelBillUnits.contains(code)) {
-            return;
-        }
-
         ComarProduct product = controller.getProduct(code);
         if (product == null) {
             ComarUtils.showWarn(this, "Producto no encontrado");
+            return;
+        }
+
+        if (tableModelBillUnits.contains(code)) {
             return;
         }
 
@@ -424,8 +479,8 @@ public class ComarPanelBillsArea extends ComarPanelView {
         if (selectedBill != null) {
             LocalDate date = selectedBill.getEntity().getFecha();
             String code = selectedBill.getEntity().getCodigo();
-            panelSelectedBillTitle.setTitle(String.format("%s:%s", "Codigo", code));
-            panelSelectedBillTitle.setTitleEast(String.format("%s:%s", "Fecha", date));
+            panelSelectedBillTitle.setTitle(String.format("%s: %s", "Factura", code));
+            panelSelectedBillTitle.setTitleEast(String.format("%s", date));
             tableModelBillUnits.fireTableDataChanged();
         } else {
             panelSelectedBillTitle.setTitle("");

@@ -5,26 +5,23 @@
  */
 package cl.rworks.comar.swing.views.products;
 
+import cl.rworks.comar.core.model.CategoriaEntity;
 import cl.rworks.comar.swing.model.ComarCategory;
 import cl.rworks.comar.swing.model.ComarProduct;
 import cl.rworks.comar.core.model.Metrica;
-import cl.rworks.comar.core.model.impl.CategoriaEntityImpl;
-import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.util.ComarPanel;
-import cl.rworks.comar.swing.util.ComarPanelButtonsArea;
+import cl.rworks.comar.swing.util.ComarPanelOptionsArea;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.util.ComarPanelView;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.rootpane.WebDialog;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.splitpane.WebSplitPane;
 import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 import java.awt.BorderLayout;
-import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -38,7 +35,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.util.ComarActionSimple;
-import com.alee.extended.layout.FormLayout;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.optionpane.WebOptionPane;
@@ -46,18 +42,15 @@ import com.alee.laf.separator.WebSeparator;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
-import cl.rworks.comar.core.model.CategoriaEntity;
-import cl.rworks.comar.swing.util.ComarTextField;
 import cl.rworks.comar.swing.util.WebTextFieldFactory;
-import java.util.EventObject;
 
 /**
  *
  * @author aplik
  */
-public class ComarPanelProductsArea extends ComarPanelView {
+public class ComarPanelProdsByCategoryArea extends ComarPanelView {
 
-    private ComarPanelProductsController controller;
+    private ComarPanelProdsByCategoryController controller = new ComarPanelProdsByCategoryController();;
     //
     private WebSplitPane split;
     private JTree tree;
@@ -66,14 +59,11 @@ public class ComarPanelProductsArea extends ComarPanelView {
     private ComarPanelTitle panelProductTitle;
     private WebTextField textProductCode;
     private WebButton buttonAddProduct;
-    private WebButton buttonDeleteProducts;
     //
-    private DefaultMutableTreeNode selectedCategoryNode = null;
+    private ComarCategory selectedCategory = null;
 
-    public ComarPanelProductsArea() {
-        super("Inventario");
-        this.controller = new ComarPanelProductsController();
-
+    public ComarPanelProdsByCategoryArea() {
+        super("Productos Por Categoria");
         initComponents();
     }
 
@@ -94,8 +84,9 @@ public class ComarPanelProductsArea extends ComarPanelView {
         tree = new JTree(new DefaultTreeModel(controller.getRootNode()));
         panelLeft.add(new WebScrollPane(tree), BorderLayout.CENTER);
 
-        ComarPanelButtonsArea panelCategoryButtons = new ComarPanelButtonsArea();
-        panelCategoryButtons.addRight(new WebButton("Agregar", e -> AddCategoryAction()));
+        ComarPanelOptionsArea panelCategoryButtons = new ComarPanelOptionsArea();
+        panelCategoryButtons.addRight(new WebButton("Agregar", e -> addCategoryAction()));
+        panelCategoryButtons.addRight(new WebButton("Editar", e -> editCategoryAction()));
         panelCategoryButtons.addRight(new WebButton("Eliminar", e -> deleteCategoryAction()));
         panelLeft.add(panelCategoryButtons, BorderLayout.SOUTH);
 
@@ -103,11 +94,13 @@ public class ComarPanelProductsArea extends ComarPanelView {
         tree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                loadProductsForSelectedCategory();
+                setSelectedCategory();
             }
         });
 
         JPopupMenu popupTree = new JPopupMenu();
+        popupTree.add(new ComarActionSimple("Editar", e -> editCategoryAction()));
+        popupTree.add(new WebSeparator());
         popupTree.add(new ComarActionSimple("Eliminar", e -> deleteCategoryAction()));
         tree.setComponentPopupMenu(popupTree);
 
@@ -125,11 +118,11 @@ public class ComarPanelProductsArea extends ComarPanelView {
         panelRight.add(panelTableContent, BorderLayout.CENTER);
 
         // BOTONERA PRODUCTOS
-        ComarPanelButtonsArea panelButtons = new ComarPanelButtonsArea();
+        ComarPanelOptionsArea panelButtons = new ComarPanelOptionsArea();
         panelButtons.addLeft(new WebLabel("Codigo"));
         panelButtons.addLeft(textProductCode = new WebTextFieldFactory().cols(30).actionListener(e -> addProductAction()).create());
         panelButtons.addLeft(buttonAddProduct = new WebButton("Agregar", e -> addProductAction()));
-        panelButtons.addRight(buttonDeleteProducts = new WebButton("Eliminar", e -> deleteProductsAction()));
+        panelButtons.addRight(new WebButton("Eliminar", e -> deleteProductsAction()));
         panelTableContent.add(panelButtons, BorderLayout.NORTH);
 
         // TABLA
@@ -137,6 +130,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
         tableProducts = new WebTable(tableModelProducts);
         tableProducts.setCellSelectionEnabled(true);
         tableProducts.setDefaultEditor(Metrica.class, new DefaultCellEditor(createComarMetricComboBox()));
+        ComarUtils.initTable(tableProducts);
 
         WebPopupMenu popupTable = new WebPopupMenu();
 //        popup.add(new WebButton("Eliminar", e -> deleteProductsAction()));
@@ -146,7 +140,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
         tableProducts.setComponentPopupMenu(popupTable);
 
         panelTableContent.add(new WebScrollPane(tableProducts), BorderLayout.CENTER);
-        
+
         return panelRight;
     }
 
@@ -260,32 +254,32 @@ public class ComarPanelProductsArea extends ComarPanelView {
                         break;
                 }
             } catch (ComarControllerException ex) {
-                ComarUtils.showWarn(ComarPanelProductsArea.this, ex.getMessage());
+                ComarUtils.showWarn(ComarPanelProdsByCategoryArea.this, ex.getMessage());
             }
 
         }
     }
 
-    public void loadProductsForSelectedCategory() {
-        selectedCategoryNode = getSelectedCategoryNode();
+    public void setSelectedCategory() {
+        selectedCategory = getSelectedCategory();
 
         String str = "";
-        if (selectedCategoryNode != null) {
-            ComarCategory cmodel = (ComarCategory) selectedCategoryNode.getUserObject();
-            str = cmodel.getEntity().getNombre();
+        if (selectedCategory != null) {
+            str = selectedCategory.getEntity().getNombre();
+        } else {
+            str = "Todas las categorias";
         }
         panelProductTitle.setTitle(str);
 
-        List<ComarProduct> products = controller.getProducts(selectedCategoryNode);
+        List<ComarProduct> products = controller.getProducts(selectedCategory);
         this.tableModelProducts.setProducts(products);
         this.tableModelProducts.fireTableDataChanged();
 
-        this.textProductCode.setEnabled(selectedCategoryNode != null);
-        this.buttonAddProduct.setEnabled(selectedCategoryNode != null);
-//        this.buttonDeleteProducts.setEnabled(selectedCategory != null);
+        this.textProductCode.setEnabled(selectedCategory != null);
+        this.buttonAddProduct.setEnabled(selectedCategory != null);
     }
 
-    private DefaultMutableTreeNode getSelectedCategoryNode() {
+    private ComarCategory getSelectedCategory() {
         TreePath path = tree.getSelectionPath();
         if (path == null) {
             return null;
@@ -303,124 +297,82 @@ public class ComarPanelProductsArea extends ComarPanelView {
         DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) selectedObject;
         Object userObject = dmtn.getUserObject();
 
-        if (!(userObject instanceof ComarCategory)) {
+        if (userObject instanceof ComarCategory) {
+            ComarCategory cat = (ComarCategory) userObject;
+            return cat;
+        } else {
             return null;
         }
-
-        return dmtn;
     }
 
-    public void AddCategoryAction() {
-        AddCategoryDialog dialog = new AddCategoryDialog(ComarSystem.getInstance().getFrame());
-        dialog.showMe();
-
-        if (dialog.isOk()) {
-            tree.updateUI();
-        }
-    }
-
-    public class CategoriaEditorPanel extends WebPanel {
-
-        private WebTextField textName = new WebTextField();
-
-        public CategoriaEditorPanel() {
-            setLayout(new FormLayout(10, 10));
-            add(new WebLabel("Nombre"));
-            add(textName);
-        }
-
-        public void updateForm(CategoriaEntity c) {
-            this.textName.setText(c.getNombre());
-        }
-
-        public WebTextField getTextName() {
-            return textName;
-        }
-
-    }
-
-    public class AddCategoryDialog extends WebDialog {
-
-        private CategoriaEditorPanel panelEditor;
-        private boolean ok = false;
-
-        public AddCategoryDialog(Window window) {
-            super(window, "Agregar Categoria", ModalityType.APPLICATION_MODAL);
-            initValues();
-            ComarUtils.installCloseKey(this, e -> closeAction());
-        }
-
-        private void initValues() {
-            setLayout(new BorderLayout());
-
-            panelEditor = new CategoriaEditorPanel();
-            panelEditor.setBorder(new EmptyBorder(10, 10, 10, 10));
-            panelEditor.updateForm(CategoriaEntityImpl.create(""));
-            add(panelEditor, BorderLayout.CENTER);
-
-            ComarPanelButtonsArea panelButtons = new ComarPanelButtonsArea();
-            panelButtons.addRight(new WebButton("Aceptar", e -> okAction()));
-            panelButtons.addRight(new WebButton("Cerrar", e -> closeAction()));
-            add(panelButtons, BorderLayout.SOUTH);
-        }
-
-        public void showMe() {
-            setSize(400, 150);
-            setLocationRelativeTo(null);
-            setVisible(true);
-        }
-
-        private boolean isOk() {
-            return ok;
-        }
-
-        public void okAction() {
-            String name = panelEditor.getTextName().getText();
+    public void addCategoryAction() {
+//        AddCategoryDialog dialog = new AddCategoryDialog(ComarSystem.getInstance().getFrame());
+//        dialog.showMe();
+        String name = (String) WebOptionPane.showInputDialog(this, "Nombre", "Agregar Categoria", WebOptionPane.PLAIN_MESSAGE, null, null, "");
+        if (name != null) {
             if (name.isEmpty()) {
-                ComarUtils.showWarn(panelEditor, "Ingrese un nombre para la categoria");
+                ComarUtils.showWarn(this, "Ingrese un nombre para la categoria");
                 return;
             }
 
             try {
                 controller.insertCategory(name);
-                ok = true;
-                dispose();
+                tree.updateUI();
             } catch (ComarControllerException ex) {
-                ComarUtils.showWarn(panelEditor, ex.getMessage());
+                ComarUtils.showWarn(this, ex.getMessage());
             }
         }
+    }
 
-        public void closeAction() {
-            ok = false;
-            dispose();
+    public void editCategoryAction() {
+        if (selectedCategory == null) {
+            return;
         }
 
+        String name = (String) WebOptionPane.showInputDialog(this, "Nombre", "Editar Categoria", WebOptionPane.PLAIN_MESSAGE, null, null, selectedCategory.getEntity().getNombre());
+        if (name != null) {
+            if (name.isEmpty()) {
+                ComarUtils.showWarn(this, "Ingrese un nombre para la categoria");
+                return;
+            }
+
+            try {
+                controller.updateCategory(selectedCategory, name);
+                tree.updateUI();
+                tableModelProducts.setProducts(controller.getProducts(selectedCategory));
+                tableModelProducts.fireTableDataChanged();
+            } catch (ComarControllerException ex) {
+                ComarUtils.showWarn(this, ex.getMessage());
+            }
+        }
     }
 
     public void deleteCategoryAction() {
-        DefaultMutableTreeNode cview = getSelectedCategoryNode();
-        if (cview == null) {
+        if (selectedCategory == null) {
             ComarUtils.showWarn(null, "Seleccione una categoria");
             return;
         }
 
-        ComarCategory cmodel = (ComarCategory) cview.getUserObject();
-        if (!cmodel.getProducts().isEmpty()) {
-            ComarUtils.showWarn(null, "La categoria no debe poseer productos");
+        if (!selectedCategory.getProducts().isEmpty()) {
+            ComarUtils.showInfo(null, "Antes de eliminar una categoria, elimine o mueva los productos asociados a ella");
             return;
         }
 
-        int response = ComarUtils.showYesNo(ComarPanelProductsArea.this, "Desea eliminar la categoria seleccionada?", "Eliminar");
+        if (selectedCategory.getEntity().getNombre().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+            ComarUtils.showWarn(null, "Esta categoria esta reservada por el sistema y no puede ser eliminada");
+            return;
+        }
+
+        int response = ComarUtils.showYesNo(ComarPanelProdsByCategoryArea.this, "Desea eliminar la categoria seleccionada?", "Eliminar");
         if (response != JOptionPane.YES_OPTION) {
             return;
         }
 
         try {
-            controller.removeCategory(cview);
-            this.selectedCategoryNode = null;
+            controller.removeCategory(selectedCategory);
+            this.selectedCategory = null;
 
             this.panelProductTitle.setTitle("");
-            this.tableModelProducts.setProducts(null);
             this.tableModelProducts.fireTableDataChanged();
             this.tree.updateUI();
         } catch (ComarControllerException ex) {
@@ -431,7 +383,7 @@ public class ComarPanelProductsArea extends ComarPanelView {
     }
 
     public void addProductAction() {
-        if (selectedCategoryNode == null) {
+        if (selectedCategory == null) {
             ComarUtils.showWarn(this, "Seleccione una categoria");
             return;
         }
@@ -443,13 +395,12 @@ public class ComarPanelProductsArea extends ComarPanelView {
         }
 
         try {
-            ComarProduct pmodel = controller.insertProduct(code, selectedCategoryNode);
-            tableModelProducts.getProducts().add(pmodel);
+            controller.insertProduct(code, selectedCategory);
+            tableModelProducts.setProducts(controller.getProducts(selectedCategory));
             tableModelProducts.fireTableDataChanged();
             tree.updateUI();
             textProductCode.clear();
         } catch (ComarControllerException ex) {
-            ex.printStackTrace();
             ComarUtils.showWarn(this, ex.getMessage());
         }
     }
@@ -479,10 +430,9 @@ public class ComarPanelProductsArea extends ComarPanelView {
         }
 
         try {
-            controller.deleteProducts(selectedProducts, selectedCategoryNode);
-            tableModelProducts.getProducts().removeAll(selectedProducts);
+            controller.deleteProducts(selectedProducts);
+            tableModelProducts.setProducts(controller.getProducts(selectedCategory));
             tableModelProducts.fireTableDataChanged();
-
             tree.updateUI();
         } catch (ComarControllerException ex) {
             ex.printStackTrace();
@@ -497,15 +447,13 @@ public class ComarPanelProductsArea extends ComarPanelView {
             return;
         }
 
-        Object[] values = controller.getCategoryModels().toArray();
+        Object[] values = controller.getCategories().toArray();
         Object response = WebOptionPane.showInputDialog(this, "Categoria", "Mover a", WebOptionPane.PLAIN_MESSAGE, null, values, values[0]);
         if (response != null) {
             try {
                 ComarCategory category = (ComarCategory) response;
                 controller.moveProducts(selectedProducts, category);
-                tableModelProducts.getProducts().removeAll(selectedProducts);
-
-                tableModelProducts.setProducts(controller.getProducts(selectedCategoryNode));
+                tableModelProducts.setProducts(controller.getProducts(selectedCategory));
                 tableModelProducts.fireTableDataChanged();
             } catch (ComarControllerException ex) {
                 ex.printStackTrace();

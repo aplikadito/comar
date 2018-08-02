@@ -17,11 +17,11 @@ import cl.rworks.comar.core.model.CategoriaEntity;
  *
  * @author aplik
  */
-public class InsertCategoria {
+public class InsertCategoriaDefault {
 
     private Connection connection;
 
-    public InsertCategoria(Connection connection) {
+    public InsertCategoriaDefault(Connection connection) {
         this.connection = connection;
     }
 
@@ -31,17 +31,12 @@ public class InsertCategoria {
         }
 
         String name = category.getNombre();
-        if (name == null) {
-            throw new ComarServiceException("Nombre de la Categoria nula");
+        if (name == null || name.isEmpty()) {
+            throw new ComarServiceException("Nombre de la Categoria nula o vacia");
         }
 
-        name = name.trim();
-        if (name.isEmpty()) {
-            throw new ComarServiceException("Nombre de la Categoria vacia, evite espacios antes y despues del nombre");
-        }
-
-        if (name.equals(CategoriaEntity.DEFAULT_CATEGORY)) {
-            throw new ComarServiceException("Nombre de la categoria reservado por el sistema: " + CategoriaEntity.DEFAULT_CATEGORY);
+        if (!name.equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+            throw new ComarServiceException("Nombre de la categoria por defecto incorrecto: " + name + ", debe ser: " + CategoriaEntity.DEFAULT_CATEGORY);
         }
 
         byte[] id = UUIDUtils.createId();
@@ -59,6 +54,6 @@ public class InsertCategoria {
     }
 
     public static void serve(Connection connection, CategoriaEntity category) throws ComarServiceException {
-        new InsertCategoria(connection).execute(category);
+        new InsertCategoriaDefault(connection).execute(category);
     }
 }

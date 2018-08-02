@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.util;
+package cl.rworks.comar.swing.views.pos;
 
 import cl.rworks.comar.swing.main.ComarSystem;
 import com.alee.laf.label.WebLabel;
@@ -12,17 +12,17 @@ import com.alee.laf.label.WebLabel;
  *
  * @author aplik
  */
-public class ComarLabel extends WebLabel {
+public class ComarPosLabel extends WebLabel {
 
-    public ComarLabel() {
+    public ComarPosLabel() {
         this("");
     }
 
-    public ComarLabel(String text) {
+    public ComarPosLabel(String text) {
         this(text, ComarSystem.getInstance().getProperties().getFontSize());
     }
 
-    public ComarLabel(String text, int fontSize) {
+    public ComarPosLabel(String text, int fontSize) {
         super(text);
         setFontSize(fontSize);
     }

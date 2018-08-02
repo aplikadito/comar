@@ -7,11 +7,12 @@ package cl.rworks.comar.swing.main;
 
 import cl.rworks.comar.swing.views.pos.ComarPanelPosArea;
 import cl.rworks.comar.swing.views.sells.ComarPanelSellsArea;
-import cl.rworks.comar.swing.views.settings.ComarPanelSettings;
+import cl.rworks.comar.swing.views.pos.ComarPanelPosSettingsArea;
 import cl.rworks.comar.swing.util.ComarPanel;
-import cl.rworks.comar.swing.util.IconLoader;
+import cl.rworks.comar.swing.util.ComarIconLoader;
 import cl.rworks.comar.swing.views.bills.ComarPanelBillsArea;
-import cl.rworks.comar.swing.views.products.ComarPanelProductsArea;
+import cl.rworks.comar.swing.views.products.ComarPanelProdsCsvInsertArea;
+import cl.rworks.comar.swing.views.products.ComarPanelProdsByCategoryArea;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.scroll.WebScrollPane;
 import java.awt.BorderLayout;
@@ -35,7 +36,10 @@ public class ComarFrame extends WebFrame {
     private ComarPanel panelCard;
     private ComarStatusBar statusBar;
     private JMenu menuFile;
-    private JMenu menuNavigate;
+    private JMenu menuPointOfSell;
+    private JMenu menuProducts;
+    private JMenu menuBills;
+    private JMenu menuSells;
 //    private JMenu menuInventory;
     //
     private String actualCardName;
@@ -48,7 +52,7 @@ public class ComarFrame extends WebFrame {
     }
 
     private void initComponents() {
-        setIconImage(IconLoader.load("/comar_32.png"));
+        setIconImage(ComarIconLoader.load("/comar_32.png"));
         setLayout(new BorderLayout());
 
         ComarPanel panelContent = new ComarPanel(new BorderLayout());
@@ -61,11 +65,10 @@ public class ComarFrame extends WebFrame {
         menuFile.add(new JMenuItem(new ExitAction()));
         menuBar.add(menuFile);
 
-        menuNavigate = new JMenu("Navegar");
-        menuBar.add(menuNavigate);
-
-//        menuInventory = new JMenu("Inventario");
-//        menuBar.add(menuInventory);
+        menuBar.add(menuPointOfSell = new JMenu("Punto de Venta"));
+        menuBar.add(menuProducts = new JMenu("Productos"));
+        menuBar.add(menuBills = new JMenu("Facturas"));
+        menuBar.add(menuSells = new JMenu("Ventas"));
 
         panelCard = new ComarPanel();
         panelCard.setLayout(new CardLayout());
@@ -76,13 +79,17 @@ public class ComarFrame extends WebFrame {
     }
 
     private void initValues() {
-        addCard("POS", "Punto de Venta", new ComarPanelPosArea(), menuNavigate);
-        addCard("PRODUCTOS", "Productos", new ComarPanelProductsArea(), menuNavigate);
-        addCard("FACTURAS", "Facturas", new ComarPanelBillsArea(), menuNavigate);
-        addCard("SELL", "Ventas", new ComarPanelSellsArea(), menuNavigate);
-        addCard("OPT", "Opciones", new ComarPanelSettings(), menuNavigate);
+        addCard("POS_POS", "Punto de Venta", new ComarPanelPosArea(), menuPointOfSell);
+        addCard("POS_OPT", "Opciones", new ComarPanelPosSettingsArea(), menuPointOfSell);
 
-        actualCardName = "POS";
+        addCard("PRODS_CATEGORIES", "Por Categoria", new ComarPanelProdsByCategoryArea(), menuProducts);
+        addCard("PRODS_CSV", "Agregar via CSV", new ComarPanelProdsCsvInsertArea(), menuProducts);
+
+        addCard("BILLS_", "Por Fecha", new ComarPanelBillsArea(), menuBills);
+
+        addCard("SELLS", "Por Fecha", new ComarPanelSellsArea(), menuSells);
+
+        actualCardName = "POS_POS";
     }
 
     public void showMe() {

@@ -22,6 +22,7 @@ import cl.rworks.comar.core.model.MetricaEntity;
 import cl.rworks.comar.core.model.ProductoEntity;
 import cl.rworks.comar.core.model.VentaEntity;
 import cl.rworks.comar.core.model.VentaUnidadEntity;
+import java.math.BigDecimal;
 
 /**
  *
@@ -164,7 +165,7 @@ public class ComarServiceDerby implements ComarService {
     public void deleteFacturas(List<FacturaEntity> facturas) throws ComarServiceException {
         DeleteFacturas.serve(tx.getConnection(), facturas);
     }
-    
+
     public void deleteFacturaUnidades(List<FacturaUnidadEntity> unidades) throws ComarServiceException {
         DeleteFacturaUnidades.serve(tx.getConnection(), unidades);
     }
@@ -181,4 +182,28 @@ public class ComarServiceDerby implements ComarService {
         return GetAllVentaUnidad.serve(tx.getConnection());
     }
 
+    public void updateFacturaUnidadPropiedad(FacturaUnidadEntity entity, String propiedad, Object valor) throws ComarServiceException {
+        UpdateFacturaUnidadPropiedad.serve(tx.getConnection(), entity, propiedad, valor);
+    }
+
+    @Override
+    public boolean existsProductCode(String code) throws ComarServiceException {
+        ProductoEntity product = GetProductoPorCodigo.serve(tx.getConnection(), code);
+        return product != null;
+    }
+
+    public void checkProductCode(String code) throws ComarServiceException {
+        ProductoEntity product = GetProductoPorCodigo.serve(tx.getConnection(), code);
+        if (product != null) {
+            throw new ComarServiceException("El codigo del producto ya existe: " + code);
+        }
+    }
+
+    public void updateCategoriaPropiedad(CategoriaEntity entity, String propiedad, Object valor) throws ComarServiceException {
+        UpdateCategoriaPropiedad.serve(tx.getConnection(), entity, propiedad, valor);
+    }
+
+    public void insertProductosPorCsv(List<ProductoEntity> productos, CategoriaEntity categoria) throws ComarServiceException{
+        InsertProductosPorCsv.serve(tx.getConnection(), productos, categoria);
+    }
 }

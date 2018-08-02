@@ -22,29 +22,34 @@ import cl.rworks.comar.core.model.CategoriaEntity;
 import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.model.ProductoEntity;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author aplik
  */
-public class ComarPanelProductsController {
+public class ComarPanelProdsByCategoryController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ComarPanelProductsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ComarPanelProdsByCategoryController.class);
     //
     private ComarWorkspace ws;
     private DefaultMutableTreeNode rootNode;
+    private Map<ComarCategory, DefaultMutableTreeNode> categoryToNode;
 
-    public ComarPanelProductsController() {
+    public ComarPanelProdsByCategoryController() {
         ws = ComarSystem.getInstance().getWorkspace();
         initRootNode();
     }
 
     private void initRootNode() {
         this.rootNode = new DefaultMutableTreeNode("Categorias");
+        this.categoryToNode = new HashMap<>();
         List<ComarCategory> categories = ws.getCategories();
         for (ComarCategory c : categories) {
             DefaultMutableTreeNode cnode = new DefaultMutableTreeNode(c);
             rootNode.add(cnode);
+            categoryToNode.put(c, cnode);
         }
     }
 
@@ -63,72 +68,86 @@ public class ComarPanelProductsController {
             rootNode.add(new DefaultMutableTreeNode(cnode));
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
         }
 
     }
 
-    public void removeCategory(DefaultMutableTreeNode cview) throws ComarControllerException {
+    public void removeCategory(ComarCategory category) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
 
-            ComarCategory cmodel = (ComarCategory) cview.getUserObject();
-            service.deleteCategoria(cmodel.getEntity());
+            service.deleteCategoria(category.getEntity());
             tx.commit();
 
-            ws.removeCategoria(cmodel);
+            ws.removeCategoria(category);
+            DefaultMutableTreeNode cview = categoryToNode.remove(category);
             rootNode.remove(cview);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
         }
     }
 
-    public List<ComarProduct> getProducts(DefaultMutableTreeNode cview) {
-        if (cview != null) {
-            ComarCategory cmodel = (ComarCategory) cview.getUserObject();
-            return new ArrayList<>(cmodel.getProducts());
+    public void updateCategory(ComarCategory category, String name) throws ComarControllerException {
+        if (name.trim().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+            throw new ComarControllerException("Nombre de Categoria reservado por el sistema: " + CategoriaEntity.DEFAULT_CATEGORY);
+        }
+
+        ComarService service = ComarSystem.getInstance().getService();
+        try (ComarTransaction tx = service.createTransaction()) {
+            service.updateCategoriaPropiedad(category.getEntity(), "NOMBRE", name);
+            tx.commit();
+
+            category.getEntity().setNombre(name);
+        } catch (ComarServiceException ex) {
+            LOG.error("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
+        }
+    }
+
+    public List<ComarProduct> getProducts(ComarCategory category) {
+        if (category != null) {
+            return new ArrayList<>(category.getProducts());
         } else {
             return ws.getCategories().stream().flatMap(e -> e.getProducts().stream()).collect(Collectors.toList());
 
         }
     }
 
-    public ComarProduct insertProduct(String code, DefaultMutableTreeNode cview) throws ComarControllerException {
-        ComarCategory cmodel = (ComarCategory) cview.getUserObject();
-
+    public ComarProduct insertProduct(String code, ComarCategory category) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-            ProductoEntity pentity = service.insertProductoPorCodigo(code, cmodel.getEntity());
+            service.checkProductCode(code);
+
+            ProductoEntity pentity = service.insertProductoPorCodigo(code, category.getEntity());
             tx.commit();
 
-            ComarProduct pmodel = new ComarProduct(pentity);
-            ws.insertProduct(pmodel, cmodel);
+            ComarProduct product = new ComarProduct(pentity);
+            ws.insertProduct(product, category);
 
-            return pmodel;
+            return product;
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
         }
     }
 
-    public void deleteProducts(List<ComarProduct> products, DefaultMutableTreeNode cview) throws ComarControllerException {
-        ComarCategory cmodel = (ComarCategory) cview.getUserObject();
-
+    public void deleteProducts(List<ComarProduct> products) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
             List<ProductoEntity> entityList = products.stream().map(e -> e.getEntity()).collect(Collectors.toList());
             service.deleteProducts(entityList);
             tx.commit();
 
-            ws.removeProducts(products, cmodel);
+            ws.removeProducts(products);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
         }
     }
 
-    public List<ComarCategory> getCategoryModels() {
+    public List<ComarCategory> getCategories() {
         return ws.getCategories();
     }
 
@@ -143,20 +162,23 @@ public class ComarPanelProductsController {
             ws.moveProducts(products, category);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
         }
     }
 
-    public void updateProductCode(ComarProduct pmodel, String code) throws ComarControllerException {
+    public void updateProductCode(ComarProduct product, String code) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-            service.updateProductoCodigo(pmodel.getEntity(), code);
-            tx.commit();
-
-            pmodel.getEntity().setCodigo(code);
+            if (!service.existsProductCode(code)) {
+                service.updateProductoCodigo(product.getEntity(), code);
+                tx.commit();
+                product.getEntity().setCodigo(code);
+            } else {
+                throw new ComarControllerException("El codigo del producto ya existe: " + code);
+            }
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
         }
     }
 
@@ -169,7 +191,7 @@ public class ComarPanelProductsController {
             pmodel.getEntity().setDescripcion(desc);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
         }
     }
 
@@ -182,7 +204,7 @@ public class ComarPanelProductsController {
             pmodel.getEntity().setMetrica(metrica);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
         }
     }
 

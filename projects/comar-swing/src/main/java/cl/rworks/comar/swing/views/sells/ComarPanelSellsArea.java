@@ -48,7 +48,7 @@ public class ComarPanelSellsArea extends ComarPanelView {
     //
 
     public ComarPanelSellsArea() {
-        super("Ventas");
+        super("Ventas Por Fecha");
 
         initComponents();
         initToolTipHelp();

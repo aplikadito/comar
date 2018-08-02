@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.util;
+package cl.rworks.comar.swing.views.pos;
 
 import cl.rworks.comar.swing.main.ComarSystem;
 import com.alee.laf.text.WebTextField;
@@ -12,15 +12,15 @@ import com.alee.laf.text.WebTextField;
  *
  * @author aplik
  */
-public class ComarTextField extends WebTextField {
+public class ComarPosTextField extends WebTextField {
 
-    public ComarTextField() {
+    public ComarPosTextField() {
         super();
         setFontSize(ComarSystem.getInstance().getProperties().getFontSize());
         setFocusable(true);
     }
 
-    public ComarTextField(int columns) {
+    public ComarPosTextField(int columns) {
         super(columns);
         setFontSize(ComarSystem.getInstance().getProperties().getFontSize());
         setFocusable(true);

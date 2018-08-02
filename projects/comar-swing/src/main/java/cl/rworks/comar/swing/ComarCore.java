@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing;
 
+import cl.rworks.comar.swing.util.CharsetUtils;
 import cl.rworks.comar.swing.main.ComarFrame;
 import cl.rworks.comar.swing.main.ComarFrameListener;
 import cl.rworks.comar.swing.main.ComarSystem;
@@ -25,17 +26,20 @@ public class ComarCore {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                LOG.info("==========================");
+                LOG.info("START");
+                LOG.info("==========================");
+                LOG.info("home: " + System.getProperty("user.dir"));
                 WebLookAndFeel.install();
+                CharsetUtils.resume();
 
-                LOG.info("Iniciando la aplicacion");
-                
                 ComarSystem.getInstance().startup();
-                
+
                 ComarFrame frame = new ComarFrame();
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 frame.addWindowListener(new ComarFrameListener());
                 ComarSystem.getInstance().setFrame(frame);
-                
+
 //                frame.setExtendedState(WebFrame.MAXIMIZED_BOTH);
                 frame.showMe();
             }

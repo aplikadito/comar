@@ -101,6 +101,10 @@ public class ProductoEntityImpl implements ProductoEntity {
         return new ProductoEntityImpl(code);
     }
 
+    public static ProductoEntity create(String code, String description) {
+        return new ProductoEntityImpl(code, description);
+    }
+
     @Override
     public String toString() {
         String idStr = UUIDUtils.toString(id);

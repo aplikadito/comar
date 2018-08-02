@@ -22,11 +22,11 @@ public interface ComarProperties {
     String AYUDA = "comar.ayuda.activa";
     int AYUDA_DEFAULT = 1;
     //
-    String BANNER_COLOR = "comar.banner.color";
-    String BANNER_COLOR_DEFAULT = "35,80,35";
-    //
-    String BACKGROUND_COLOR = "comar.background.color";
-    String BACKGROUND_COLOR_DEFAULT = "240,240,240";
+//    String BANNER_COLOR = "comar.banner.color";
+//    String BANNER_COLOR_DEFAULT = "35,80,35";
+//    //
+//    String BACKGROUND_COLOR = "comar.background.color";
+//    String BACKGROUND_COLOR_DEFAULT = "240,240,240";
 
     void load();
 
@@ -44,13 +44,13 @@ public interface ComarProperties {
 
     void setHelpActive(boolean helpActive);
     
-    Color getBannerColor();
-
-    void setBannerColor(Color bannerColor);
-    
-    Color getBackgroundColor();
-
-    void setBackgroundColor(Color backgroundColor);
+//    Color getBannerColor();
+//
+//    void setBannerColor(Color bannerColor);
+//    
+//    Color getBackgroundColor();
+//
+//    void setBackgroundColor(Color backgroundColor);
 
     public void loadDefaultValues();
 }

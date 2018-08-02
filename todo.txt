@@ -1,2 +1,2 @@
-Al cambiar codigo de producto, controlar lo que debe ocurrir sobre las referencias, por ejemplo, ventas.
+
 

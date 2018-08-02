@@ -5,7 +5,6 @@
  */
 package cl.rworks.comar.swing.views.bills;
 
-import cl.rworks.comar.core.model.ProductoEntity;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.service.ComarTransaction;
@@ -15,8 +14,7 @@ import cl.rworks.comar.swing.model.ComarBillUnit;
 import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.model.ComarProduct;
 import cl.rworks.comar.swing.model.ComarWorkspace;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -108,10 +106,36 @@ public class ComarPanelBillsController {
     public void deleteBillUnits(List<ComarBillUnit> units, ComarBill selectedBill) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-            service.deleteFacturaUnidades(units.stream().map(e ->e.getEntity()).collect(Collectors.toList()));
+            service.deleteFacturaUnidades(units.stream().map(e -> e.getEntity()).collect(Collectors.toList()));
             tx.commit();
 
             selectedBill.deleteUnits(units);
+        } catch (ComarServiceException ex) {
+            LOG.error("Error", ex);
+            throw new ComarControllerException("Error", ex);
+        }
+    }
+
+    public void updateBillUnitPrice(ComarBillUnit billUnit, BigDecimal precioCompra) throws ComarControllerException {
+        ComarService service = ComarSystem.getInstance().getService();
+        try (ComarTransaction tx = service.createTransaction()) {
+            service.updateFacturaUnidadPropiedad(billUnit.getEntity(), "PRECIOCOMPRA", precioCompra);
+            tx.commit();
+
+            billUnit.getEntity().setPrecioCompra(precioCompra);
+        } catch (ComarServiceException ex) {
+            LOG.error("Error", ex);
+            throw new ComarControllerException("Error", ex);
+        }
+    }
+
+    public void updateBillUnitQuatity(ComarBillUnit billUnit, BigDecimal cantidad) throws ComarControllerException {
+        ComarService service = ComarSystem.getInstance().getService();
+        try (ComarTransaction tx = service.createTransaction()) {
+            service.updateFacturaUnidadPropiedad(billUnit.getEntity(), "CANTIDAD", cantidad);
+            tx.commit();
+
+            billUnit.getEntity().setCantidad(cantidad);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
             throw new ComarControllerException("Error", ex);

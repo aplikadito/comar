@@ -78,6 +78,13 @@ public interface ComarService {
 
     public List<VentaUnidadEntity> getAllVentaUnidad() throws ComarServiceException;
 
-    
+    public void updateFacturaUnidadPropiedad(FacturaUnidadEntity entity, String propiedad, Object valor) throws ComarServiceException;
 
+    public boolean existsProductCode(String code) throws ComarServiceException;
+    
+    public void checkProductCode(String code) throws ComarServiceException;
+
+    public void updateCategoriaPropiedad(CategoriaEntity entity, String propiedad, Object valor) throws ComarServiceException;
+
+    public void insertProductosPorCsv(List<ProductoEntity> collect, CategoriaEntity categoria) throws ComarServiceException;
 }

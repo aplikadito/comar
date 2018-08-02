@@ -18,6 +18,8 @@ import javax.swing.border.EmptyBorder;
  */
 public class ComarPanelTitle extends WebPanel {
 
+    private static final Color BANNER_COLOR = new Color(35, 80, 35);
+    //
     private WebLabel labelTitle;
     private WebLabel labelTitleEast;
 
@@ -40,7 +42,8 @@ public class ComarPanelTitle extends WebPanel {
         setMaximumHeight(24 + 25);
         setBorder(new EmptyBorder(10, 10, 10, 10));
 //        setBackground(Color.BLACK);
-        setBackground(ComarSystem.getInstance().getProperties().getBannerColor());
+//        setBackground(ComarSystem.getInstance().getProperties().getBannerColor());
+        setBackground(BANNER_COLOR);
     }
 
     public void setTitle(String title) {

@@ -5,14 +5,15 @@
  */
 package cl.rworks.comar.core;
 
-import cl.rworks.comar.core.service.ComarServiceException;
-import cl.rworks.comar.core.service.derby.GetAllMetricas;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  *
@@ -21,26 +22,34 @@ import java.sql.SQLException;
 public class TestFast {
 
     public static void main(String[] args) {
-//        MathContext MATH_CTX = new MathContext(3, RoundingMode.HALF_UP);
-//        double tercio = 1.0 / 3.0;
-//        System.out.println("tercio: " + tercio);
-//
-//        String str = Double.toString(tercio);
-//        System.out.println("str: " + str);
-//        BigDecimal bd = new BigDecimal(str, MATH_CTX);
-//        System.out.println(bd.toString());
 
-        try (Connection conn = TestUtils.createConnection()) {
-            String sql = "INSERT INTO COMAR_METRIC VALUES (5, 'rené', '[r]')";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.executeUpdate();
-                conn.commit();
-            } catch (SQLException e) {
+        try (FileWriter fw = new FileWriter(new File("D:\\trabajo\\comar\\share\\gtin.csv"))) {
+
+            fw.append("Codigo;Descripcion").append("\n");
+
+            Path path = Paths.get("D:\\trabajo\\comar\\share\\gtin.txt");
+            try (Stream<String> stream = Files.lines(path)) {
+                stream.forEach(e -> {
+                    String[] split = e.split(" ");
+                    if (split.length > 2) {
+                        try {
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 2; i < split.length; i++) {
+                                sb.append(split[i]).append(" ");
+                            }
+                            String description = sb.toString().trim();
+
+//                        System.out.println(split[1] + ";" + description);
+                            fw.append(split[1] + ";" + description).append("\n");
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+            } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                conn.rollback();
             }
-        } catch (SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

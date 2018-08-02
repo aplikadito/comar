@@ -6,9 +6,9 @@
 package cl.rworks.comar.swing.views.bills;
 
 import cl.rworks.comar.swing.model.ComarBill;
+import cl.rworks.comar.swing.util.ComarException;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelDate;
-import cl.rworks.comar.swing.util.ComarValidationException;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.text.WebTextField;
@@ -103,7 +103,7 @@ public class ComarPanelBillInsert extends ComarPanel {
         this.textCode.setText(code);
     }
 
-    public ComarBill getBill() throws ComarValidationException {
+    public ComarBill getBill() throws ComarException {
         ComarBill bill = new ComarBill();
         bill.getEntity().setFecha(panelDate.getDate());
         bill.getEntity().setCodigo(textCode.getText());

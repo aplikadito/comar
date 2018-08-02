@@ -5,8 +5,8 @@
  */
 package cl.rworks.comar.swing.util;
 
+import java.awt.Image;
 import java.net.URL;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
@@ -15,10 +15,8 @@ import javax.swing.ImageIcon;
  */
 public class ComarIconLoader {
 
-    public static final String ERROR = "/com/alee/extended/style/icons/status/error.png";
-
-    public static Icon load(String path) {
+    public static Image load(String path) {
         URL url = ComarIconLoader.class.getResource(path);
-        return url != null ? new ImageIcon(url) : null;
+        return url != null ? new ImageIcon(url).getImage() : null;
     }
 }

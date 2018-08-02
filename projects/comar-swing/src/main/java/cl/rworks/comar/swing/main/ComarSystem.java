@@ -35,7 +35,6 @@ public class ComarSystem {
     }
 
     private ComarSystem() {
-        System.out.println(System.getProperty("user.dir"));
         this.service = ComarServiceFactory.create(ComarService.DERBY);
         this.properties = new ComarPropertiesImpl();
     }

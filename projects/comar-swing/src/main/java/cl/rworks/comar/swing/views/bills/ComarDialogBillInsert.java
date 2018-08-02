@@ -6,10 +6,10 @@
 package cl.rworks.comar.swing.views.bills;
 
 import cl.rworks.comar.swing.model.ComarBill;
+import cl.rworks.comar.swing.util.ComarException;
 import cl.rworks.comar.swing.util.ComarPanel;
-import cl.rworks.comar.swing.util.ComarPanelButtonsArea;
+import cl.rworks.comar.swing.util.ComarPanelOptionsArea;
 import cl.rworks.comar.swing.util.ComarUtils;
-import cl.rworks.comar.swing.util.ComarValidationException;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.rootpane.WebDialog;
@@ -26,13 +26,13 @@ import java.awt.event.WindowEvent;
 public class ComarDialogBillInsert extends WebDialog {
 
     private ComarPanelBillInsert panel;
-    private ComarPanelButtonsArea panelButtonsArea;
+    private ComarPanelOptionsArea panelButtonsArea;
     //
     private ComarBill bill = null;
     private boolean ok = false;
 
-    public ComarDialogBillInsert(Window window) {
-        super(window, "Agregar Factura", ModalityType.APPLICATION_MODAL);
+    public ComarDialogBillInsert(Window window, String title) {
+        super(window, title, ModalityType.APPLICATION_MODAL);
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(panel = new ComarPanelBillInsert(), BorderLayout.CENTER);
@@ -40,7 +40,7 @@ public class ComarDialogBillInsert extends WebDialog {
     }
 
     private ComarPanel initButtonsArea() {
-        panelButtonsArea = new ComarPanelButtonsArea();
+        panelButtonsArea = new ComarPanelOptionsArea();
         panelButtonsArea.addRight(new WebButton("Aceptar", e -> okAction()));
         panelButtonsArea.addRight(new WebButton("Cancelar", e -> closeAction()));
 
@@ -67,7 +67,7 @@ public class ComarDialogBillInsert extends WebDialog {
 
             ok = true;
             this.dispose();
-        } catch (ComarValidationException ex) {
+        } catch (ComarException ex) {
             ComarUtils.showWarn(this, ex.getMessage());
         }
     }
@@ -87,7 +87,7 @@ public class ComarDialogBillInsert extends WebDialog {
             @Override
             public void run() {
                 WebLookAndFeel.install();
-                ComarDialogBillInsert dialog = new ComarDialogBillInsert(null);
+                ComarDialogBillInsert dialog = new ComarDialogBillInsert(null, "");
                 dialog.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosing(WindowEvent e) {

@@ -73,12 +73,21 @@ public class ComarWorkspaceCreator {
             e.printStackTrace();
         }
 
+        boolean foundDefaultCategory = false;
         List<ComarCategory> categoryNodes = new ArrayList<>();
         Map<String, ComarCategory> index = new HashMap<>();
         for (CategoriaEntity centity : centities) {
             ComarCategory cnode = new ComarCategory(centity);
             categoryNodes.add(cnode);
             index.put(UUIDUtils.toString(centity.getId()), cnode);
+
+            if (cnode.getEntity().getNombre().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+                foundDefaultCategory = true;
+            }
+        }
+
+        if (!foundDefaultCategory) {
+            throw new RuntimeException("No se encontro categoria por defecto: " + CategoriaEntity.DEFAULT_CATEGORY);
         }
 
         for (ProductoEntity pentity : pentities) {
@@ -130,8 +139,8 @@ public class ComarWorkspaceCreator {
 
         return bills;
     }
-    
-     private List<ComarSell> loadSells(ComarService service) {
+
+    private List<ComarSell> loadSells(ComarService service) {
         List<VentaEntity> eventas = new ArrayList<>();
         List<VentaUnidadEntity> eventaUnidades = new ArrayList<>();
         try (ComarTransaction tx = service.createTransaction()) {

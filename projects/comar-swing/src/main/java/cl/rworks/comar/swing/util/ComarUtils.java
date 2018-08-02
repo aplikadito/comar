@@ -7,9 +7,6 @@ package cl.rworks.comar.swing.util;
 
 import cl.rworks.comar.core.util.ComarNumberFormat;
 import com.alee.laf.optionpane.WebOptionPane;
-import com.alee.managers.notification.NotificationIcon;
-import com.alee.managers.notification.NotificationManager;
-import com.alee.managers.notification.WebInnerNotification;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -24,6 +21,7 @@ import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
 /**
@@ -108,6 +106,10 @@ public class ComarUtils {
                 closeAction.actionPerformed(e);
             }
         });
+    }
+
+    public static void initTable(JTable table) {
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
     }
 
 }

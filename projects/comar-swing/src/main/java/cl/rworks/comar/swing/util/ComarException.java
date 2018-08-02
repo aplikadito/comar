@@ -9,6 +9,15 @@ package cl.rworks.comar.swing.util;
  *
  * @author aplik
  */
-public class ComarCount {
-    
+public class ComarException extends Exception {
+
+    public ComarException(String message) {
+        super(message);
+    }
+
+    public ComarException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
+

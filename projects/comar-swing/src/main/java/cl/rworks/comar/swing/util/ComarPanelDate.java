@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.swing.util;
 
+import cl.rworks.comar.swing.views.pos.ComarPosLabel;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBoxCellRenderer;
@@ -40,18 +41,21 @@ public class ComarPanelDate extends ComarPanel {
     public ComarPanelDate(String title, LayoutManager layout) {
         this.setLayout(layout);
         comboYear = new ComarComboBox();
+        comboYear.setMaximumRowCount(20);
         comboYear.addItem(-1);
         for (int i = 2000; i <= 2050; i++) {
             comboYear.addItem(i);
         }
 
         comboMonth = new ComarComboBox();
+        comboMonth.setMaximumRowCount(13);
         comboMonth.addItem(-1);
         for (int i = 1; i <= 12; i++) {
             comboMonth.addItem(i);
         }
 
         comboDay = new ComarComboBox();
+        comboDay.setMaximumRowCount(20);
         comboDay.addItem(-1);
         for (int i = 1; i <= 31; i++) {
             comboDay.addItem(i);
@@ -101,7 +105,7 @@ public class ComarPanelDate extends ComarPanel {
         int day = now.getDayOfMonth();
         this.comboDay.setSelectedItem(day);
 
-        add(new ComarLabel(title));
+        add(new ComarPosLabel(title));
         add(comboYear);
         add(comboMonth);
         add(comboDay);
@@ -114,14 +118,14 @@ public class ComarPanelDate extends ComarPanel {
         return new int[]{year, month, day};
     }
 
-    public LocalDate getDate() throws ComarValidationException {
+    public LocalDate getDate() throws ComarException {
         int[] value = getValue();
 
         boolean anyMatch = Arrays.stream(value).anyMatch(e -> e == -1);
         if (!anyMatch) {
             return LocalDate.of(value[0], value[1], value[2]);
         } else {
-            throw new ComarValidationException("Fecha incorrecta");
+            throw new ComarException("Fecha incorrecta");
         }
     }
 

@@ -58,8 +58,8 @@ public class ComarPropertiesImpl implements ComarProperties {
     public void loadDefaultValues() {
         setPercentualIva(PERCENTUAL_IVA_DEFAULT);
         setFontSize(LETRA_DEFAULT);
-        setBannerColor(parseColor(BANNER_COLOR_DEFAULT));
-        setBackgroundColor(parseColor(BACKGROUND_COLOR_DEFAULT));
+//        setBannerColor(parseColor(BANNER_COLOR_DEFAULT));
+//        setBackgroundColor(parseColor(BACKGROUND_COLOR_DEFAULT));
         setHelpActive(AYUDA_DEFAULT == 1);
     }
 
@@ -130,46 +130,46 @@ public class ComarPropertiesImpl implements ComarProperties {
         return color.getRed() + "," + color.getGreen() + "," + color.getBlue();
     }
 
-    @Override
-    public Color getBannerColor() {
-        String strValue = properties.getProperty(BANNER_COLOR);
-        if (strValue != null && !strValue.isEmpty()) {
-            String[] split = strValue.split(",");
-            if (split.length == 3) {
-                return parseColor(strValue);
-            } else {
-                return parseColor(BANNER_COLOR_DEFAULT);
-            }
-        } else {
-            return parseColor(BANNER_COLOR_DEFAULT);
-        }
-    }
-
-    @Override
-    public void setBannerColor(Color bannerColor) {
-        String strColor = formatColor(bannerColor);
-        properties.setProperty(BANNER_COLOR, strColor);
-    }
-
-    @Override
-    public Color getBackgroundColor() {
-        String strValue = properties.getProperty(BACKGROUND_COLOR);
-        if (strValue != null && !strValue.isEmpty()) {
-            String[] split = strValue.split(",");
-            if (split.length == 3) {
-                return parseColor(strValue);
-            } else {
-                return parseColor(BACKGROUND_COLOR_DEFAULT);
-            }
-        } else {
-            return parseColor(BACKGROUND_COLOR_DEFAULT);
-        }
-    }
-
-    @Override
-    public void setBackgroundColor(Color backgroundColor) {
-        String strColor = formatColor(backgroundColor);
-        properties.setProperty(BACKGROUND_COLOR, strColor);
-    }
+//    @Override
+//    public Color getBannerColor() {
+//        String strValue = properties.getProperty(BANNER_COLOR);
+//        if (strValue != null && !strValue.isEmpty()) {
+//            String[] split = strValue.split(",");
+//            if (split.length == 3) {
+//                return parseColor(strValue);
+//            } else {
+//                return parseColor(BANNER_COLOR_DEFAULT);
+//            }
+//        } else {
+//            return parseColor(BANNER_COLOR_DEFAULT);
+//        }
+//    }
+//
+//    @Override
+//    public void setBannerColor(Color bannerColor) {
+//        String strColor = formatColor(bannerColor);
+//        properties.setProperty(BANNER_COLOR, strColor);
+//    }
+//
+//    @Override
+//    public Color getBackgroundColor() {
+//        String strValue = properties.getProperty(BACKGROUND_COLOR);
+//        if (strValue != null && !strValue.isEmpty()) {
+//            String[] split = strValue.split(",");
+//            if (split.length == 3) {
+//                return parseColor(strValue);
+//            } else {
+//                return parseColor(BACKGROUND_COLOR_DEFAULT);
+//            }
+//        } else {
+//            return parseColor(BACKGROUND_COLOR_DEFAULT);
+//        }
+//    }
+//
+//    @Override
+//    public void setBackgroundColor(Color backgroundColor) {
+//        String strColor = formatColor(backgroundColor);
+//        properties.setProperty(BACKGROUND_COLOR, strColor);
+//    }
 
 }

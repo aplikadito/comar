@@ -5,6 +5,7 @@
  */
 package cl.rworks.comar.core.service.derby;
 
+import cl.rworks.comar.core.model.CategoriaEntity;
 import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.model.impl.CategoriaEntityImpl;
@@ -40,9 +41,9 @@ public class ComarServiceDerbyDatabaseCreator {
             InsertCategoria.serve(conn, new CategoriaEntityImpl("Bebidas"));
             InsertCategoria.serve(conn, new CategoriaEntityImpl("Alcoholes"));
             InsertCategoria.serve(conn, new CategoriaEntityImpl("Despensa"));
-            InsertCategoria.serve(conn, new CategoriaEntityImpl("Varios"));
             InsertCategoria.serve(conn, new CategoriaEntityImpl("Electronica"));
             InsertCategoria.serve(conn, new CategoriaEntityImpl("Plásticos"));
+            InsertCategoriaDefault.serve(conn, new CategoriaEntityImpl(CategoriaEntity.DEFAULT_CATEGORY));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } catch (ComarServiceException ex) {

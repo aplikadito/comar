@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cl.rworks.comar.swing.util;
+package cl.rworks.comar.swing.views.pos;
 
 import cl.rworks.comar.swing.main.ComarSystem;
+import cl.rworks.comar.swing.util.BigDecimalTableRenderer;
+import cl.rworks.comar.swing.util.DoubleTableRenderer;
 import com.alee.laf.table.WebTable;
 import java.math.BigDecimal;
 import javax.swing.table.TableModel;
@@ -14,13 +16,13 @@ import javax.swing.table.TableModel;
  *
  * @author aplik
  */
-public class ComarTable extends WebTable {
+public class ComarPosTable extends WebTable {
 
-    public ComarTable() {
+    public ComarPosTable() {
         this(null);
     }
 
-    public ComarTable(TableModel model) {
+    public ComarPosTable(TableModel model) {
         super(model);
         int normalFontSize = ComarSystem.getInstance().getProperties().getFontSize();
         getTableHeader().setFont(getTableHeader().getFont().deriveFont((float) normalFontSize));

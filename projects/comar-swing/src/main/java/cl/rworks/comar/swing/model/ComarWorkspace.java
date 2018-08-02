@@ -48,8 +48,11 @@ public class ComarWorkspace {
         cmodel.addProduct(pmodel);
     }
 
-    public void removeProducts(List<ComarProduct> products, ComarCategory cmodel) {
-        cmodel.removeProducts(products);
+    public void removeProducts(List<ComarProduct> products) {
+        for (ComarProduct product : products) {
+            ComarCategory category = product.getCategory();
+            category.removeProduct(product);
+        }
     }
 
     public void moveProducts(List<ComarProduct> pmodels, ComarCategory cmodel) {
@@ -77,7 +80,8 @@ public class ComarWorkspace {
         return null;
     }
 
-    public void deleteBills(List<ComarBill> bills) {
+    public void deleteBills(List<ComarBill> list) {
+        this.bills.removeAll(list);
     }
 
     public List<ComarSell> getSells() {

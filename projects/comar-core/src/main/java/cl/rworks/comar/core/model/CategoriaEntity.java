@@ -10,6 +10,8 @@ package cl.rworks.comar.core.model;
  * @author aplik
  */
 public interface CategoriaEntity {
+    
+    String DEFAULT_CATEGORY = "Varios";
 
     byte[] getId();
 

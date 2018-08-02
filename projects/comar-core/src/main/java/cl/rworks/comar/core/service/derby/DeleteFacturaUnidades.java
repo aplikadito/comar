@@ -5,7 +5,6 @@
  */
 package cl.rworks.comar.core.service.derby;
 
-import cl.rworks.comar.core.model.FacturaEntity;
 import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.service.ComarServiceException;
 import java.sql.Connection;

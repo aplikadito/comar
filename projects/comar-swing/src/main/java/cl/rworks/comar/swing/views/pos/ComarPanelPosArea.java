@@ -5,18 +5,13 @@
  */
 package cl.rworks.comar.swing.views.pos;
 
-import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.service.ComarTransaction;
 import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.util.ComarButton;
-import cl.rworks.comar.swing.util.ComarCount;
-import cl.rworks.comar.swing.util.ComarLabel;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
-import cl.rworks.comar.swing.util.ComarTable;
-import cl.rworks.comar.swing.util.ComarTextField;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.scroll.WebScrollPane;
@@ -58,11 +53,11 @@ public class ComarPanelPosArea extends ComarPanel {
     private static final String TOOLTIP_ADD = "Agregar el producto a la venta";
     private static final String TOOLTIP_EDIT = "Editar la cantidad del producto seleccionado\nPuede presionar F2 para editar el producto seleccionado";
     //
-    private ComarLabel labelCode;
-    private ComarTextField textCode;
-    private ComarTable table;
+    private ComarPosLabel labelCode;
+    private ComarPosTextField textCode;
+    private ComarPosTable table;
     private TableModel tableModel;
-    private ComarTextField textTotal;
+    private ComarPosTextField textTotal;
     private ComarButton buttonAdd;
     private ComarButton buttonEdit;
 
@@ -80,9 +75,9 @@ public class ComarPanelPosArea extends ComarPanel {
         ComarPanel panel = new ComarPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        labelCode = new ComarLabel("Codigo");
+        labelCode = new ComarPosLabel("Codigo");
 
-        textCode = new ComarTextField(20);
+        textCode = new ComarPosTextField(20);
         textCode.setFocusable(true);
         textCode.addKeyListener(new KeyAdapter() {
 
@@ -125,7 +120,7 @@ public class ComarPanelPosArea extends ComarPanel {
         panel.add(panelNorth, BorderLayout.NORTH);
 
         tableModel = new TableModel();
-        table = new ComarTable(tableModel);
+        table = new ComarPosTable(tableModel);
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -135,7 +130,7 @@ public class ComarPanelPosArea extends ComarPanel {
             }
         });
 
-        this.table.setDefaultRenderer(ComarCount.class, new DefaultTableCellRenderer() {
+        this.table.setDefaultRenderer(BigDecimal.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -167,11 +162,11 @@ public class ComarPanelPosArea extends ComarPanel {
         panelTable.add(new WebScrollPane(table), BorderLayout.CENTER);
         panel.add(panelTable, BorderLayout.CENTER);
 
-        textTotal = new ComarTextField(10);
+        textTotal = new ComarPosTextField(10);
         textTotal.setFontSize(36);
         panel.add(new ComarPanel(new FlowLayout()) {
             {
-                ComarLabel labelTotal = new ComarLabel("Total");
+                ComarPosLabel labelTotal = new ComarPosLabel("Total");
                 labelTotal.setFontSize(36);
                 add(labelTotal);
 
@@ -365,7 +360,7 @@ public class ComarPanelPosArea extends ComarPanel {
                 case 1:
                     return String.class;
                 case 2:
-                    return ComarCount.class;
+                    return BigDecimal.class;
                 case 3:
                     return BigDecimal.class;
                 default:

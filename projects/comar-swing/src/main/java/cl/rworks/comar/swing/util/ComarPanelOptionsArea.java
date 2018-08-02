@@ -15,13 +15,13 @@ import javax.swing.JComponent;
  *
  * @author aplik
  */
-public class ComarPanelButtonsArea extends ComarPanel {
+public class ComarPanelOptionsArea extends ComarPanel {
 
     private ComarPanel panelLeft;
     private ComarPanel panelCenter;
     private ComarPanel panelRight;
 
-    public ComarPanelButtonsArea() {
+    public ComarPanelOptionsArea() {
         setLayout(new BorderLayout());
 
         add(panelLeft = new ComarPanel(new FlowLayout(FlowLayout.LEFT)), BorderLayout.WEST);
