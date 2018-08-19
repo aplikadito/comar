@@ -34,12 +34,13 @@ public class UpdateCategoriaDeProductos {
 
         String sql = String.format("UPDATE PRODUCTO SET PRODUCTO_CATEGORIA_ID = ? WHERE PRODUCTO_ID IN (%s)", sb.toString());
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setBytes(1, category.getId());
-
-            int i = 2;
+            int i = 1;
+            ps.setBytes(i++, category.getId());
             for (ProductoEntity p : products) {
                 ps.setBytes(i++, p.getId());
             }
+            ps.executeUpdate();
+
         } catch (SQLException ex) {
             throw new ComarServiceException("Error", ex);
         }

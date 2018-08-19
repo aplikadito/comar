@@ -5,9 +5,8 @@
  */
 package cl.rworks.comar.swing.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import cl.rworks.comar.core.model.ProductoEntity;
+import cl.rworks.comar.core.util.UUIDUtils;
 
 /**
  *
@@ -15,24 +14,28 @@ import cl.rworks.comar.core.model.ProductoEntity;
  */
 public class ComarProduct {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ComarProduct.class);
     private ComarCategory category;
     private ProductoEntity entity;
 
-    public ComarProduct(ProductoEntity entity) {
+    public ComarProduct(ProductoEntity entity, ComarCategory category) {
         this.entity = entity;
+        this.category = category;
     }
 
     public ProductoEntity getEntity() {
         return entity;
     }
 
+    public ComarCategory getCategory() {
+        return category;
+    }
+
     public void setCategory(ComarCategory category) {
         this.category = category;
     }
-    
-    public ComarCategory getCategory() {
-        return category;
+
+    public String getId() {
+        return UUIDUtils.toString(entity.getId());
     }
 
 //    public void updateCode(String code) throws ComarModelException {
@@ -70,4 +73,9 @@ public class ComarProduct {
 //            throw new ComarModelException("Error al actualizar metrica: " + ex.getMessage(), ex);
 //        }
 //    }
+    @Override
+    public String toString() {
+        return "ComarProduct{" + "category=" + category + ", entity=" + entity + '}';
+    }
+
 }

@@ -23,7 +23,10 @@ public class ProductoEntityImpl implements ProductoEntity {
     private String code;
     private String description = "";
     private BigDecimal precioVentaActual = BigDecimal.ZERO;
-    private BigDecimal stockActual = BigDecimal.ZERO;
+    private boolean incluirEnBoleta = true;
+    private boolean precioVentaFijo = true;
+    private BigDecimal stockComprado = BigDecimal.ZERO;
+    private BigDecimal stockVendido = BigDecimal.ZERO;
     private Metrica metric = Metrica.UNIDADES;
     private byte[] categoryId = null;
 
@@ -31,12 +34,17 @@ public class ProductoEntityImpl implements ProductoEntity {
     }
 
     public ProductoEntityImpl(String code) {
-        this.code = code;
+        this(code, "", BigDecimal.ZERO);
     }
 
     public ProductoEntityImpl(String code, String description) {
+        this(code, description, BigDecimal.ZERO);
+    }
+
+    public ProductoEntityImpl(String code, String description, BigDecimal precioVentaActual) {
         this.code = code;
         this.description = description;
+        this.precioVentaActual = precioVentaActual;
     }
 
     public byte[] getId() {
@@ -67,16 +75,40 @@ public class ProductoEntityImpl implements ProductoEntity {
         return precioVentaActual;
     }
 
+    public boolean isIncluirEnBoleta() {
+        return incluirEnBoleta;
+    }
+
+    public void setIncluirEnBoleta(boolean incluirEnBoleta) {
+        this.incluirEnBoleta = incluirEnBoleta;
+    }
+    
+    public boolean isPrecioVentaFijo() {
+        return precioVentaFijo;
+    }
+
+    public void setPrecioVentaFijo(boolean precioVentaFijo) {
+        this.precioVentaFijo = precioVentaFijo;
+    }
+
     public void setPrecioVentaActual(BigDecimal precioActual) {
         this.precioVentaActual = precioActual;
     }
 
-    public BigDecimal getStockActual() {
-        return stockActual;
+    public BigDecimal getStockComprado() {
+        return stockComprado;
     }
 
-    public void setStockActual(BigDecimal stockActual) {
-        this.stockActual = stockActual;
+    public void setStockComprado(BigDecimal stockComprado) {
+        this.stockComprado = stockComprado;
+    }
+
+    public BigDecimal getStockVendido() {
+        return stockVendido;
+    }
+
+    public void setStockVendido(BigDecimal stockVendido) {
+        this.stockVendido = stockVendido;
     }
 
     public Metrica getMetrica() {
@@ -105,11 +137,15 @@ public class ProductoEntityImpl implements ProductoEntity {
         return new ProductoEntityImpl(code, description);
     }
 
+    public static ProductoEntity create(String code, String description, BigDecimal precioVentaActual) {
+        return new ProductoEntityImpl(code, description, precioVentaActual);
+    }
+
     @Override
     public String toString() {
         String idStr = UUIDUtils.toString(id);
         String categoryIdStr = UUIDUtils.toString(categoryId);
-        return "ProductoImpl{" + "id=" + idStr + ", code=" + code + ", description=" + description + ", precioVentaActual=" + precioVentaActual + ", stockActual=" + stockActual + ", metric=" + metric + ", categoryId=" + categoryIdStr + '}';
+        return "ProductoImpl{" + "id=" + idStr + ", code=" + code + ", description=" + description + ", precioVentaActual=" + precioVentaActual + ", incluirEnBoleta=" + incluirEnBoleta + ", precioVentaFijo=" + precioVentaFijo + ", stockComprado=" + stockComprado + ", stockVendido=" + stockVendido + ", metric=" + metric + ", categoryId=" + categoryIdStr + '}';
     }
 
     public static ProductoEntity create(ResultSet rs) throws SQLException {
@@ -119,7 +155,10 @@ public class ProductoEntityImpl implements ProductoEntity {
         product.setCodigo(rs.getString(i++));
         product.setDescripcion(rs.getString(i++));
         product.setPrecioVentaActual(BigDecimalUtils.toBigDecimal(rs.getLong(i++)));
-        product.setStockActual(BigDecimalUtils.toBigDecimal(rs.getLong(i++)));
+        product.setIncluirEnBoleta(rs.getBoolean(i++));
+        product.setPrecioVentaFijo(rs.getBoolean(i++));
+        product.setStockComprado(BigDecimalUtils.toBigDecimal(rs.getLong(i++)));
+        product.setStockVendido(BigDecimalUtils.toBigDecimal(rs.getLong(i++)));
         product.setMetrica(Metrica.get(rs.getInt(i++)));
         product.setCategoriaId(rs.getBytes(i++));
 

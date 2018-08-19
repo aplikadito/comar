@@ -6,6 +6,7 @@
 package cl.rworks.comar.swing.model;
 
 import cl.rworks.comar.core.model.VentaUnidadEntity;
+import cl.rworks.comar.core.util.UUIDUtils;
 
 /**
  *
@@ -14,17 +15,33 @@ import cl.rworks.comar.core.model.VentaUnidadEntity;
 public class ComarSellUnit {
 
     private VentaUnidadEntity entity;
-    
-    public ComarSellUnit(VentaUnidadEntity e) {
+    private ComarSell sell;
+    private ComarProduct product;
+
+    public ComarSellUnit(VentaUnidadEntity e, ComarSell sell, ComarProduct product) {
         this.entity = e;
+        this.sell = sell;
+        this.product = product;
     }
 
     public VentaUnidadEntity getEntity() {
         return entity;
     }
 
+    public ComarSell getSell() {
+        return sell;
+    }
+
+    public ComarProduct getProduct() {
+        return product;
+    }
+    
     public void setEntity(VentaUnidadEntity entity) {
         this.entity = entity;
     }
-    
+
+    public String getId() {
+        return UUIDUtils.toString(entity.getId());
+    }
+
 }

@@ -5,13 +5,19 @@
  */
 package cl.rworks.comar.core.model;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author aplik
  */
 public interface CategoriaEntity {
-    
-    String DEFAULT_CATEGORY = "Varios";
+
+//    String DEFAULT_CATEGORY = "Varios";
+    BigDecimal DEFAULT_IMPUESTO_PRINCIPAL = new BigDecimal("0.19");
+    BigDecimal DEFAULT_PORCENTAJE_GANANCIA = new BigDecimal("0.25");
+    BigDecimal MIN_PORCENTAJE = BigDecimal.ZERO;
+    BigDecimal MAX_PORCENTAJE = BigDecimal.ONE;
 
     byte[] getId();
 
@@ -20,5 +26,17 @@ public interface CategoriaEntity {
     String getNombre();
 
     void setNombre(String nombre);
+
+    BigDecimal getImpuestoPrincipal();
+
+    void setImpuestoPrincipal(BigDecimal impuestoPrincipal);
+    
+    BigDecimal getImpuestoSecundario();
+
+    void setImpuestoSecundario(BigDecimal impuestoSecundario);
+    
+    BigDecimal getPorcentajeGanancia();
+
+    void setPorcentajeGanancia(BigDecimal porcentajeGanancia);
 
 }

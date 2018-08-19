@@ -38,6 +38,8 @@ public interface ComarService {
 
     public ProductoEntity getProductoPorCodigo(String codigo) throws ComarServiceException;
 
+    public void insertProducto(ProductoEntity producto, CategoriaEntity categoria) throws ComarServiceException;
+    
     public ProductoEntity insertProductoPorCodigo(String codigo, CategoriaEntity categoria) throws ComarServiceException;
 
     public List<CategoriaEntity> getAllCategorias() throws ComarServiceException;
@@ -48,11 +50,7 @@ public interface ComarService {
 
     public void deleteProducts(List<ProductoEntity> products) throws ComarServiceException;
 
-    public void updateProductoCodigo(ProductoEntity producto, String codigo) throws ComarServiceException;
-
-    public void updateProductoDescripcion(ProductoEntity model, String descripcion) throws ComarServiceException;
-
-    public void updateProductoMetrica(ProductoEntity product, Metrica metric) throws ComarServiceException;
+    public void updateProductoPropiedad(ProductoEntity producto, String propiedad, Object valor) throws ComarServiceException;
 
     public void updateCategoriaDeProductos(List<ProductoEntity> products, CategoriaEntity category) throws ComarServiceException;
 
@@ -66,12 +64,12 @@ public interface ComarService {
 
     public void insertFactura(FacturaEntity factura) throws ComarServiceException;
 
-    public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura) throws ComarServiceException;
+    public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura, ProductoEntity producto) throws ComarServiceException;
 
     public void updateFactura(FacturaEntity entity) throws ComarServiceException;
 
     public void deleteFacturas(List<FacturaEntity> collect) throws ComarServiceException;
-    
+
     public void deleteFacturaUnidades(List<FacturaUnidadEntity> collect) throws ComarServiceException;
 
     public List<VentaEntity> getAllVenta() throws ComarServiceException;
@@ -81,10 +79,15 @@ public interface ComarService {
     public void updateFacturaUnidadPropiedad(FacturaUnidadEntity entity, String propiedad, Object valor) throws ComarServiceException;
 
     public boolean existsProductCode(String code) throws ComarServiceException;
-    
+
     public void checkProductCode(String code) throws ComarServiceException;
 
     public void updateCategoriaPropiedad(CategoriaEntity entity, String propiedad, Object valor) throws ComarServiceException;
 
-    public void insertProductosPorCsv(List<ProductoEntity> collect, CategoriaEntity categoria) throws ComarServiceException;
+    public void insertProductoBatch(List<ProductoEntity> productos, CategoriaEntity categoria) throws ComarServiceException;
+
+    public void insertVenta(VentaEntity entity) throws ComarServiceException;
+    
+    public void insertVentaUnidad(VentaUnidadEntity ventaUnidad, VentaEntity venta, ProductoEntity producto) throws ComarServiceException;
+    
 }

@@ -12,18 +12,16 @@ import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.model.ComarCategory;
 import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.model.ComarProduct;
-import cl.rworks.comar.swing.model.ComarWorkspace;
+import cl.rworks.comar.swing.model.ComarEntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import cl.rworks.comar.core.model.CategoriaEntity;
 import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.model.ProductoEntity;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -33,39 +31,20 @@ public class ComarPanelProdsAdministrationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComarPanelProdsAdministrationController.class);
     //
-    private ComarWorkspace ws;
-    private DefaultMutableTreeNode rootNode;
-    private Map<ComarCategory, DefaultMutableTreeNode> categoryToNode;
+    private ComarEntityManager ws;
 
     public ComarPanelProdsAdministrationController() {
-        ws = ComarSystem.getInstance().getWorkspace();
-        initRootNode();
-    }
-
-    private void initRootNode() {
-        this.rootNode = new DefaultMutableTreeNode("Categorias");
-        this.categoryToNode = new HashMap<>();
-        List<ComarCategory> categories = ws.getCategories();
-        for (ComarCategory c : categories) {
-            DefaultMutableTreeNode cnode = new DefaultMutableTreeNode(c);
-            rootNode.add(cnode);
-            categoryToNode.put(c, cnode);
-        }
-    }
-
-    public DefaultMutableTreeNode getRootNode() {
-        return rootNode;
+        ws = ComarSystem.getInstance().getEntityManager();
     }
 
     public void insertCategory(String name) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-            CategoriaEntity cat = service.insertCategoriaPorNombre(name);
+            CategoriaEntity e = service.insertCategoriaPorNombre(name);
             tx.commit();
 
-            ComarCategory cnode = new ComarCategory(cat);
-            ws.addCategoria(cnode);
-            rootNode.add(new DefaultMutableTreeNode(cnode));
+            ComarCategory category = new ComarCategory(e);
+            ws.addCategory(category);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
             throw new ComarControllerException(ex.getMessage(), ex);
@@ -73,33 +52,56 @@ public class ComarPanelProdsAdministrationController {
 
     }
 
-    public void removeCategory(ComarCategory category) throws ComarControllerException {
+    public void deleteCategory(ComarCategory category) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-
             service.deleteCategoria(category.getEntity());
             tx.commit();
 
-            ws.removeCategoria(category);
-            DefaultMutableTreeNode cview = categoryToNode.remove(category);
-            rootNode.remove(cview);
+            ws.removeCategory(category);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
             throw new ComarControllerException(ex.getMessage(), ex);
         }
     }
 
-    public void updateCategory(ComarCategory category, String name) throws ComarControllerException {
-        if (name.trim().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
-            throw new ComarControllerException("Nombre de Categoria reservado por el sistema: " + CategoriaEntity.DEFAULT_CATEGORY);
+    public void updateCategory(ComarCategory category, String name, BigDecimal tax1, BigDecimal tax2, BigDecimal profit) throws ComarControllerException {
+//        if (name.trim().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+//            throw new ComarControllerException("Nombre de Categoria reservado por el sistema: " + CategoriaEntity.DEFAULT_CATEGORY);
+//        }
+
+        if (tax1.compareTo(CategoriaEntity.MIN_PORCENTAJE) < 0) {
+            throw new ComarControllerException("IVA debe ser mayor que cero");
         }
 
+        if (tax1.compareTo(CategoriaEntity.MAX_PORCENTAJE) > 0) {
+            throw new ComarControllerException("IVA debe ser menor que uno");
+        }
+        
+        if (tax2.compareTo(CategoriaEntity.MIN_PORCENTAJE) < 0) {
+            throw new ComarControllerException("Imp. Extra debe ser mayor que cero");
+        }
+
+        if (tax2.compareTo(CategoriaEntity.MAX_PORCENTAJE) > 0) {
+            throw new ComarControllerException("Imp. Extra debe ser menor que uno");
+        }
+
+        if (profit.compareTo(CategoriaEntity.MIN_PORCENTAJE) < 0) {
+            throw new ComarControllerException("% Ganancia debe ser mayor que cero");
+        }
+        
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
             service.updateCategoriaPropiedad(category.getEntity(), "NOMBRE", name);
+            service.updateCategoriaPropiedad(category.getEntity(), "IMPUESTOPRINCIPAL", tax1);
+            service.updateCategoriaPropiedad(category.getEntity(), "IMPUESTOSECUNDARIO", tax2);
+            service.updateCategoriaPropiedad(category.getEntity(), "PORCENTAJEGANANCIA", profit);
             tx.commit();
 
             category.getEntity().setNombre(name);
+            category.getEntity().setImpuestoPrincipal(tax1);
+            category.getEntity().setImpuestoSecundario(tax2);
+            category.getEntity().setPorcentajeGanancia(profit);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
             throw new ComarControllerException(ex.getMessage(), ex);
@@ -123,17 +125,24 @@ public class ComarPanelProdsAdministrationController {
             ProductoEntity pentity = service.insertProductoPorCodigo(code, category.getEntity());
             tx.commit();
 
-            ComarProduct product = new ComarProduct(pentity);
-            ws.insertProduct(product, category);
+            ComarProduct product = new ComarProduct(pentity, category);
+            ws.addProduct(product);
 
             return product;
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException(ex.getMessage(), ex);
+            throw new ComarControllerException("Error: " + ex.getMessage(), ex);
         }
     }
 
     public void deleteProducts(List<ComarProduct> products) throws ComarControllerException {
+        ComarEntityManager em = ComarSystem.getInstance().getEntityManager();
+        boolean found = em.checkReferences(products);
+        if (found) {
+            LOG.error("Productos con referencias, no pueden ser eliminados");
+            throw new ComarControllerException("Uno o mas productos no pueden ser eliminados dado que estan siendo utilizados por otras entidades");
+        }
+
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
             List<ProductoEntity> entityList = products.stream().map(e -> e.getEntity()).collect(Collectors.toList());
@@ -174,7 +183,7 @@ public class ComarPanelProdsAdministrationController {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
             if (!service.existsProductCode(code)) {
-                service.updateProductoCodigo(product.getEntity(), code.trim());
+                service.updateProductoPropiedad(product.getEntity(), "CODIGO", code.trim());
                 tx.commit();
                 product.getEntity().setCodigo(code);
             } else {
@@ -193,10 +202,27 @@ public class ComarPanelProdsAdministrationController {
 
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-            service.updateProductoDescripcion(product.getEntity(), desc.trim());
+            service.updateProductoPropiedad(product.getEntity(), "DESCRIPCION", desc.trim());
             tx.commit();
 
             product.getEntity().setDescripcion(desc);
+        } catch (ComarServiceException ex) {
+            LOG.error("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
+        }
+    }
+
+    public void updateProductSellPrice(ComarProduct product, BigDecimal sellPrice) throws ComarControllerException {
+        if (product.getEntity().getPrecioVentaActual().equals(sellPrice)) {
+            return;
+        }
+
+        ComarService service = ComarSystem.getInstance().getService();
+        try (ComarTransaction tx = service.createTransaction()) {
+            service.updateProductoPropiedad(product.getEntity(), "PRECIOVENTAACTUAL", sellPrice);
+            tx.commit();
+
+            product.getEntity().setPrecioVentaActual(sellPrice);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
             throw new ComarControllerException(ex.getMessage(), ex);
@@ -210,10 +236,44 @@ public class ComarPanelProdsAdministrationController {
 
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-            service.updateProductoMetrica(product.getEntity(), metrica);
+            service.updateProductoPropiedad(product.getEntity(), "METRICA", metrica);
             tx.commit();
 
             product.getEntity().setMetrica(metrica);
+        } catch (ComarServiceException ex) {
+            LOG.error("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
+        }
+    }
+
+    public void updateProductIncludeInSell(ComarProduct product, boolean incluirEnBoleta) throws ComarControllerException {
+        if (product.getEntity().isIncluirEnBoleta() == incluirEnBoleta) {
+            return;
+        }
+
+        ComarService service = ComarSystem.getInstance().getService();
+        try (ComarTransaction tx = service.createTransaction()) {
+            service.updateProductoPropiedad(product.getEntity(), "INCLUIRENBOLETA", incluirEnBoleta);
+            tx.commit();
+
+            product.getEntity().setIncluirEnBoleta(incluirEnBoleta);
+        } catch (ComarServiceException ex) {
+            LOG.error("Error", ex);
+            throw new ComarControllerException(ex.getMessage(), ex);
+        }
+    }
+
+    public void updateProductPrecioVentaFijo(ComarProduct product, boolean precioVentaFijo) throws ComarControllerException {
+        if (product.getEntity().isPrecioVentaFijo() == precioVentaFijo) {
+            return;
+        }
+
+        ComarService service = ComarSystem.getInstance().getService();
+        try (ComarTransaction tx = service.createTransaction()) {
+            service.updateProductoPropiedad(product.getEntity(), "PRECIOVENTAFIJO", precioVentaFijo);
+            tx.commit();
+
+            product.getEntity().setPrecioVentaFijo(precioVentaFijo);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
             throw new ComarControllerException(ex.getMessage(), ex);

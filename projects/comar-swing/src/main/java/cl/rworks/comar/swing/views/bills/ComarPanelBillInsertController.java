@@ -5,12 +5,6 @@
  */
 package cl.rworks.comar.swing.views.bills;
 
-import cl.rworks.comar.swing.main.ComarSystem;
-import cl.rworks.comar.swing.model.ComarBillUnit;
-import cl.rworks.comar.swing.model.ComarControllerException;
-import cl.rworks.comar.swing.model.ComarProduct;
-import cl.rworks.comar.swing.model.ComarWorkspace;
-
 /**
  *
  * @author aplik

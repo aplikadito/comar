@@ -38,9 +38,9 @@ public class InsertProductosPorCsvTest {
                 productos.add(ProductoEntityImpl.create("0006", "0006"));
                 productos.add(ProductoEntityImpl.create("0007", "0007"));
                 
-                InsertProductosPorCsv.serve(conn, productos, c, 4);
+                InsertProductoBatch.serve(conn, productos, c, 4);
                 
-                GetAllProductos.serve(conn).forEach(System.out::println);
+                GetAllProducto.serve(conn).forEach(System.out::println);
             } catch (ComarServiceException e) {
                 e.printStackTrace();
             } finally {

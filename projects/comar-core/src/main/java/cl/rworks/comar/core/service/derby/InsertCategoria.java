@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import cl.rworks.comar.core.model.CategoriaEntity;
+import cl.rworks.comar.core.model.impl.CategoriaEntityImpl;
+import cl.rworks.comar.core.util.BigDecimalUtils;
 
 /**
  *
@@ -26,6 +28,10 @@ public class InsertCategoria {
     }
 
     public void execute(CategoriaEntity category) throws ComarServiceException {
+        execute(category, true);
+    }
+
+    private void execute(CategoriaEntity category, boolean validate) throws ComarServiceException {
         if (category == null) {
             throw new ComarServiceException("Categoria nula");
         }
@@ -40,15 +46,18 @@ public class InsertCategoria {
             throw new ComarServiceException("Nombre de la Categoria vacia, evite espacios antes y despues del nombre");
         }
 
-        if (name.equals(CategoriaEntity.DEFAULT_CATEGORY)) {
-            throw new ComarServiceException("Nombre de la categoria reservado por el sistema: " + CategoriaEntity.DEFAULT_CATEGORY);
-        }
+//        if (validate && name.equals(CategoriaEntity.DEFAULT_CATEGORY)) {
+//            throw new ComarServiceException("Nombre de la categoria reservado por el sistema: " + CategoriaEntity.DEFAULT_CATEGORY);
+//        }
 
         byte[] id = UUIDUtils.createId();
-        String sql = "INSERT INTO CATEGORIA VALUES(?, ?)";
+        String sql = "INSERT INTO CATEGORIA VALUES(?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setBytes(1, id);
             ps.setString(2, category.getNombre());
+            ps.setLong(3, BigDecimalUtils.toLong(category.getImpuestoPrincipal()));
+            ps.setLong(4, BigDecimalUtils.toLong(category.getImpuestoSecundario()));
+            ps.setLong(5, BigDecimalUtils.toLong(category.getPorcentajeGanancia()));
             ps.executeUpdate();
             category.setId(id);
         } catch (SQLIntegrityConstraintViolationException ex) {
@@ -61,4 +70,21 @@ public class InsertCategoria {
     public static void serve(Connection connection, CategoriaEntity category) throws ComarServiceException {
         new InsertCategoria(connection).execute(category);
     }
+
+    public static void serve(Connection connection, CategoriaEntity category, boolean validate) throws ComarServiceException {
+        new InsertCategoria(connection).execute(category, validate);
+    }
+
+    public static CategoriaEntity serve(Connection connection, String name) throws ComarServiceException {
+        CategoriaEntity category = CategoriaEntityImpl.create(name);
+        new InsertCategoria(connection).execute(category);
+        return category;
+    }
+
+    public static CategoriaEntity serve(Connection connection, String name, boolean validate) throws ComarServiceException {
+        CategoriaEntity category = CategoriaEntityImpl.create(name);
+        new InsertCategoria(connection).execute(category, validate);
+        return category;
+    }
+
 }

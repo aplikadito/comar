@@ -8,20 +8,14 @@ package cl.rworks.comar.swing.views.bills;
 import cl.rworks.comar.swing.model.ComarBill;
 import cl.rworks.comar.swing.util.ComarException;
 import cl.rworks.comar.swing.util.ComarPanel;
-import cl.rworks.comar.swing.util.ComarPanelDate;
-import com.alee.extended.date.WebCalendar;
 import com.alee.extended.date.WebDateField;
 import com.alee.extended.layout.FormLayout;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.text.WebTextField;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Calendar;
-import java.util.Date;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
 
@@ -39,7 +33,6 @@ public class ComarPanelBillInsert extends ComarPanel {
     private WebDateField calendar;
 
     public ComarPanelBillInsert() {
-
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -52,12 +45,11 @@ public class ComarPanelBillInsert extends ComarPanel {
 //        panelBillArea.setBorder(new TitledBorder("Factura"));
 
         ComarPanel form = new ComarPanel(new FormLayout(10, 10));
-        form.add(new WebLabel("Fecha"));
-//        form.add(panelDate = new ComarPanelDate("", new FlowLayout(FlowLayout.LEFT)));
-        form.add(calendar = new WebDateField());
-        form.add(new WebLabel("Identificador"));
+        form.add(new WebLabel("Factura"));
         form.add(textCode = new WebTextField(30));
-
+        form.add(new WebLabel("Fecha"));
+        form.add(calendar = new WebDateField());
+        
         form.setPreferredSize(new Dimension(300, 100));
         form.setMaximumSize(new Dimension(300, 100));
         form.setAlignmentX(0f);

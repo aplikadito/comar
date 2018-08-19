@@ -5,7 +5,9 @@
  */
 package cl.rworks.comar.swing.util;
 
+import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.util.ComarNumberFormat;
+import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.optionpane.WebOptionPane;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -15,6 +17,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import javax.swing.AbstractAction;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JComponent.WHEN_FOCUSED;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
@@ -51,6 +55,10 @@ public class ComarUtils {
 
     public static String format(BigDecimal bd) {
         return ComarNumberFormat.format(bd);
+    }
+    
+    public static String formatPercentual(BigDecimal bd) {
+        return ComarNumberFormat.formatPercentual(bd);
     }
 
     public static BigDecimal parse(String str) throws ParseException {
@@ -107,9 +115,24 @@ public class ComarUtils {
             }
         });
     }
-
+    
     public static void initTable(JTable table) {
         table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        table.setCellSelectionEnabled(true);
+        
+        table.setDefaultRenderer(Metrica.class, new MetricaTableRenderer());
+        table.setDefaultEditor(Metrica.class, new MetricaTableEditor());
+      
+        table.setDefaultRenderer(BigDecimal.class, new BigDecimalTableRenderer());
+        table.setDefaultEditor(BigDecimal.class, new BigDecimalTableEditor());
+        
+        table.setDefaultRenderer(Boolean.class, new BooleanTableRenderer());
+        table.setDefaultEditor(Boolean.class, new BooleanTableEditor());
+        
+        table.setDefaultRenderer(String.class, new StringTableRenderer());
+//        table.setDefaultEditor(String.class, new StringTableEditor());
     }
+    
+    
 
 }

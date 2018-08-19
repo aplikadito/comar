@@ -21,17 +21,9 @@ public interface FacturaUnidadEntity {
 
     public void setIdProducto(byte[] idProducto);
 
-    public String getCodigoProducto();
+    public BigDecimal getPrecioNetoCompra();
 
-    public void setCodigoProducto(String code);
-
-    public String getDescripcionProducto();
-
-    public void setDescripcionProducto(String descripcion);
-
-    public BigDecimal getPrecioCompra();
-
-    public void setPrecioCompra(BigDecimal precioCompra);
+    public void setPrecioNetoCompra(BigDecimal precioNetoCompra);
 
     public BigDecimal getCantidad();
 

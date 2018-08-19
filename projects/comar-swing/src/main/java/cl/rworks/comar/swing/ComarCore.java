@@ -10,6 +10,7 @@ import cl.rworks.comar.swing.main.ComarFrame;
 import cl.rworks.comar.swing.main.ComarFrameListener;
 import cl.rworks.comar.swing.main.ComarSystem;
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.rootpane.WebFrame;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
@@ -40,8 +41,9 @@ public class ComarCore {
                 frame.addWindowListener(new ComarFrameListener());
                 ComarSystem.getInstance().setFrame(frame);
 
-//                frame.setExtendedState(WebFrame.MAXIMIZED_BOTH);
-                frame.showMe();
+                frame.setExtendedState(WebFrame.MAXIMIZED_BOTH);
+                frame.setVisible(true);
+//                frame.showMe();
             }
         });
     }

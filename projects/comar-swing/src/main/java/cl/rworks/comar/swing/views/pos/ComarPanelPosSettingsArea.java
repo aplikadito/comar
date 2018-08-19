@@ -8,7 +8,6 @@ package cl.rworks.comar.swing.views.pos;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.properties.ComarProperties;
-import cl.rworks.comar.swing.util.ComarButton;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.extended.layout.FormLayout;
@@ -38,11 +37,11 @@ import javax.swing.border.LineBorder;
 public class ComarPanelPosSettingsArea extends ComarPanel {
 
     private ComarProperties properties = ComarSystem.getInstance().getProperties();
-    private ComarPosTextField textIva;
-    private WebSpinner spinnerNormal;
-    private WebCheckBox checkHelpActive;
-    private ComarPosLabel labelColorBannerValue;
-    private ComarPosLabel labelColorBackgroundValue;
+//    private ComarPosTextField textIva;
+    private WebSpinner spinnerSize;
+//    private WebCheckBox checkHelpActive;
+//    private ComarPosLabel labelColorBannerValue;
+//    private ComarPosLabel labelColorBackgroundValue;
 
     public ComarPanelPosSettingsArea() {
         setLayout(new BorderLayout());
@@ -67,19 +66,19 @@ public class ComarPanelPosSettingsArea extends ComarPanel {
         panelMain.add(panelForm, BorderLayout.CENTER);
 
         // IVA
-        ComarPosLabel labelIva = new ComarPosLabel("IVA (%)");
-        textIva = new ComarPosTextField(10);
-        textIva.setText(ComarUtils.formatIva(properties.getPercentualIva()));
-        textIva.setHorizontalAlignment(SwingUtilities.RIGHT);
-        panelForm.add(labelIva);
-        panelForm.add(textIva);
+//        ComarPosLabel labelIva = new ComarPosLabel("IVA (%)");
+//        textIva = new ComarPosTextField(10);
+//        textIva.setText(ComarUtils.formatIva(properties.getPercentualIva()));
+//        textIva.setHorizontalAlignment(SwingUtilities.RIGHT);
+//        panelForm.add(labelIva);
+//        panelForm.add(textIva);
 
         // FONT SIZE
         ComarPosLabel labelFontSize = new ComarPosLabel("Tamaño Letra");
-        spinnerNormal = new WebSpinner(new SpinnerNumberModel(properties.getFontSize(), 12, 30, 1));
-        spinnerNormal.setFontSize(properties.getFontSize());
+        spinnerSize = new WebSpinner(new SpinnerNumberModel(properties.getFontSize(), 12, 30, 1));
+        spinnerSize.setFontSize(properties.getFontSize());
         panelForm.add(labelFontSize);
-        panelForm.add(spinnerNormal);
+        panelForm.add(spinnerSize);
 
         // COLOR BANNER
 //        labelColorBannerValue = new ComarPosLabel();
@@ -110,17 +109,17 @@ public class ComarPanelPosSettingsArea extends ComarPanel {
 //        panelForm.add(panelBackground);
 
         // HELP ACTIVE
-        ComarPosLabel labelHelpActive = new ComarPosLabel("Mostrar Ayuda");
-        checkHelpActive = new WebCheckBox();
-        checkHelpActive.setSelected(properties.isHelpActive());
-        panelForm.add(labelHelpActive);
-        panelForm.add(checkHelpActive);
+//        ComarPosLabel labelHelpActive = new ComarPosLabel("Mostrar Ayuda");
+//        checkHelpActive = new WebCheckBox();
+//        checkHelpActive.setSelected(properties.isHelpActive());
+//        panelForm.add(labelHelpActive);
+//        panelForm.add(checkHelpActive);
 
         // BOTONES
-        ComarButton buttonApply = new ComarButton("Aplicar");
+        ComarPosButton buttonApply = new ComarPosButton("Aplicar");
         buttonApply.addActionListener(new ApplyListener());
 
-        ComarButton buttonFactoryValues = new ComarButton("Reset");
+        ComarPosButton buttonFactoryValues = new ComarPosButton("Reset");
         buttonFactoryValues.addActionListener(new FactoryValuesListener());
 
         ComarPanel panelButtons = new ComarPanel(new FlowLayout(FlowLayout.CENTER));
@@ -143,32 +142,31 @@ public class ComarPanelPosSettingsArea extends ComarPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int iva = 0;
-            try {
-                String strText = textIva.getText();
-                iva = Integer.parseInt(strText);
-            } catch (NumberFormatException ex) {
-                ComarUtils.showWarn(ComarPanelPosSettingsArea.this, "IVA no valido");
-                return;
-            }
+//            int iva = 0;
+//            try {
+//                String strText = textIva.getText();
+//                iva = Integer.parseInt(strText);
+//            } catch (NumberFormatException ex) {
+//                ComarUtils.showWarn(ComarPanelPosSettingsArea.this, "IVA no valido");
+//                return;
+//            }
 
-            if (iva < 0 || iva > 100) {
-                ComarUtils.showWarn(ComarPanelPosSettingsArea.this, "IVA debe ser un valor entre 0 y 100");
-                return;
-            }
+//            if (iva < 0 || iva > 100) {
+//                ComarUtils.showWarn(ComarPanelPosSettingsArea.this, "IVA debe ser un valor entre 0 y 100");
+//                return;
+//            }
 
-            int normal = (Integer) spinnerNormal.getValue();
-            Color bannerColor = labelColorBannerValue.getBackground();
-            Color backgroundColor = labelColorBackgroundValue.getBackground();
+            int normal = (Integer) spinnerSize.getValue();
+//            Color bannerColor = labelColorBannerValue.getBackground();
+//            Color backgroundColor = labelColorBackgroundValue.getBackground();
 
-            boolean helpActive = checkHelpActive.isSelected();
+//            boolean helpActive = checkHelpActive.isSelected();
 
-            properties.setPercentualIva(iva);
-            properties.setFontSize(normal);
+//            properties.setPercentualIva(iva);
             properties.setFontSize(normal);
 //            properties.setBannerColor(bannerColor);
 //            properties.setBackgroundColor(backgroundColor);
-            properties.setHelpActive(helpActive);
+//            properties.setHelpActive(helpActive);
             properties.save();
             ComarUtils.showInfo(null, "Los cambios se haran efectivos al reiniciar la aplicacion");
         }

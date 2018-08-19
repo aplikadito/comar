@@ -17,14 +17,20 @@ import java.text.ParseException;
 public final class ComarNumberFormat {
 
     private static final DecimalFormat DEFAULT_DECIMAL_FORMAT;
+    private static final DecimalFormat DEFAULT_DECIMAL_FORMAT_PERCENTUAL;
 
     static {
-        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-        dfs.setDecimalSeparator('.');
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        String pattern = "#,##0.###";
 
-        DEFAULT_DECIMAL_FORMAT = new DecimalFormat("#0.000");
-        DEFAULT_DECIMAL_FORMAT.setDecimalFormatSymbols(dfs);
-        DEFAULT_DECIMAL_FORMAT.setGroupingUsed(false);
+        DEFAULT_DECIMAL_FORMAT = new DecimalFormat(pattern, symbols);
+        DEFAULT_DECIMAL_FORMAT.setParseBigDecimal(true);
+
+        DecimalFormatSymbols symbolsPercentual = new DecimalFormatSymbols();
+        String patternPercentual = "#,##0.###%";
+
+        DEFAULT_DECIMAL_FORMAT_PERCENTUAL = new DecimalFormat(patternPercentual, symbolsPercentual);
+        DEFAULT_DECIMAL_FORMAT_PERCENTUAL.setParseBigDecimal(true);
     }
 
     private ComarNumberFormat() {
@@ -34,8 +40,16 @@ public final class ComarNumberFormat {
         return bd != null ? DEFAULT_DECIMAL_FORMAT.format(bd) : "";
     }
 
+    public static String formatPercentual(BigDecimal bd) {
+        return bd != null ? DEFAULT_DECIMAL_FORMAT_PERCENTUAL.format(bd) : "";
+    }
+
     public static BigDecimal parse(String strValue) throws ParseException {
-        return new BigDecimal(DEFAULT_DECIMAL_FORMAT.parse(strValue).doubleValue(), BigDecimalUtils.MC);
+        return (BigDecimal) DEFAULT_DECIMAL_FORMAT.parse(strValue);
+    }
+
+    public static BigDecimal parsePercentual(String strValue) throws ParseException {
+        return (BigDecimal) DEFAULT_DECIMAL_FORMAT_PERCENTUAL.parse(strValue);
     }
 
     public static String formatDbl(double dblValue) {

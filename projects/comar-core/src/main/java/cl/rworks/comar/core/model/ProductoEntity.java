@@ -24,14 +24,26 @@ public interface ProductoEntity {
     String getDescripcion();
 
     void setDescripcion(String description);
-    
+
     public BigDecimal getPrecioVentaActual();
 
-    public void setPrecioVentaActual(BigDecimal precioVentaActual);
+    void setPrecioVentaActual(BigDecimal precioVentaActual);
 
-    public BigDecimal getStockActual();
+    public boolean isIncluirEnBoleta();
 
-    public void setStockActual(BigDecimal stockActual);
+    public void setIncluirEnBoleta(boolean incluirEnBoleta);
+    
+    public boolean isPrecioVentaFijo();
+
+    public void setPrecioVentaFijo(boolean precioVentaFijo);
+
+    BigDecimal getStockComprado();
+
+    void setStockComprado(BigDecimal stockComprado);
+
+    BigDecimal getStockVendido();
+
+    void setStockVendido(BigDecimal stockVendido);
 
     Metrica getMetrica();
 

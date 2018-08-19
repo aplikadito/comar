@@ -10,7 +10,6 @@ import cl.rworks.comar.swing.model.ComarBill;
 import cl.rworks.comar.swing.model.ComarBillUnit;
 import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.model.ComarProduct;
-import cl.rworks.comar.swing.util.BigDecimalTableRenderer;
 import cl.rworks.comar.swing.util.ComarActionSimple;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelOptionsArea;
@@ -19,6 +18,8 @@ import cl.rworks.comar.swing.util.ComarPanelFactory;
 import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.util.ComarPanelView;
 import cl.rworks.comar.swing.util.ComarUtils;
+import cl.rworks.comar.swing.util.LocalDateTableCellRenderer;
+import cl.rworks.comar.swing.util.PercentualTableModel;
 import cl.rworks.comar.swing.util.WebTextFieldFactory;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
@@ -28,10 +29,8 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.splitpane.WebSplitPane;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.table.WebTable;
-import com.alee.laf.table.renderers.WebTableCellRenderer;
 import com.alee.laf.text.WebTextField;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
@@ -40,9 +39,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -77,7 +76,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private ComarBill selectedBill;
 
     public ComarPanelBillsArea() {
-        super("Administrar");
+        super("Administrar Facturas");
         initComponents();
     }
 
@@ -101,26 +100,21 @@ public class ComarPanelBillsArea extends ComarPanelView {
         panelSearchBillByDate.addCenter(new WebButton("Buscar", e -> searchBillByDateAction()));
         tabbed.addTab("Por Fecha", panelSearchBillByDate);
 
+        panelBillDateSearch.getComboDay().setSelectedItem(-1);
+
         ComarPanelOptionsArea panelSearchBillByCode = new ComarPanelOptionsArea();
         panelSearchBillByCode.addCenter(textBillCodeSearch = new WebTextField(20));
         panelSearchBillByCode.addCenter(new WebButton("Buscar", e -> searchBillByCodeAction()));
         tabbed.addTab("Por Codigo", panelSearchBillByCode);
 
+        panelLeft.setBorder(new TitledBorder("Facturas"));
         panelLeft.add(tabbed, BorderLayout.NORTH);
         panelLeft.add(new WebScrollPane(tableBills = new WebTable()), BorderLayout.CENTER);
         panelLeft.add(panelBillOptionsDown = new ComarPanelOptionsArea(), BorderLayout.SOUTH);
 
         tableModelBills = new TableModelBills();
         tableBills.setModel(tableModelBills);
-        tableBills.setDefaultRenderer(LocalDate.class, new WebTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                WebLabel label = (WebLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column); //To change body of generated methods, choose Tools | Templates.
-                label.setText(((LocalDate) value).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-                return label;
-            }
-
-        });
+        tableBills.setDefaultRenderer(LocalDate.class, new LocalDateTableCellRenderer());
         tableBills.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -157,9 +151,8 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
         tableModelBillUnits = new TableModelBillUnits();
         tableBillUnits.setModel(tableModelBillUnits);
-        tableBillUnits.setCellSelectionEnabled(true);
-        tableBillUnits.setComponentPopupMenu(popupTableBills = new WebPopupMenu());
-        tableBillUnits.setDefaultRenderer(BigDecimal.class, new BigDecimalTableRenderer());
+        ComarUtils.initTable(tableBillUnits);
+        
         popupTableBills.add(new ComarActionSimple("Eliminar", e -> deleteBillAction()));
 
         sorter = new TableRowSorter(tableModelBillUnits);
@@ -229,14 +222,25 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
     }
 
-    private class TableModelBillUnits extends AbstractTableModel {
+    private class TableModelBillUnits extends AbstractTableModel implements PercentualTableModel{
 
-        private String[] colNames = new String[]{"Codigo", "Descripcion", "Precio", "Cantidad", "Subtotal"};
+        private Object[][] cols = new Object[][]{
+            {"Codigo", String.class, false, false},
+            {"Descripcion", String.class, false, false},
+            {"Precio Neto Compra", BigDecimal.class, true, false},
+            {"Cantidad", BigDecimal.class, true, false},
+            {"IVA", BigDecimal.class, false, true},
+            {"Imp.Extra", BigDecimal.class, false, true},
+            {"Precio Bruto Compra", BigDecimal.class, false, false},
+            {"% Ganancia", BigDecimal.class, false, true},
+            {"Precio Venta Sugerido", BigDecimal.class, false, false},
+            {"Subtotal", BigDecimal.class, false, false}
+        };
 
         private boolean contains(String code) {
             List<ComarBillUnit> units = selectedBill != null ? selectedBill.getUnits() : null;
             if (units != null) {
-                return units.stream().anyMatch(e -> e.getEntity().getCodigoProducto().equals(code));
+                return units.stream().anyMatch(e -> e.getProduct().getEntity().getCodigo().equals(code));
             } else {
                 return false;
             }
@@ -251,50 +255,51 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
         @Override
         public int getColumnCount() {
-            return colNames.length;
+            return cols.length;
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return String.class;
-                case 1:
-                    return String.class;
-                case 2:
-                    return BigDecimal.class;
-                case 3:
-                    return BigDecimal.class;
-                case 4:
-                    return BigDecimal.class;
-                default:
-                    return String.class;
-            }
+            return (Class) cols[columnIndex][1];
         }
 
         @Override
-        public String getColumnName(int column) {
-            return colNames[column];
+        public String getColumnName(int columnIndex) {
+            return (String) cols[columnIndex][0];
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             List<ComarBillUnit> units = selectedBill.getUnits();
             ComarBillUnit billUnit = units.get(rowIndex);
+
+            BigDecimal price = billUnit.getEntity().getPrecioNetoCompra();
+            BigDecimal tax1 = billUnit.getProduct().getCategory().getEntity().getImpuestoPrincipal();
+            BigDecimal tax2 = billUnit.getProduct().getCategory().getEntity().getImpuestoSecundario();
+            BigDecimal priceReal = price.multiply(BigDecimal.ONE.add(tax1).add(tax2));
+            BigDecimal profit = billUnit.getProduct().getCategory().getEntity().getPorcentajeGanancia();
+            BigDecimal quantity = billUnit.getEntity().getCantidad();
             switch (columnIndex) {
                 case 0:
-                    return billUnit.getEntity().getCodigoProducto();
+                    return billUnit.getProduct().getEntity().getCodigo();
                 case 1:
-                    return billUnit.getEntity().getDescripcionProducto();
+                    return billUnit.getProduct().getEntity().getDescripcion();
                 case 2:
-                    return billUnit.getEntity().getPrecioCompra();
+                    return price;
                 case 3:
-                    return billUnit.getEntity().getCantidad();
-                case 4: {
-                    BigDecimal buyPrice = billUnit.getEntity().getPrecioCompra();
-                    BigDecimal quantity = billUnit.getEntity().getCantidad();
-                    return buyPrice.multiply(quantity);
-                }
+                    return quantity;
+                case 4:
+                    return tax1;
+                case 5:
+                    return tax2;
+                case 6:
+                    return priceReal;
+                case 7:
+                    return profit;
+                case 8:
+                    return priceReal.multiply(BigDecimal.ONE.add(profit));
+                case 9:
+                    return priceReal.multiply(quantity);
                 default:
                     return "";
             }
@@ -302,20 +307,12 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return false;
-                case 1:
-                    return false;
-                case 2:
-                    return true;
-                case 3:
-                    return true;
-                case 4:
-                    return false;
-                default:
-                    return false;
-            }
+            return (Boolean) cols[columnIndex][2];
+        }
+        
+        @Override
+        public boolean isPercentual(int rowIndex, int columnIndex) {
+            return (Boolean) cols[columnIndex][3];
         }
 
         @Override
@@ -323,16 +320,14 @@ public class ComarPanelBillsArea extends ComarPanelView {
             List<ComarBillUnit> units = selectedBill.getUnits();
             ComarBillUnit billUnit = units.get(rowIndex);
             switch (columnIndex) {
-                case 0:
-                    break;
-                case 1:
-                    break;
                 case 2: {
                     try {
                         BigDecimal precio = (BigDecimal) aValue;
                         controller.updateBillUnitPrice(billUnit, precio);
                         fireTableCellUpdated(rowIndex, columnIndex);
-                        fireTableCellUpdated(rowIndex, 4);
+                        fireTableCellUpdated(rowIndex, 6);
+                        fireTableCellUpdated(rowIndex, 8);
+                        fireTableCellUpdated(rowIndex, 9);
                     } catch (ComarControllerException ex) {
                         ComarUtils.showWarn(null, ex.getMessage());
                     }
@@ -343,14 +338,14 @@ public class ComarPanelBillsArea extends ComarPanelView {
                         BigDecimal cantidad = (BigDecimal) aValue;
                         controller.updateBillUnitQuatity(billUnit, cantidad);
                         fireTableCellUpdated(rowIndex, columnIndex);
-                        fireTableCellUpdated(rowIndex, 4);
+                        fireTableCellUpdated(rowIndex, 6);
+                        fireTableCellUpdated(rowIndex, 8);
+                        fireTableCellUpdated(rowIndex, 9);
                     } catch (ComarControllerException ex) {
                         ComarUtils.showWarn(null, ex.getMessage());
                     }
                     break;
                 }
-                case 4:
-                    break;
                 default:
                     break;
             }
@@ -495,8 +490,8 @@ public class ComarPanelBillsArea extends ComarPanelView {
         }
 
         try {
-            ComarBillUnit unit = new ComarBillUnit(product);
-            controller.addBillUnit(unit, selectedBill);
+            ComarBillUnit unit = new ComarBillUnit(selectedBill, product);
+            controller.addBillUnit(unit);
             tableModelBillUnits.fireTableDataChanged();
         } catch (ComarControllerException ex) {
             ComarUtils.showWarn(this, ex.getMessage());
@@ -566,7 +561,8 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
     public void searchBillUnitAction() {
         String text = textSearch.getText();
-        sorter.setRowFilter(RowFilter.regexFilter("(?i).*" + text + ".*", 0, 1));
+        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text + "", 0, 1));
         sorter.sort();
     }
+
 }

@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Mon Jul 23 16:11:54 CLT 2018:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-0164-c8c5-0a3a-00000e8abd50 
-on database directory D:\storage with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
+Thu Aug 16 17:16:30 CLST 2018:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-0165-4461-e147-00000e85aef8 
+on database directory memory:D:\trabajo\comar\projects\comar-core\storage with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
 Loaded from file:/C:/Users/aplik/.m2/repository/org/apache/derby/derby/10.13.1.1/derby-10.13.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_152-b16

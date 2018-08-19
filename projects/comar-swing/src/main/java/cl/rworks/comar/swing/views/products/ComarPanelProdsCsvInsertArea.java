@@ -5,11 +5,12 @@
  */
 package cl.rworks.comar.swing.views.products;
 
-import cl.rworks.comar.core.model.CategoriaEntity;
 import cl.rworks.comar.core.util.ComarCharset;
+import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.model.ComarCategory;
 import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.model.ComarProduct;
+import cl.rworks.comar.swing.util.ComarLookup;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelOptionsArea;
 import cl.rworks.comar.swing.util.ComarPanelView;
@@ -18,7 +19,6 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.filechooser.WebFileChooser;
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.text.WebTextField;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -31,6 +31,7 @@ import java.util.List;
  */
 public class ComarPanelProdsCsvInsertArea extends ComarPanelView {
 
+    public static final String CSVUPDATE = "CSVUPDATE";
     private final ComarPanelProdsCsvInsertController controller = new ComarPanelProdsCsvInsertController();
     //
     private WebTextField textFile;
@@ -39,7 +40,7 @@ public class ComarPanelProdsCsvInsertArea extends ComarPanelView {
     private File selectedFile = null;
 
     public ComarPanelProdsCsvInsertArea() {
-        super("Agregar via CSV");
+        super("Agregar Productos via CSV");
         initComponents();
     }
 
@@ -72,63 +73,23 @@ public class ComarPanelProdsCsvInsertArea extends ComarPanelView {
             return;
         }
 
-        boolean go = false;
-        Object[] lists = null;
         try {
-            List<ComarProduct> csvProducts = controller.readCsvFile(selectedFile, (ComarCharset) comboCharset.getSelectedItem());
-            lists = controller.checkCsvProducts(csvProducts);
-            go = true;
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Object[] result = controller.load(selectedFile, (ComarCharset) comboCharset.getSelectedItem());
+            List<ComarCategory> cats = (List<ComarCategory>) result[0];
+            List<ComarProduct> prods = (List<ComarProduct>) result[1];
+
+            String msg = "Proceso finalizado correctamente\n";
+            msg += "Nro Categorias agregadas: '" + cats.size() + "'\n";
+            msg += "Nro Productos agregados: '" + prods.size() + "'\n";
+
+            ComarSystem.getInstance().getLookup().fire(ComarLookup.PRODUCT_CSVUPDATE, null);
+            ComarUtils.showInfo(this, msg);
         } catch (ComarControllerException ex) {
-            go = false;
+            ex.printStackTrace();
             ComarUtils.showWarn(this, ex.getMessage());
-        }
-
-        if (!go) {
-            return;
-        }
-
-        go = false;
-        List<ComarProduct> existsYes = (List<ComarProduct>) lists[0];
-        List<ComarProduct> existsNo = (List<ComarProduct>) lists[1];
-        if (existsYes.size() > 0) {
-            int r = ComarUtils.showYesNo(this, "'" + existsYes.size() + "' productos del archivo ya existen y no seran ingresados.\n"
-                    + "Se ingresaran '" + existsNo.size() + "' productos. \n"
-                    + "Desea continuar?", "Aviso");
-            if (r == WebOptionPane.YES_OPTION) {
-                go = true;
-            } else {
-                // se podria generar un reporte que imprima los productos que ya existen
-                // go = false;
-            }
-        } else {
-            go = true;
-        }
-
-        if (!go) {
-            return;
-        }
-
-        ComarCategory defaultCategory = null;
-        ComarCategory[] values = controller.getCategories().toArray(new ComarCategory[]{});
-        for (ComarCategory c : values) {
-            if (c.getEntity().getNombre().equals(CategoriaEntity.DEFAULT_CATEGORY)) {
-                defaultCategory = c;
-            }
-        }
-
-        Object response = WebOptionPane.showInputDialog(this, "Categoria", "Seleccione una categoria", WebOptionPane.PLAIN_MESSAGE, null, values, defaultCategory);
-        if (response != null) {
-            try {
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                ComarCategory category = (ComarCategory) response;
-                controller.insertProducts(existsNo, category);
-                ComarUtils.showInfo(this, "Productos ingresados correctamente");
-            } catch (ComarControllerException ex) {
-                ex.printStackTrace();
-                ComarUtils.showWarn(this, ex.getMessage());
-            } finally {
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
+        } finally {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
     }

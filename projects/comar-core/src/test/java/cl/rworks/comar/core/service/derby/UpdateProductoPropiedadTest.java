@@ -6,6 +6,7 @@
 package cl.rworks.comar.core.service.derby;
 
 import cl.rworks.comar.core.TestUtils;
+import cl.rworks.comar.core.model.CategoriaEntity;
 import cl.rworks.comar.core.model.Metrica;
 import cl.rworks.comar.core.service.ComarServiceException;
 import java.sql.Connection;
@@ -21,14 +22,16 @@ public class UpdateProductoPropiedadTest {
     public static void main(String[] args) {
         try (Connection conn = TestUtils.createConnection()) {
             try {
-                ProductoEntity producto = InsertProductoPorCodigo.serve(conn, "xxx", "Bebidas");
-                GetAllProductos.serve(conn).forEach(System.out::println);
+                CategoriaEntity categoria = InsertCategoria.serve(conn, "ccc");
+                
+                ProductoEntity producto = InsertProducto.serve(conn, "xxx", categoria);
+                GetAllProducto.serve(conn).forEach(System.out::println);
 //                
                 System.out.println("");
                 UpdateProductoPropiedad.serve(conn, producto, "CODIGO", "yyy");
                 UpdateProductoPropiedad.serve(conn, producto, "DESCRIPCION", "mate");
                 UpdateProductoPropiedad.serve(conn, producto, "METRICA", Metrica.CENTIMETROS_CUBICOS);
-                GetAllProductos.serve(conn).forEach(System.out::println);
+                GetAllProducto.serve(conn).forEach(System.out::println);
             } catch (ComarServiceException e) {
                 e.printStackTrace();
             } finally {

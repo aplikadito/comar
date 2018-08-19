@@ -21,14 +21,6 @@ public interface VentaUnidadEntity {
 
     public void setIdProducto(byte[] idProducto);
 
-    public String getCodigoProducto();
-
-    public void setCodigoProducto(String code);
-
-    public String getDescripcionProducto();
-
-    public void setDescripcionProducto(String descripcion);
-
     public BigDecimal getPrecioVenta();
 
     public void setPrecioVenta(BigDecimal precioVenta);

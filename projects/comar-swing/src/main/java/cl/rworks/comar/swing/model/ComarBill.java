@@ -7,6 +7,7 @@ package cl.rworks.comar.swing.model;
 
 import cl.rworks.comar.core.model.FacturaEntity;
 import cl.rworks.comar.core.model.impl.FacturaEntityImpl;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,10 @@ public class ComarBill {
         return entity;
     }
 
+    public String getId() {
+        return UUIDUtils.toString(entity.getId());
+    }
+
     public void addUnit(ComarBillUnit unit) {
         units.add(unit);
     }
@@ -42,8 +47,12 @@ public class ComarBill {
         return units;
     }
 
-    public void deleteUnits(List<ComarBillUnit> dunits) {
-        this.units.removeAll(dunits);
+    public void removeUnits(List<ComarBillUnit> billUnits) {
+        this.units.removeAll(billUnits);
+    }
+
+    public void removeUnit(ComarBillUnit billUnit) {
+        this.units.remove(billUnit);
     }
 
 }

@@ -6,7 +6,6 @@
 package cl.rworks.comar.core.model.impl;
 
 import java.time.LocalDate;
-import cl.rworks.comar.core.model.FacturaEntity;
 import cl.rworks.comar.core.model.VentaEntity;
 import cl.rworks.comar.core.util.UUIDUtils;
 import java.sql.Date;

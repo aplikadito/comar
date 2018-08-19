@@ -9,6 +9,8 @@ import cl.rworks.comar.core.util.UUIDUtils;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import cl.rworks.comar.core.model.CategoriaEntity;
+import cl.rworks.comar.core.util.BigDecimalUtils;
+import java.math.BigDecimal;
 
 /**
  *
@@ -17,7 +19,10 @@ import cl.rworks.comar.core.model.CategoriaEntity;
 public class CategoriaEntityImpl implements CategoriaEntity {
 
     private byte[] id;
-    private String nombre;
+    private String nombre = "";
+    private BigDecimal impuestoPrincipal = CategoriaEntity.DEFAULT_IMPUESTO_PRINCIPAL;
+    private BigDecimal impuestoSecundario = BigDecimal.ZERO;
+    private BigDecimal porcentajeGanancia = CategoriaEntity.DEFAULT_PORCENTAJE_GANANCIA;
 
     public CategoriaEntityImpl() {
     }
@@ -47,15 +52,42 @@ public class CategoriaEntityImpl implements CategoriaEntity {
         this.nombre = name;
     }
 
-    @Override
-    public String toString() {
-        return "CategoriaImpl{" + "id=" + UUIDUtils.toString(id) + ", nombre=" + nombre + '}';
+    public BigDecimal getImpuestoPrincipal() {
+        return impuestoPrincipal;
     }
 
+    public void setImpuestoPrincipal(BigDecimal impuestoPrincipal) {
+        this.impuestoPrincipal = impuestoPrincipal;
+    }
+
+    public BigDecimal getImpuestoSecundario() {
+        return impuestoSecundario;
+    }
+
+    public void setImpuestoSecundario(BigDecimal impuestoSecundario) {
+        this.impuestoSecundario = impuestoSecundario;
+    }
+
+    public BigDecimal getPorcentajeGanancia() {
+        return porcentajeGanancia;
+    }
+
+    public void setPorcentajeGanancia(BigDecimal porcentajeGanancia) {
+        this.porcentajeGanancia = porcentajeGanancia;
+    }
+
+    @Override
+    public String toString() {
+        return "CategoriaEntityImpl{" + "id=" + UUIDUtils.toString(id) + ", nombre=" + nombre + ", impuestoPrincipal=" + impuestoPrincipal + ", impuestoSecundario=" + impuestoSecundario + ", porcentajeGanancia=" + porcentajeGanancia + '}';
+    }
+    
     public static CategoriaEntity create(ResultSet rs) throws SQLException {
         CategoriaEntityImpl c = new CategoriaEntityImpl();
         c.setId(rs.getBytes(1));
         c.setNombre(rs.getString(2));
+        c.setImpuestoPrincipal(BigDecimalUtils.toBigDecimal(rs.getLong(3)));
+        c.setImpuestoSecundario(BigDecimalUtils.toBigDecimal(rs.getLong(4)));
+        c.setPorcentajeGanancia(BigDecimalUtils.toBigDecimal(rs.getLong(5)));
         return c;
     }
 
@@ -73,5 +105,12 @@ public class CategoriaEntityImpl implements CategoriaEntity {
 
     public static CategoriaEntity create(byte[] id, String name) {
         return new CategoriaEntityImpl(id, name);
+    }
+    
+    public static CategoriaEntity create(String name, BigDecimal tax1, BigDecimal tax2) {
+        CategoriaEntityImpl c = new CategoriaEntityImpl(null, name);
+        c.setImpuestoPrincipal(tax1);
+        c.setImpuestoSecundario(tax2);
+        return c;
     }
 }

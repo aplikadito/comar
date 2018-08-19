@@ -40,7 +40,7 @@ public class InsertFacturaUnidadTest {
                 InsertFactura.serve(conn, factura);
 
                 FacturaUnidadEntity unidad = FacturaUnidadEntityImpl.create(factura, producto, new BigDecimal("1000"), BigDecimal.ONE);
-                InsertFacturaUnidad.serve(conn, unidad, factura);
+                InsertFacturaUnidad.serve(conn, unidad, factura, producto);
 
                 GetAllFacturaUnidad.serve(conn).stream().forEach(System.out::println);
 

@@ -15,6 +15,7 @@ public class RunSqlScriptTest {
 
     public static void main(String[] args) throws Exception {
         EmbeddedDataSource ds = new EmbeddedDataSource();
+//        ds.setDatabaseName("memory:storage;create=true");
         ds.setDatabaseName("D:\\storage;create=true");
 //        ds.getConnection().prepareStatement("SELECT 1 FROM SYSIBM.SYSDUMMY1");
 

@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.sql.DataSource;
@@ -25,7 +24,17 @@ import javax.sql.DataSource;
  */
 public class RunSqlScript {
 
+    private boolean debug = true;
+
     public RunSqlScript() {
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
     public void run(DataSource ds, File file) throws RunSqlScriptException {
@@ -40,11 +49,11 @@ public class RunSqlScript {
         try {
             String source = readInputStream(is);
             String[] split = source.split("/\\*sql-break\\*/");
-            System.out.println("RUTINAS SQL DETECTADAS: " + split.length);
+            print("RUTINAS SQL DETECTADAS: " + split.length);
 
             for (String sql : split) {
                 String sqlTrim = sql.trim();
-                System.out.println("  SQL   : \"" + sqlTrim + "\"");
+                print("  SQL   : \"" + sqlTrim + "\"");
                 executeSql(ds, sqlTrim);
             }
         } catch (IOException ex) {
@@ -66,16 +75,22 @@ public class RunSqlScript {
         try (Connection conn = ds.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.executeUpdate();
-            System.out.println("  ESTADO: OK");
+            print("  ESTADO: OK");
         } catch (SQLException e) {
             String sqlState = e.getSQLState();
             if (sqlState.equals("X0Y32")) {
-                System.err.println("  ESTADO: La tabla ya existe, " + e.getMessage());
+                print("  ESTADO: La tabla ya existe, " + e.getMessage());
             } else {
-                System.err.println("  ESTADO: " + e.getMessage());
+                print("  ESTADO: " + e.getMessage());
             }
         }
-        System.out.println(" ");
+        print(" ");
+    }
+
+    private void print(String msg) {
+        if (debug) {
+            System.out.println(msg);
+        }
     }
 
 }

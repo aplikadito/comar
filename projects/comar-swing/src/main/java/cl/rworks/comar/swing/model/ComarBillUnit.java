@@ -7,6 +7,7 @@ package cl.rworks.comar.swing.model;
 
 import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.model.impl.FacturaUnidadEntityImpl;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.math.BigDecimal;
 
 /**
@@ -16,34 +17,44 @@ import java.math.BigDecimal;
 public class ComarBillUnit {
 
     private FacturaUnidadEntity entity;
+    //
+    private ComarBill bill;
+    private ComarProduct product;
 
-    public ComarBillUnit() {
-        this.entity = new FacturaUnidadEntityImpl();
-    }
-
-    public ComarBillUnit(FacturaUnidadEntity entity) {
+    public ComarBillUnit(FacturaUnidadEntity entity, ComarBill bill, ComarProduct product) {
         this.entity = entity;
+        this.bill = bill;
+        this.product = product;
     }
 
-    public ComarBillUnit(ComarProduct product) {
+    public ComarBillUnit(ComarBill bill, ComarProduct product) {
         this.entity = new FacturaUnidadEntityImpl();
         this.entity.setIdProducto(product.getEntity().getId());
-        this.entity.setCodigoProducto(product.getEntity().getCodigo());
-        this.entity.setDescripcionProducto(product.getEntity().getDescripcion());
-        this.entity.setPrecioCompra(BigDecimal.ZERO);
+        this.entity.setPrecioNetoCompra(BigDecimal.ZERO);
         this.entity.setCantidad(BigDecimal.ZERO);
+
+        this.bill = bill;
+        this.product = product;
     }
 
     public FacturaUnidadEntity getEntity() {
         return entity;
     }
 
-    public void updateBuyPrice(BigDecimal buyPrice) {
-        this.entity.setPrecioCompra(buyPrice);
+    public ComarBill getBill() {
+        return bill;
     }
 
-    public void updateQuantity(BigDecimal quantity) {
-        this.entity.setCantidad(quantity);
+    public ComarProduct getProduct() {
+        return product;
+    }
+
+    public void setProduct(ComarProduct product) {
+        this.product = product;
+    }
+
+    public String getId() {
+        return UUIDUtils.toString(entity.getId());
     }
 
 }

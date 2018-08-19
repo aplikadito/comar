@@ -8,8 +8,7 @@ package cl.rworks.comar.swing.model;
 import java.util.ArrayList;
 import java.util.List;
 import cl.rworks.comar.core.model.CategoriaEntity;
-import java.util.HashMap;
-import java.util.Map;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.util.Optional;
 
 /**
@@ -29,6 +28,10 @@ public class ComarCategory {
         return entity;
     }
 
+    public String getId() {
+        return UUIDUtils.toString(entity.getId());
+    }
+
     public List<ComarProduct> getProducts() {
         return products;
     }
@@ -39,7 +42,6 @@ public class ComarCategory {
 
     public void addProduct(ComarProduct pnode) {
         products.add(pnode);
-        pnode.setCategory(this);
     }
 
     void removeProducts(List<ComarProduct> list) {
@@ -51,9 +53,18 @@ public class ComarCategory {
         return opt.isPresent() ? opt.get() : null;
     }
 
+    public ComarProduct getProductById(byte[] id) {
+        Optional<ComarProduct> opt = products.stream().filter(e -> {
+            String id1 = UUIDUtils.toString(e.getEntity().getId());
+            String id2 = UUIDUtils.toString(id);
+            return id1.equals(id2);
+        }).findFirst();
+        return opt.isPresent() ? opt.get() : null;
+    }
+
     @Override
     public String toString() {
-        return entity.getNombre() + " (" + products.size() + ")";
+        return entity.getNombre();
     }
 
 }

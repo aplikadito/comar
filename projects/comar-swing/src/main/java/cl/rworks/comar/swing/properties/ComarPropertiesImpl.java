@@ -5,7 +5,6 @@
  */
 package cl.rworks.comar.swing.properties;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -56,32 +55,32 @@ public class ComarPropertiesImpl implements ComarProperties {
 
     @Override
     public void loadDefaultValues() {
-        setPercentualIva(PERCENTUAL_IVA_DEFAULT);
+//        setPercentualIva(PERCENTUAL_IVA_DEFAULT);
         setFontSize(LETRA_DEFAULT);
 //        setBannerColor(parseColor(BANNER_COLOR_DEFAULT));
 //        setBackgroundColor(parseColor(BACKGROUND_COLOR_DEFAULT));
-        setHelpActive(AYUDA_DEFAULT == 1);
+//        setHelpActive(AYUDA_DEFAULT == 1);
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
+//    public Properties getProperties() {
+//        return properties;
+//    }
 
-    @Override
-    public int getPercentualIva() {
-        try {
-            String strIva = properties.getProperty(PERCENTUAL_IVA);
-            return Integer.parseInt(strIva);
-        } catch (NumberFormatException ex) {
-            LOG.error("Error al parsear IVA", ex);
-            return PERCENTUAL_IVA_DEFAULT;
-        }
-    }
-
-    @Override
-    public void setPercentualIva(int iva) {
-        properties.setProperty(PERCENTUAL_IVA, Integer.toString(iva));
-    }
+//    @Override
+//    public int getPercentualIva() {
+//        try {
+//            String strIva = properties.getProperty(PERCENTUAL_IVA);
+//            return Integer.parseInt(strIva);
+//        } catch (NumberFormatException ex) {
+//            LOG.error("Error al parsear IVA", ex);
+//            return PERCENTUAL_IVA_DEFAULT;
+//        }
+//    }
+//
+//    @Override
+//    public void setPercentualIva(int iva) {
+//        properties.setProperty(PERCENTUAL_IVA, Integer.toString(iva));
+//    }
 
     private int getInt(String property, int defaultValue) {
         try {
@@ -108,27 +107,27 @@ public class ComarPropertiesImpl implements ComarProperties {
         setInt(LETRA, size);
     }
 
-    @Override
-    public boolean isHelpActive() {
-        return getInt(AYUDA, 1) == 1;
-    }
+//    @Override
+//    public boolean isHelpActive() {
+//        return getInt(AYUDA, 1) == 1;
+//    }
+//
+//    @Override
+//    public void setHelpActive(boolean helpActive) {
+//        setInt(AYUDA, helpActive ? 1 : 0);
+//    }
 
-    @Override
-    public void setHelpActive(boolean helpActive) {
-        setInt(AYUDA, helpActive ? 1 : 0);
-    }
+//    private Color parseColor(String strColor) {
+//        String[] split = strColor.split(",");
+//        int r = Integer.parseInt(split[0].trim());
+//        int g = Integer.parseInt(split[1].trim());
+//        int b = Integer.parseInt(split[2].trim());
+//        return new Color(r, g, b);
+//    }
 
-    private Color parseColor(String strColor) {
-        String[] split = strColor.split(",");
-        int r = Integer.parseInt(split[0].trim());
-        int g = Integer.parseInt(split[1].trim());
-        int b = Integer.parseInt(split[2].trim());
-        return new Color(r, g, b);
-    }
-
-    private String formatColor(Color color) {
-        return color.getRed() + "," + color.getGreen() + "," + color.getBlue();
-    }
+//    private String formatColor(Color color) {
+//        return color.getRed() + "," + color.getGreen() + "," + color.getBlue();
+//    }
 
 //    @Override
 //    public Color getBannerColor() {

@@ -122,3 +122,80 @@ java.nio.file.NoSuchFileException: D:\gtin.txt
 	at cl.rworks.comar.swing.views.products.ComarPanelProdsCsvInsertController.readCsvFile(ComarPanelProdsCsvInsertController.java:39)
 	at cl.rworks.comar.swing.views.products.ComarPanelProdsCsvInsertControllerTest.testReadCsvFile(ComarPanelProdsCsvInsertControllerTest.java:23)
 	at cl.rworks.comar.swing.views.products.ComarPanelProdsCsvInsertControllerTest.main(ComarPanelProdsCsvInsertControllerTest.java:33)
+2018-08-16 17:42:09 ERROR WebPanel:273 - com.alee.managers.style.StyleException: StyleManager must be initialized
+com.alee.managers.style.StyleException: StyleManager must be initialized
+	at com.alee.managers.style.StyleManager.checkInitialization(StyleManager.java:166)
+	at com.alee.managers.style.StyleManager.getData(StyleManager.java:627)
+	at com.alee.managers.style.StyleManager.installSkin(StyleManager.java:369)
+	at com.alee.laf.panel.WebPanelUI.installUI(WebPanelUI.java:80)
+	at javax.swing.JComponent.setUI(JComponent.java:666)
+	at javax.swing.JPanel.setUI(JPanel.java:153)
+	at com.alee.laf.panel.WebPanel.updateUI(WebPanel.java:566)
+	at javax.swing.JPanel.<init>(JPanel.java:86)
+	at javax.swing.JPanel.<init>(JPanel.java:95)
+	at com.alee.laf.panel.WebPanel.<init>(WebPanel.java:68)
+	at cl.rworks.comar.swing.views.products.Test$1.run(Test.java:22)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+2018-08-16 17:42:31 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:42:31 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:42:31 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:42:31 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:42:31 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:42:51 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:42:51 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:42:51 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:42:51 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:42:51 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:42:57 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:42:57 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:42:57 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:42:57 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:42:57 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:43:14 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:43:14 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:43:14 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:43:14 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:43:14 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:43:23 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:43:23 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:43:23 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:43:23 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:43:23 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:44:14 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:44:14 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:44:14 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:44:14 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:44:14 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:44:50 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:44:50 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:44:50 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:44:50 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:44:50 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:45:11 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:45:11 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:45:11 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:45:11 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:45:11 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:45:26 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:45:26 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:45:26 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:45:26 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:45:26 INFO  CharsetUtils:33 - Default Encoding: Cp1252
+2018-08-16 17:45:36 INFO  CharsetUtils:29 - Default Locale:   es_PE
+2018-08-16 17:45:36 INFO  CharsetUtils:30 - Default Charset:  windows-1252
+2018-08-16 17:45:36 INFO  CharsetUtils:31 - file.encoding;    Cp1252
+2018-08-16 17:45:36 INFO  CharsetUtils:32 - sun.jnu.encoding: Cp1252
+2018-08-16 17:45:36 INFO  CharsetUtils:33 - Default Encoding: Cp1252

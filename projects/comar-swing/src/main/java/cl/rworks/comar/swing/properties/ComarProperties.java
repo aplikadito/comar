@@ -13,14 +13,14 @@ import java.awt.Color;
  */
 public interface ComarProperties {
 
-    String PERCENTUAL_IVA = "comar.iva";
-    int PERCENTUAL_IVA_DEFAULT = 19;
+//    String PERCENTUAL_IVA = "comar.iva";
+//    int PERCENTUAL_IVA_DEFAULT = 19;
     //
     String LETRA = "comar.tamano.letra";
     int LETRA_DEFAULT = 20;
     //
-    String AYUDA = "comar.ayuda.activa";
-    int AYUDA_DEFAULT = 1;
+//    String AYUDA = "comar.ayuda.activa";
+//    int AYUDA_DEFAULT = 1;
     //
 //    String BANNER_COLOR = "comar.banner.color";
 //    String BANNER_COLOR_DEFAULT = "35,80,35";
@@ -32,17 +32,17 @@ public interface ComarProperties {
 
     void save();
 
-    int getPercentualIva();
-
-    void setPercentualIva(int iva);
+//    int getPercentualIva();
+//
+//    void setPercentualIva(int iva);
 
     int getFontSize();
 
     void setFontSize(int size);
 
-    boolean isHelpActive();
-
-    void setHelpActive(boolean helpActive);
+//    boolean isHelpActive();
+//
+//    void setHelpActive(boolean helpActive);
     
 //    Color getBannerColor();
 //

@@ -5,8 +5,7 @@
  */
 package cl.rworks.comar.swing.main;
 
-import cl.rworks.comar.swing.model.ComarWorkspace;
-import cl.rworks.comar.swing.model.ComarWorkspaceCreator;
+import cl.rworks.comar.swing.model.ComarEntityManager;
 import cl.rworks.comar.swing.views.pos.ComarPanelPosArea;
 import cl.rworks.comar.swing.properties.ComarProperties;
 import cl.rworks.comar.swing.properties.ComarPropertiesImpl;
@@ -15,6 +14,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import cl.rworks.comar.core.service.ComarService;
 import cl.rworks.comar.core.service.ComarServiceFactory;
+import cl.rworks.comar.swing.util.ComarLookup;
 
 /**
  *
@@ -27,7 +27,8 @@ public class ComarSystem {
     private ComarFrame frame;
     private final ComarService service;
     private final ComarProperties properties;
-    private ComarWorkspace workspace;
+    private ComarEntityManager workspace;
+    private final ComarLookup lookup = new ComarLookup();
 
     public static ComarSystem getInstance() {
         instance = instance == null ? new ComarSystem() : instance;
@@ -67,7 +68,7 @@ public class ComarSystem {
 
     private void startupServices() {
         service.startup(ComarService.DISK);
-        workspace = new ComarWorkspaceCreator().create(service);
+        workspace = new ComarEntityManager(service);
     }
 
     private void startupKeyboard() {
@@ -90,8 +91,12 @@ public class ComarSystem {
         System.exit(0);
     }
 
-    public ComarWorkspace getWorkspace() {
+    public ComarEntityManager getEntityManager() {
         return workspace;
     }
 
+    public ComarLookup getLookup() {
+        return lookup;
+    }
+    
 }

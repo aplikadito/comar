@@ -9,7 +9,6 @@ import cl.rworks.comar.core.service.ComarServiceException;
 import java.util.List;
 import javax.sql.DataSource;
 import cl.rworks.comar.core.service.ComarTransaction;
-import cl.rworks.comar.core.model.Metrica;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,7 +21,6 @@ import cl.rworks.comar.core.model.MetricaEntity;
 import cl.rworks.comar.core.model.ProductoEntity;
 import cl.rworks.comar.core.model.VentaEntity;
 import cl.rworks.comar.core.model.VentaUnidadEntity;
-import java.math.BigDecimal;
 
 /**
  *
@@ -86,7 +84,7 @@ public class ComarServiceDerby implements ComarService {
 
     @Override
     public List<ProductoEntity> getAllProductos() throws ComarServiceException {
-        return GetAllProductos.serve(tx.getConnection());
+        return GetAllProducto.serve(tx.getConnection());
     }
 
     @Override
@@ -100,12 +98,17 @@ public class ComarServiceDerby implements ComarService {
     }
 
     @Override
+    public void insertProducto(ProductoEntity producto, CategoriaEntity category) throws ComarServiceException {
+        InsertProducto.serve(tx.getConnection(), producto, category);
+    }
+
+    @Override
     public ProductoEntity insertProductoPorCodigo(String codigo, CategoriaEntity category) throws ComarServiceException {
-        return InsertProductoPorCodigo.serve(tx.getConnection(), codigo, category);
+        return InsertProducto.serve(tx.getConnection(), codigo, category);
     }
 
     public List<CategoriaEntity> getAllCategorias() throws ComarServiceException {
-        return GetAllCategorias.serve(tx.getConnection());
+        return GetAllCategoria.serve(tx.getConnection());
     }
 
     public void insertCategoria(CategoriaEntity category) throws ComarServiceException {
@@ -114,23 +117,15 @@ public class ComarServiceDerby implements ComarService {
 
     @Override
     public void deleteCategoria(CategoriaEntity category) throws ComarServiceException {
-        DeleteCategoriaPorNombre.serve(tx.getConnection(), category.getNombre());
+        DeleteCategoria.serve(tx.getConnection(), category.getNombre());
     }
 
     public void deleteProducts(List<ProductoEntity> products) throws ComarServiceException {
-        DeleteProductos.serve(tx.getConnection(), products);
+        DeleteProductoBatch.serve(tx.getConnection(), products);
     }
 
-    public void updateProductoCodigo(ProductoEntity product, String code) throws ComarServiceException {
-        UpdateProductoPropiedad.serve(tx.getConnection(), product, "CODIGO", code);
-    }
-
-    public void updateProductoDescripcion(ProductoEntity product, String description) throws ComarServiceException {
-        UpdateProductoPropiedad.serve(tx.getConnection(), product, "DESCRIPCION", description);
-    }
-
-    public void updateProductoMetrica(ProductoEntity product, Metrica metric) throws ComarServiceException {
-        UpdateProductoPropiedad.serve(tx.getConnection(), product, "METRICA", metric);
+    public void updateProductoPropiedad(ProductoEntity product, String propiedad, Object valor) throws ComarServiceException {
+        UpdateProductoPropiedad.serve(tx.getConnection(), product, propiedad, valor);
     }
 
     public void updateCategoriaDeProductos(List<ProductoEntity> products, CategoriaEntity category) throws ComarServiceException {
@@ -138,11 +133,11 @@ public class ComarServiceDerby implements ComarService {
     }
 
     public List<MetricaEntity> getAllMetrics() throws ComarServiceException {
-        return GetAllMetricas.serve(tx.getConnection());
+        return GetAllMetrica.serve(tx.getConnection());
     }
 
     public CategoriaEntity insertCategoriaPorNombre(String name) throws ComarServiceException {
-        return InsertCategoriaPorNombre.serve(tx.getConnection(), name);
+        return InsertCategoria.serve(tx.getConnection(), name);
     }
 
     public List<FacturaEntity> getAllFactura() throws ComarServiceException {
@@ -170,8 +165,8 @@ public class ComarServiceDerby implements ComarService {
         DeleteFacturaUnidades.serve(tx.getConnection(), unidades);
     }
 
-    public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura) throws ComarServiceException {
-        InsertFacturaUnidad.serve(tx.getConnection(), facturaUnidad, factura);
+    public void insertFacturaUnidad(FacturaUnidadEntity facturaUnidad, FacturaEntity factura, ProductoEntity producto) throws ComarServiceException {
+        InsertFacturaUnidad.serve(tx.getConnection(), facturaUnidad, factura, producto);
     }
 
     public List<VentaEntity> getAllVenta() throws ComarServiceException {
@@ -203,7 +198,15 @@ public class ComarServiceDerby implements ComarService {
         UpdateCategoriaPropiedad.serve(tx.getConnection(), entity, propiedad, valor);
     }
 
-    public void insertProductosPorCsv(List<ProductoEntity> productos, CategoriaEntity categoria) throws ComarServiceException{
-        InsertProductosPorCsv.serve(tx.getConnection(), productos, categoria);
+    public void insertProductoBatch(List<ProductoEntity> productos, CategoriaEntity categoria) throws ComarServiceException {
+        InsertProductoBatch.serve(tx.getConnection(), productos, categoria);
+    }
+
+    public void insertVenta(VentaEntity venta) throws ComarServiceException {
+        InsertVenta.serve(tx.getConnection(), venta);
+    }
+
+    public void insertVentaUnidad(VentaUnidadEntity ventaUnidad, VentaEntity venta, ProductoEntity producto) throws ComarServiceException {
+        InsertVentaUnidad.serve(tx.getConnection(), ventaUnidad, venta, producto);
     }
 }

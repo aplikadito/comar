@@ -12,9 +12,6 @@ import cl.rworks.comar.core.service.ComarServiceException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.junit.Test;
 
 /**
  *

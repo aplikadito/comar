@@ -10,18 +10,21 @@ import cl.rworks.comar.swing.model.ComarSell;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelDate;
 import cl.rworks.comar.swing.util.ComarPanelFactory;
+import cl.rworks.comar.swing.util.ComarPanelOptionsArea;
 import cl.rworks.comar.swing.util.ComarPanelView;
 import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.splitpane.WebSplitPane;
+import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.table.WebTable;
+import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import java.awt.BorderLayout;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,16 +42,16 @@ public class ComarPanelSellsArea extends ComarPanelView {
     //
     // LEFT AREA
     //
-    private ComarPanelDate panelDate;
-    private WebButton buttonSearchSells;
+    private ComarPanelDate panelSellDateSearch;
     private WebTable tableSells;
     private TableModelSells tableModelSells;
+    private WebTextField textSellCodeSearch;
     //
     // RIGHT AREA
     //
 
     public ComarPanelSellsArea() {
-        super("Ventas Por Fecha");
+        super("Administrar Ventas");
 
         initComponents();
         initToolTipHelp();
@@ -66,13 +69,23 @@ public class ComarPanelSellsArea extends ComarPanelView {
     private ComarPanel initLeft() {
         ComarPanel panelLeft = new ComarPanel(new BorderLayout());
 
-        panelDate = new ComarPanelDate();
-        buttonSearchSells = new WebButton("Buscar", e -> searchAction());
-        panelLeft.add(new ComarPanelFactory().flowLayoutLeft().add(panelDate, buttonSearchSells).create(), BorderLayout.NORTH);
+        WebTabbedPane tabbed = new WebTabbedPane();
+        ComarPanelOptionsArea panelSearchBillByDate = new ComarPanelOptionsArea();
+        panelSearchBillByDate.addCenter(panelSellDateSearch = new ComarPanelDate());
+        panelSearchBillByDate.addCenter(new WebButton("Buscar", e -> searchBillByDateAction()));
+        tabbed.addTab("Por Fecha", panelSearchBillByDate);
+
+        ComarPanelOptionsArea panelSearchBillByCode = new ComarPanelOptionsArea();
+        panelSearchBillByCode.addCenter(textSellCodeSearch = new WebTextField(20));
+        panelSearchBillByCode.addCenter(new WebButton("Buscar", e -> searchBillByCodeAction()));
+        tabbed.addTab("Por Codigo", panelSearchBillByCode);
 
         tableSells = new WebTable();
         tableModelSells = new TableModelSells();
         tableSells.setModel(tableModelSells);
+
+        panelLeft.setBorder(new TitledBorder("Ventas"));
+        panelLeft.add(tabbed, BorderLayout.NORTH);
         panelLeft.add(new WebScrollPane(tableSells), BorderLayout.CENTER);
 
         return panelLeft;
@@ -84,25 +97,15 @@ public class ComarPanelSellsArea extends ComarPanelView {
     }
 
     private void initToolTipHelp() {
-        if (ComarSystem.getInstance().getProperties().isHelpActive()) {
-            TooltipManager.addTooltip(buttonSearchSells, TOOLTIP_SEARCH, TooltipWay.down, 0);
-        }
+//        if (ComarSystem.getInstance().getProperties().isHelpActive()) {
+//            TooltipManager.addTooltip(buttonSearchSells, TOOLTIP_SEARCH, TooltipWay.down, 0);
+//        }
     }
 
-    private void searchAction() {
-        LOG.info("Buscando ... ");
+    private void searchBillByDateAction() {
+    }
 
-        int[] value = panelDate.getValue();
-        List<ComarSell> rows = controller.searchSells(value);
-//        List<Row> rows = new ArrayList<>();
-//        findProducts.stream().map((o) -> new Row(o.toString(), o.toString(), BigDecimal.valueOf(1))).map((row) -> {
-//            row.setCount(BigDecimal.valueOf(1));
-//            return row;
-//        }).forEachOrdered((row) -> {
-//            rows.add(row);
-//        });
-        tableModelSells.setRows(rows);
-        tableModelSells.fireTableStructureChanged();
+    private void searchBillByCodeAction() {
     }
 
     private class TableModelSells extends AbstractTableModel {

@@ -13,7 +13,7 @@ import cl.rworks.comar.swing.model.ComarBill;
 import cl.rworks.comar.swing.model.ComarBillUnit;
 import cl.rworks.comar.swing.model.ComarControllerException;
 import cl.rworks.comar.swing.model.ComarProduct;
-import cl.rworks.comar.swing.model.ComarWorkspace;
+import cl.rworks.comar.swing.model.ComarEntityManager;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -28,13 +28,18 @@ import org.slf4j.LoggerFactory;
 public class ComarPanelBillsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComarPanelBillsController.class);
+    private ComarEntityManager ws;
+
+    public ComarPanelBillsController() {
+        ws = ComarSystem.getInstance().getEntityManager();
+    }
 
     public List<ComarBill> searchBillsByDate(int[] value) {
         int year = value[0];
         int month = value[1];
         int day = value[2];
 
-        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+        ComarEntityManager ws = ComarSystem.getInstance().getEntityManager();
         List<ComarBill> bills = ws.getBills();
 
         List<ComarBill> list = bills.stream()
@@ -47,7 +52,7 @@ public class ComarPanelBillsController {
     }
 
     public List<ComarBill> searchBillsByCode(String text) {
-        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+        ComarEntityManager ws = ComarSystem.getInstance().getEntityManager();
         List<ComarBill> bills = ws.getBills();
 
         Pattern pattern = Pattern.compile(".*" + text + ".*");
@@ -64,7 +69,7 @@ public class ComarPanelBillsController {
             service.insertFactura(bill.getEntity());
             tx.commit();
 
-            ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+            ComarEntityManager ws = ComarSystem.getInstance().getEntityManager();
             ws.addBill(bill);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
@@ -79,7 +84,7 @@ public class ComarPanelBillsController {
             tx.commit();
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException("Error: " + ex.getMessage(), ex);
         }
     }
 
@@ -88,32 +93,43 @@ public class ComarPanelBillsController {
         try (ComarTransaction tx = service.createTransaction()) {
             service.deleteFacturas(bills.stream().map(e -> e.getEntity()).collect(Collectors.toList()));
             tx.commit();
+            ws.removeBills(bills);
 
-            ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
-            ws.deleteBills(bills);
+            for (ComarBill bill : bills) {
+                for (ComarBillUnit unit : bill.getUnits()) {
+                    BigDecimal total = getTotal(unit.getProduct().getEntity().getCodigo());
+                    service.updateProductoPropiedad(unit.getProduct().getEntity(), "STOCKCOMPRADO", total);
+                    tx.commit();
+                    unit.getProduct().getEntity().setStockComprado(total);
+                }
+            }
+
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException("Error: " + ex.getMessage(), ex);
         }
     }
 
     public ComarProduct getProduct(String code) {
-        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+        ComarEntityManager ws = ComarSystem.getInstance().getEntityManager();
         return ws.getProductByCode(code);
     }
 
-    public void addBillUnit(ComarBillUnit unit, ComarBill selectedBill) throws ComarControllerException {
+    public void addBillUnit(ComarBillUnit unit) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-            service.insertFacturaUnidad(unit.getEntity(), selectedBill.getEntity());
+            service.insertFacturaUnidad(unit.getEntity(), unit.getBill().getEntity(), unit.getProduct().getEntity());
             tx.commit();
+            ws.addBillUnit(unit);
 
-            selectedBill.addUnit(unit);
+//            int total = getTotal(unit.getProduct().getEntity().getCodigo());
+//            service.updateProductoPropiedad(unit.getProduct().getEntity(), "STOCKCOMPRADO", new BigDecimal(total));
+//            tx.commit();
+//            unit.getProduct().getEntity().setStockComprado(new BigDecimal(total));
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException("Error: " + ex.getMessage(), ex);
         }
-
     }
 
     public void deleteBillUnits(List<ComarBillUnit> units, ComarBill selectedBill) throws ComarControllerException {
@@ -121,24 +137,30 @@ public class ComarPanelBillsController {
         try (ComarTransaction tx = service.createTransaction()) {
             service.deleteFacturaUnidades(units.stream().map(e -> e.getEntity()).collect(Collectors.toList()));
             tx.commit();
+            selectedBill.removeUnits(units);
 
-            selectedBill.deleteUnits(units);
+            for (ComarBillUnit billUnit : units) {
+                BigDecimal total = getTotal(billUnit.getProduct().getEntity().getCodigo());
+                service.updateProductoPropiedad(billUnit.getProduct().getEntity(), "STOCKCOMPRADO", total);
+                tx.commit();
+                billUnit.getProduct().getEntity().setStockComprado(total);
+            }
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException("Error: " + ex.getMessage(), ex);
         }
     }
 
     public void updateBillUnitPrice(ComarBillUnit billUnit, BigDecimal precioCompra) throws ComarControllerException {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
-            service.updateFacturaUnidadPropiedad(billUnit.getEntity(), "PRECIOCOMPRA", precioCompra);
+            service.updateFacturaUnidadPropiedad(billUnit.getEntity(), "PRECIONETOCOMPRA", precioCompra);
             tx.commit();
 
-            billUnit.getEntity().setPrecioCompra(precioCompra);
+            billUnit.getEntity().setPrecioNetoCompra(precioCompra);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException("Error: " + ex.getMessage(), ex);
         }
     }
 
@@ -146,13 +168,31 @@ public class ComarPanelBillsController {
         ComarService service = ComarSystem.getInstance().getService();
         try (ComarTransaction tx = service.createTransaction()) {
             service.updateFacturaUnidadPropiedad(billUnit.getEntity(), "CANTIDAD", cantidad);
+            billUnit.getEntity().setCantidad(cantidad);
+
+            BigDecimal total = getTotal(billUnit.getProduct().getEntity().getCodigo());
+            service.updateProductoPropiedad(billUnit.getProduct().getEntity(), "STOCKCOMPRADO", total);
             tx.commit();
 
-            billUnit.getEntity().setCantidad(cantidad);
+            billUnit.getProduct().getEntity().setStockComprado(total);
         } catch (ComarServiceException ex) {
             LOG.error("Error", ex);
-            throw new ComarControllerException("Error", ex);
+            throw new ComarControllerException("Error: " + ex.getMessage(), ex);
         }
+    }
+
+    private BigDecimal getTotal(String pcode) {
+        BigDecimal total = BigDecimal.ZERO;
+        List<ComarBill> bills = ws.getBills();
+        for (ComarBill bill : bills) {
+            List<ComarBillUnit> units = bill.getUnits();
+            for (ComarBillUnit unit : units) {
+                if (unit.getProduct().getEntity().getCodigo().equals(pcode)) {
+                    total = total.add(unit.getEntity().getCantidad());
+                }
+            }
+        }
+        return total;
     }
 
 }

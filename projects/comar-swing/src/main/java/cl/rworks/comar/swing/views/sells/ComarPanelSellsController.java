@@ -7,7 +7,7 @@ package cl.rworks.comar.swing.views.sells;
 
 import cl.rworks.comar.swing.main.ComarSystem;
 import cl.rworks.comar.swing.model.ComarSell;
-import cl.rworks.comar.swing.model.ComarWorkspace;
+import cl.rworks.comar.swing.model.ComarEntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class ComarPanelSellsController {
         int month = value[1];
         int day = value[2];
 
-        ComarWorkspace ws = ComarSystem.getInstance().getWorkspace();
+        ComarEntityManager ws = ComarSystem.getInstance().getEntityManager();
         List<ComarSell> sells = ws.getSells();
 
         List<ComarSell> list = sells.stream()

@@ -8,6 +8,7 @@ package cl.rworks.comar.core.service.derby;
 import cl.rworks.comar.core.model.FacturaUnidadEntity;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.util.BigDecimalUtils;
+import cl.rworks.comar.core.util.ComarVerifierUtils;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,19 +27,12 @@ public class UpdateFacturaUnidadPropiedad {
     }
 
     public void execute(FacturaUnidadEntity factura, String propiedad, Object valor) throws ComarServiceException {
-        if (propiedad.equals("PRECIOCOMPRA")) {
-            if (valor instanceof BigDecimal) {
-                updateBigDecimalProperty(factura, "FACTURAUNIDAD_PRECIOCOMPRA", (BigDecimal) valor);
-            } else {
-                throw new ComarServiceException(String.format("La propiedad %s debe ser numerica", propiedad));
-            }
+        if (propiedad.equals("PRECIONETOCOMPRA")) {
+            ComarVerifierUtils.checkBigDecimal(propiedad, valor);
+            updateBigDecimalProperty(factura, "FACTURAUNIDAD_PRECIONETOCOMPRA", (BigDecimal) valor);
         } else if (propiedad.equals("CANTIDAD")) {
-            if (valor instanceof BigDecimal) {
-                updateBigDecimalProperty(factura, "FACTURAUNIDAD_CANTIDAD", (BigDecimal) valor);
-            } else {
-                throw new ComarServiceException(String.format("La propiedad %s debe ser numerica", propiedad));
-            }
-
+            ComarVerifierUtils.checkBigDecimal(propiedad, valor);
+            updateBigDecimalProperty(factura, "FACTURAUNIDAD_CANTIDAD", (BigDecimal) valor);
         } else {
             throw new ComarServiceException("Propiedad no soportada: " + propiedad);
         }

@@ -6,6 +6,7 @@
 package cl.rworks.comar.swing.model;
 
 import cl.rworks.comar.core.model.VentaEntity;
+import cl.rworks.comar.core.util.UUIDUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,18 @@ public class ComarSell {
 
     public void addUnit(ComarSellUnit unit) {
         this.units.add(unit);
+    }
+
+    public List<ComarSellUnit> getUnits() {
+        return units;
+    }
+
+    public String getId() {
+        return UUIDUtils.toString(entity.getId());
+    }
+
+    public void removeUnit(ComarSellUnit sellUnit) {
+        this.units.remove(sellUnit);
     }
 
 }

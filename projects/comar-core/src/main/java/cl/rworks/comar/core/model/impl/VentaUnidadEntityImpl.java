@@ -22,8 +22,6 @@ public class VentaUnidadEntityImpl implements VentaUnidadEntity {
 
     private byte[] id;
     private byte[] idProducto;
-    private String codigo;
-    private String descripcion;
     private BigDecimal precioVenta;
     private BigDecimal cantidad;
     private byte[] idVenta;
@@ -42,22 +40,6 @@ public class VentaUnidadEntityImpl implements VentaUnidadEntity {
 
     public void setIdProducto(byte[] idProducto) {
         this.idProducto = idProducto;
-    }
-
-    public String getCodigoProducto() {
-        return codigo;
-    }
-
-    public void setCodigoProducto(String code) {
-        this.codigo = code;
-    }
-
-    public String getDescripcionProducto() {
-        return descripcion;
-    }
-
-    public void setDescripcionProducto(String description) {
-        this.descripcion = description;
     }
 
     public BigDecimal getPrecioVenta() {
@@ -86,34 +68,30 @@ public class VentaUnidadEntityImpl implements VentaUnidadEntity {
 
     @Override
     public String toString() {
-        return "VentaUnidadEntityImpl{" + "id=" + UUIDUtils.toString(id) + ", idProducto=" + UUIDUtils.toString(idProducto) + ", codigo=" + codigo + ", descripcion=" + descripcion + ", precioVenta=" + precioVenta + ", cantidad=" + cantidad + ", idVenta=" + UUIDUtils.toString(idVenta) + '}';
+        return "VentaUnidadEntityImpl{" + "id=" + UUIDUtils.toString(id) + ", idProducto=" + UUIDUtils.toString(idProducto) + ", precioVenta=" + precioVenta + ", cantidad=" + cantidad + ", idVenta=" + UUIDUtils.toString(idVenta) + '}';
     }
 
     public static VentaUnidadEntity create(ResultSet rs) throws SQLException {
-        byte[] id = rs.getBytes(1);
-        byte[] idProducto = rs.getBytes(2);
-        String codigo = rs.getString(3);
-        String descripcion = rs.getString(4);
-        BigDecimal precioVenta = BigDecimalUtils.toBigDecimal(rs.getLong(5));
-        BigDecimal cantidad = BigDecimalUtils.toBigDecimal(rs.getLong(6));
-        byte[] idVenta = rs.getBytes(7);
+        int i = 1;
+
+        byte[] id = rs.getBytes(i++);
+        byte[] idProducto = rs.getBytes(i++);
+        BigDecimal precioVenta = BigDecimalUtils.toBigDecimal(rs.getLong(i++));
+        BigDecimal cantidad = BigDecimalUtils.toBigDecimal(rs.getLong(i++));
+        byte[] idVenta = rs.getBytes(i++);
 
         VentaUnidadEntityImpl e = new VentaUnidadEntityImpl();
         e.setId(id);
         e.setIdProducto(idProducto);
-        e.setCodigoProducto(codigo);
-        e.setDescripcionProducto(descripcion);
         e.setPrecioVenta(precioVenta);
         e.setCantidad(cantidad);
         e.setIdVenta(idVenta);
         return e;
     }
 
-    public static VentaUnidadEntity create(VentaEntity venta, ProductoEntity producto, BigDecimal precioVenta, BigDecimal cantidad) throws SQLException {
+    public static VentaUnidadEntity create(VentaEntity venta, ProductoEntity producto, BigDecimal precioVenta, BigDecimal cantidad) {
         VentaUnidadEntityImpl e = new VentaUnidadEntityImpl();
         e.setIdProducto(producto.getId());
-        e.setCodigoProducto(producto.getCodigo());
-        e.setDescripcionProducto(producto.getDescripcion());
         e.setPrecioVenta(precioVenta);
         e.setCantidad(cantidad);
         e.setIdVenta(venta.getId());

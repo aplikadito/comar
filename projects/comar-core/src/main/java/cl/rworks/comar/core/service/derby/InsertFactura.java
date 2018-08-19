@@ -6,6 +6,7 @@
 package cl.rworks.comar.core.service.derby;
 
 import cl.rworks.comar.core.model.FacturaEntity;
+import cl.rworks.comar.core.model.impl.FacturaEntityImpl;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.util.UUIDUtils;
 import java.sql.Connection;
@@ -13,6 +14,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDate;
 
 /**
  *
@@ -44,5 +46,11 @@ public class InsertFactura {
 
     public static void serve(Connection connection, FacturaEntity factura) throws ComarServiceException {
         new InsertFactura(connection).execute(factura);
+    }
+
+    public static FacturaEntity serve(Connection connection, String code) throws ComarServiceException {
+        FacturaEntity factura = FacturaEntityImpl.create(code, LocalDate.now());
+        new InsertFactura(connection).execute(factura);
+        return factura;
     }
 }
