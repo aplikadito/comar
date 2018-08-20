@@ -6,13 +6,21 @@
 package cl.rworks.comar.swing.views.sells;
 
 import cl.rworks.comar.swing.main.ComarSystem;
+import cl.rworks.comar.swing.model.ComarBill;
 import cl.rworks.comar.swing.model.ComarSell;
+import cl.rworks.comar.swing.model.ComarSellUnit;
+import cl.rworks.comar.swing.util.ComarActionSimple;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelDate;
 import cl.rworks.comar.swing.util.ComarPanelFactory;
 import cl.rworks.comar.swing.util.ComarPanelOptionsArea;
+import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.util.ComarPanelView;
+import cl.rworks.comar.swing.util.ComarUtils;
+import cl.rworks.comar.swing.util.WebTextFieldFactory;
+import cl.rworks.comar.swing.views.bills.ComarPanelBillsArea;
 import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.splitpane.WebSplitPane;
 import com.alee.laf.tabbedpane.WebTabbedPane;
@@ -21,11 +29,18 @@ import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.RowFilter;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableRowSorter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,12 +64,18 @@ public class ComarPanelSellsArea extends ComarPanelView {
     //
     // RIGHT AREA
     //
+    private ComarPanelTitle panelSelectedBillTitle;
+    private ComarPanel panelRightTableArea;
+    private WebTable tableSellUnits;
+    private TableModelSellUnits tableModelSellUnits;
+    private TableRowSorter sorter;
+    private WebTextField textSearch;
+    //
+    private ComarSell selectedSell;
 
     public ComarPanelSellsArea() {
         super("Administrar Ventas");
-
         initComponents();
-        initToolTipHelp();
     }
 
     private void initComponents() {
@@ -84,6 +105,14 @@ public class ComarPanelSellsArea extends ComarPanelView {
         tableModelSells = new TableModelSells();
         tableSells.setModel(tableModelSells);
 
+        tableSells.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                setSelectedSell(getSelectedSell());
+            }
+
+        });
+
         panelLeft.setBorder(new TitledBorder("Ventas"));
         panelLeft.add(tabbed, BorderLayout.NORTH);
         panelLeft.add(new WebScrollPane(tableSells), BorderLayout.CENTER);
@@ -92,20 +121,28 @@ public class ComarPanelSellsArea extends ComarPanelView {
     }
 
     private ComarPanel initRight() {
-        ComarPanel panelRight = new ComarPanel(new BorderLayout());
+        ComarPanel panelRight = new ComarPanelFactory().borderLayout().create();
+
+        panelRight.add(panelSelectedBillTitle = new ComarPanelTitle(""), BorderLayout.NORTH);
+        panelRight.add(panelRightTableArea = new ComarPanelFactory().borderLayout().border(new EmptyBorder(10, 10, 10, 10)).create(), BorderLayout.CENTER);
+
+        panelRightTableArea.add(new WebScrollPane(tableSellUnits = new WebTable()), BorderLayout.CENTER);
+
+        tableModelSellUnits = new TableModelSellUnits();
+        tableSellUnits.setModel(tableModelSellUnits);
+        ComarUtils.initTable(tableSellUnits);
+
+//        popupTableBills.add(new ComarActionSimple("Eliminar", e -> deleteBillAction()));
+        sorter = new TableRowSorter(tableModelSellUnits);
+        tableSellUnits.setRowSorter(sorter);
+
+        ComarPanelOptionsArea panelSearch = new ComarPanelOptionsArea();
+        panelSearch.addLeft(new WebLabel("Buscar"));
+        panelSearch.addLeft(textSearch = new WebTextFieldFactory().cols(30).actionListener(e -> searchSellUnitAction()).create());
+        panelSearch.addLeft(new WebButton("Buscar", e -> searchSellUnitAction()));
+        panelRightTableArea.add(panelSearch, BorderLayout.SOUTH);
+
         return panelRight;
-    }
-
-    private void initToolTipHelp() {
-//        if (ComarSystem.getInstance().getProperties().isHelpActive()) {
-//            TooltipManager.addTooltip(buttonSearchSells, TOOLTIP_SEARCH, TooltipWay.down, 0);
-//        }
-    }
-
-    private void searchBillByDateAction() {
-    }
-
-    private void searchBillByCodeAction() {
     }
 
     private class TableModelSells extends AbstractTableModel {
@@ -162,30 +199,115 @@ public class ComarPanelSellsArea extends ComarPanelView {
         }
     }
 
-//    private class Row {
-//
-//        private ComarSell sell;
-//
-//        public Row(String code, LocalDate date) {
-//            this.code = code;
-//            this.date = date;
+    private class TableModelSellUnits extends AbstractTableModel {
+
+        private Object[][] cols = new Object[][]{
+            {"Codigo", String.class, false},
+            {"Descripcion", String.class, false},
+            {"Precio Venta", BigDecimal.class, false},
+            {"Cantidad", BigDecimal.class, false},
+            {"Subtotal", BigDecimal.class, false}
+        };
+
+        @Override
+        public int getRowCount() {
+            List<ComarSellUnit> units = selectedSell != null ? selectedSell.getUnits() : null;
+            return units != null ? units.size() : 0;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return cols.length;
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            return (Class) cols[columnIndex][1];
+        }
+
+        @Override
+        public String getColumnName(int columnIndex) {
+            return (String) cols[columnIndex][0];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            List<ComarSellUnit> units = selectedSell.getUnits();
+            ComarSellUnit unit = units.get(rowIndex);
+
+            BigDecimal price = unit.getEntity().getPrecioVenta();
+            BigDecimal quantity = unit.getEntity().getCantidad();
+            BigDecimal subtotal = price.multiply(quantity);
+            switch (columnIndex) {
+                case 0:
+                    return unit.getProduct().getEntity().getCodigo();
+                case 1:
+                    return unit.getProduct().getEntity().getDescripcion();
+                case 2:
+                    return price;
+                case 3:
+                    return quantity;
+                case 4:
+                    return subtotal;
+                default:
+                    return "";
+            }
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return (Boolean) cols[columnIndex][2];
+        }
+        
+//        @Override
+//        public boolean isPercentual(int rowIndex, int columnIndex) {
+//            return (Boolean) cols[columnIndex][3];
 //        }
-//
-//        public String getCode() {
-//            return code;
-//        }
-//
-//        public void setCode(String code) {
-//            this.code = code;
-//        }
-//
-//        public LocalDate getDate() {
-//            return date;
-//        }
-//
-//        public void setDate(LocalDate date) {
-//            this.date = date;
-//        }
-//
-//    }
+
+    }
+
+    private ComarSell getSelectedSell() {
+        int vrow = this.tableSells.getSelectedRow();
+        if (vrow == -1) {
+            return null;
+        }
+
+        int mrow = this.tableSells.convertRowIndexToModel(vrow);
+        return this.tableModelSells.getRows().get(mrow);
+    }
+    
+    private void setSelectedSell(ComarSell sell) {
+        selectedSell = sell;
+        if (selectedSell != null) {
+            LocalDate date = selectedSell.getEntity().getFecha();
+            String code = selectedSell.getEntity().getCodigo();
+            panelSelectedBillTitle.setTitle(String.format("%s: %s", "Venta", code));
+            panelSelectedBillTitle.setTitleEast(String.format("%s", date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+            tableModelSellUnits.fireTableDataChanged();
+        } else {
+            panelSelectedBillTitle.setTitle("");
+            panelSelectedBillTitle.setTitleEast("");
+            tableModelSellUnits.fireTableDataChanged();
+        }
+
+    }
+    
+     private void searchBillByDateAction() {
+        int[] value = panelSellDateSearch.getValue();
+        List<ComarSell> sells = controller.searchSellsByDate(value);
+        tableModelSells.setRows(sells);
+        tableModelSells.fireTableDataChanged();
+
+        setSelectedSell(null);
+    }
+
+    private void searchBillByCodeAction() {
+        ComarUtils.showWarn(this, "Funcionalidad temporalmente deshabilitada");
+    }
+
+    public void searchSellUnitAction() {
+        String text = textSearch.getText();
+        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text + "", 0, 1));
+        sorter.sort();
+    }
 }

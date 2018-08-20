@@ -21,15 +21,15 @@ public class ComarPanelSellsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComarPanelSellsController.class);
 
-    public List<ComarSell> searchSells(int[] value) {
+    public List<ComarSell> searchSellsByDate(int[] value) {
         int year = value[0];
         int month = value[1];
         int day = value[2];
 
         ComarEntityManager ws = ComarSystem.getInstance().getEntityManager();
-        List<ComarSell> sells = ws.getSells();
+        List<ComarSell> bills = ws.getSells();
 
-        List<ComarSell> list = sells.stream()
+        List<ComarSell> list = bills.stream()
                 .filter(e -> year != -1 ? e.getEntity().getFecha().getYear() == year : true)
                 .filter(e -> month != -1 ? e.getEntity().getFecha().getMonthValue() == month : true)
                 .filter(e -> day != -1 ? e.getEntity().getFecha().getDayOfMonth() == day : true)

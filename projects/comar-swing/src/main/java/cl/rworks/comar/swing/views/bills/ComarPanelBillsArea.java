@@ -170,19 +170,19 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private class TableModelBills extends AbstractTableModel {
 
         private String[] colNames = new String[]{"Factura", "Fecha"};
-        private List<ComarBill> bills = null;
+        private List<ComarBill> rows = null;
 
-        public List<ComarBill> getBills() {
-            return bills;
+        public List<ComarBill> getRows() {
+            return rows;
         }
 
-        public void setBills(List<ComarBill> bills) {
-            this.bills = bills;
+        public void setRows(List<ComarBill> bills) {
+            this.rows = bills;
         }
 
         @Override
         public int getRowCount() {
-            return bills != null ? bills.size() : 0;
+            return rows != null ? rows.size() : 0;
         }
 
         @Override
@@ -209,7 +209,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            ComarBill bill = bills.get(rowIndex);
+            ComarBill bill = rows.get(rowIndex);
             switch (columnIndex) {
                 case 0:
                     return bill.getEntity().getCodigo();
@@ -356,7 +356,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
     private void searchBillByDateAction() {
         int[] value = panelBillDateSearch.getValue();
         List<ComarBill> bills = controller.searchBillsByDate(value);
-        tableModelBills.setBills(bills);
+        tableModelBills.setRows(bills);
         tableModelBills.fireTableDataChanged();
 
         setSelectedBill(null);
@@ -374,7 +374,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
         }
 
         List<ComarBill> bills = controller.searchBillsByCode(text);
-        tableModelBills.setBills(bills);
+        tableModelBills.setRows(bills);
         tableModelBills.fireTableDataChanged();
 
         setSelectedBill(null);
@@ -432,7 +432,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
         for (int i = 0; i < vrows.length; i++) {
             int vrow = vrows[i];
             int mrow = this.tableBills.convertRowIndexToModel(vrow);
-            ComarBill bill = this.tableModelBills.getBills().get(mrow);
+            ComarBill bill = this.tableModelBills.getRows().get(mrow);
             list.add(bill);
         }
 
@@ -446,7 +446,7 @@ public class ComarPanelBillsArea extends ComarPanelView {
         }
 
         int mrow = this.tableBills.convertRowIndexToModel(vrow);
-        return this.tableModelBills.getBills().get(mrow);
+        return this.tableModelBills.getRows().get(mrow);
     }
 
     private void deleteBillAction() {
