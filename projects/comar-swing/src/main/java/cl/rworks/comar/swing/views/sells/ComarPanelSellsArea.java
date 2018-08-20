@@ -5,11 +5,8 @@
  */
 package cl.rworks.comar.swing.views.sells;
 
-import cl.rworks.comar.swing.main.ComarSystem;
-import cl.rworks.comar.swing.model.ComarBill;
 import cl.rworks.comar.swing.model.ComarSell;
 import cl.rworks.comar.swing.model.ComarSellUnit;
-import cl.rworks.comar.swing.util.ComarActionSimple;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarPanelDate;
 import cl.rworks.comar.swing.util.ComarPanelFactory;
@@ -18,7 +15,6 @@ import cl.rworks.comar.swing.util.ComarPanelTitle;
 import cl.rworks.comar.swing.util.ComarPanelView;
 import cl.rworks.comar.swing.util.ComarUtils;
 import cl.rworks.comar.swing.util.WebTextFieldFactory;
-import cl.rworks.comar.swing.views.bills.ComarPanelBillsArea;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.scroll.WebScrollPane;
@@ -26,8 +22,6 @@ import com.alee.laf.splitpane.WebSplitPane;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
-import com.alee.managers.language.data.TooltipWay;
-import com.alee.managers.tooltip.TooltipManager;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -50,9 +44,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ComarPanelSellsArea extends ComarPanelView {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ComarPanelSellsArea.class);
-
-    private static final String TOOLTIP_SEARCH = "Ingrese en que rango de fechas\n quiere realizar la busqueda";
     private final ComarPanelSellsController controller = new ComarPanelSellsController();
     //
     // LEFT AREA
@@ -96,6 +87,8 @@ public class ComarPanelSellsArea extends ComarPanelView {
         panelSearchBillByDate.addCenter(new WebButton("Buscar", e -> searchBillByDateAction()));
         tabbed.addTab("Por Fecha", panelSearchBillByDate);
 
+        panelSellDateSearch.getComboDay().setSelectedItem(-1);
+
         ComarPanelOptionsArea panelSearchBillByCode = new ComarPanelOptionsArea();
         panelSearchBillByCode.addCenter(textSellCodeSearch = new WebTextField(20));
         panelSearchBillByCode.addCenter(new WebButton("Buscar", e -> searchBillByCodeAction()));
@@ -110,7 +103,6 @@ public class ComarPanelSellsArea extends ComarPanelView {
             public void mouseReleased(MouseEvent e) {
                 setSelectedSell(getSelectedSell());
             }
-
         });
 
         panelLeft.setBorder(new TitledBorder("Ventas"));
@@ -258,11 +250,6 @@ public class ComarPanelSellsArea extends ComarPanelView {
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return (Boolean) cols[columnIndex][2];
         }
-        
-//        @Override
-//        public boolean isPercentual(int rowIndex, int columnIndex) {
-//            return (Boolean) cols[columnIndex][3];
-//        }
 
     }
 
@@ -275,7 +262,7 @@ public class ComarPanelSellsArea extends ComarPanelView {
         int mrow = this.tableSells.convertRowIndexToModel(vrow);
         return this.tableModelSells.getRows().get(mrow);
     }
-    
+
     private void setSelectedSell(ComarSell sell) {
         selectedSell = sell;
         if (selectedSell != null) {
@@ -291,8 +278,8 @@ public class ComarPanelSellsArea extends ComarPanelView {
         }
 
     }
-    
-     private void searchBillByDateAction() {
+
+    private void searchBillByDateAction() {
         int[] value = panelSellDateSearch.getValue();
         List<ComarSell> sells = controller.searchSellsByDate(value);
         tableModelSells.setRows(sells);
