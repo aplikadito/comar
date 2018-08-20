@@ -28,10 +28,10 @@ import org.slf4j.LoggerFactory;
 public class ComarPanelBillsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComarPanelBillsController.class);
-    private ComarEntityManager ws;
+    private ComarEntityManager em;
 
     public ComarPanelBillsController() {
-        ws = ComarSystem.getInstance().getEntityManager();
+        em = ComarSystem.getInstance().getEntityManager();
     }
 
     public List<ComarBill> searchBillsByDate(int[] value) {
@@ -93,7 +93,7 @@ public class ComarPanelBillsController {
         try (ComarTransaction tx = service.createTransaction()) {
             service.deleteFacturas(bills.stream().map(e -> e.getEntity()).collect(Collectors.toList()));
             tx.commit();
-            ws.removeBills(bills);
+            em.removeBills(bills);
 
             for (ComarBill bill : bills) {
                 for (ComarBillUnit unit : bill.getUnits()) {
@@ -120,7 +120,7 @@ public class ComarPanelBillsController {
         try (ComarTransaction tx = service.createTransaction()) {
             service.insertFacturaUnidad(unit.getEntity(), unit.getBill().getEntity(), unit.getProduct().getEntity());
             tx.commit();
-            ws.addBillUnit(unit);
+            em.addBillUnit(unit);
 
 //            int total = getTotal(unit.getProduct().getEntity().getCodigo());
 //            service.updateProductoPropiedad(unit.getProduct().getEntity(), "STOCKCOMPRADO", new BigDecimal(total));
@@ -183,7 +183,7 @@ public class ComarPanelBillsController {
 
     private BigDecimal getTotal(String pcode) {
         BigDecimal total = BigDecimal.ZERO;
-        List<ComarBill> bills = ws.getBills();
+        List<ComarBill> bills = em.getBills();
         for (ComarBill bill : bills) {
             List<ComarBillUnit> units = bill.getUnits();
             for (ComarBillUnit unit : units) {

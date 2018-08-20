@@ -69,6 +69,10 @@ public class ComarPanelPosAreaController {
                 VentaUnidadEntity unidad = VentaUnidadEntityImpl.create(venta, product.getEntity(), price, count);
                 service.insertVentaUnidad(unidad, sell.getEntity(), product.getEntity());
                 em.addSellUnit(new ComarSellUnit(unidad, sell, product));
+
+                BigDecimal totalCantidadVendida = getTotal(product.getEntity().getCodigo());
+                service.updateProductoPropiedad(product.getEntity(), "STOCKVENDIDO", totalCantidadVendida);
+                product.getEntity().setStockVendido(totalCantidadVendida);
             }
 
             tx.commit();
@@ -76,5 +80,19 @@ public class ComarPanelPosAreaController {
             LOG.error("Error", ex);
             throw new ComarControllerException("Error: " + ex.getMessage(), ex);
         }
+    }
+
+    private BigDecimal getTotal(String pcode) {
+        BigDecimal total = BigDecimal.ZERO;
+        List<ComarSell> bills = em.getSells();
+        for (ComarSell bill : bills) {
+            List<ComarSellUnit> units = bill.getUnits();
+            for (ComarSellUnit unit : units) {
+                if (unit.getProduct().getEntity().getCodigo().equals(pcode)) {
+                    total = total.add(unit.getEntity().getCantidad());
+                }
+            }
+        }
+        return total;
     }
 }

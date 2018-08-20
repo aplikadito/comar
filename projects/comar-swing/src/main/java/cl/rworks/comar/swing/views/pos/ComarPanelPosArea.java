@@ -6,16 +6,9 @@
 package cl.rworks.comar.swing.views.pos;
 
 import cl.rworks.comar.core.model.Metrica;
-import cl.rworks.comar.core.model.VentaEntity;
-import cl.rworks.comar.core.model.VentaUnidadEntity;
-import cl.rworks.comar.core.model.impl.VentaEntityImpl;
-import cl.rworks.comar.core.model.impl.VentaUnidadEntityImpl;
 import cl.rworks.comar.core.service.ComarServiceException;
 import cl.rworks.comar.core.util.ComarNumberFormat;
 import cl.rworks.comar.swing.model.ComarControllerException;
-import cl.rworks.comar.swing.model.ComarProduct;
-import cl.rworks.comar.swing.model.ComarSell;
-import cl.rworks.comar.swing.model.ComarSellUnit;
 import cl.rworks.comar.swing.util.ComarPanel;
 import cl.rworks.comar.swing.util.ComarUtils;
 import com.alee.laf.optionpane.WebOptionPane;
@@ -49,8 +42,6 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.table.renderers.WebTableCellRenderer;
 import java.awt.Color;
 import java.awt.Font;
-import java.math.BigInteger;
-import java.math.MathContext;
 import java.time.LocalDate;
 
 /**
