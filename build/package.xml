@@ -3,10 +3,20 @@
        
     <property file="properties/main.properties"/>
     
+    <target name="buildProject" description="Builds the individual project">
+        <exec dir="${source.dir}\${projectName}" executable="cmd">
+            <arg value="/C"/>
+            <arg value="${env.MAVEN_HOME}\bin\mvn.bat"/>
+            <arg line="clean install" />
+        </exec>
+    </target>
+    
     <target name="package">
         <echo message="${dir.base}"/>
         
-        <delete dir="${dir.base}\\comar" />
+        
+        
+<!--        <delete dir="${dir.base}\\comar" />
         <mkdir dir="${dir.base}\\comar" />
 
         <copy todir="${dir.base}\\comar" file="${dir.base}\\projects\\comar-proto\\target\\comar-proto-1.0.jar" />
@@ -18,7 +28,7 @@
         
         <copy file="${dir.base}\\share\\JavaExe_64.exe" tofile="${dir.base}\\comar\\comar-proto-1.0.exe" />
         
-        <copy file="${dir.base}\\home\gtin.bin" todir="${dir.base}\\comar"/>
+        <copy file="${dir.base}\\home\gtin.bin" todir="${dir.base}\\comar"/>-->
         
     </target>
     
